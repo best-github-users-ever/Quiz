@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+	<constant name="struts.devMode" value="true" />
+
+	<package name="default" namespace="/" extends="struts-default">
+
+		<action name="">
+			<result>/login.jsp</result>
+		</action>
+
+		<action name="login-again">
+			<result>/login.jsp</result>
+		</action>
+
+		<action name="/">
+			<result>/login.jsp</result>
+		</action>
+
+		<action name="request-new-account">
+			<result>/newAccount.jsp</result>
+        </action>
+        
+		<action name="login" class="com.quiz.action.LoginAction">
+			<result name="success">/topics-u.jsp</result>
+			<result name="error">/login.jsp</result>
+		</action>
+		
+		<action name="logout-u" class="com.quiz.action.LogoutAction">
+			<result name="success">/login.jsp</result>
+        </action>
+
+		<action name="request-topics-u" class="com.quiz.action.GoToTopicsAction">
+			<result name="success">/topics-u.jsp</result>
+		</action>
+		
+		<action name="new-account" class="com.quiz.action.NewAccountAction">
+			<result name="success">/login.jsp</result>
+		</action>
+		
+		<action name="chooseQuizTopic-u" class="com.quiz.action.ChooseQuizTopicAction">
+			<result name="success">/quiz-u.jsp</result>
+			<result name="error">/topics-u.jsp</result>
+		</action>
+		
+		<action name="answerQuestion-u" class="com.quiz.action.AnswerQuestionAction">
+			<result name="success">/quiz-u.jsp</result>
+			<result name="error">/quiz-u.jsp</result>
+		</action>
+		
+		<action name="createTopic-u" class="com.quiz.action.CreateTopicAction">
+			<result name="success">/createTopic-u.jsp</result>
+			<result name="error">/createTopic-u.jsp</result>
+		</action>
+	</package>
+
+</struts>

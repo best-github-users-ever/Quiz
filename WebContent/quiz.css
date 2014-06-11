@@ -1,0 +1,103 @@
+body {
+	font-size: small;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	line-height: 1.6em;
+	background-color: #daeab8;
+}
+
+h1,h2 {
+	color: #0063d1;
+}
+
+h1 {
+ 	font-size: 300%; 
+    text-align: center;
+}
+
+h2 {
+ 	font-size: 200%; 
+    text-align: center;
+	color: black;
+}
+
+*.footerdate {
+	float: right;
+}
+
+*.footerdeveloper {
+	clear: left;
+	float: left;
+}
+*.login {
+	float: left;
+}
+
+*.homepage {
+	float: left;
+}
+
+*.table {
+	width: 100%;
+	text-align: center;
+}
+
+*.tableCaption {
+	font-size: 140%;
+}
+
+*.price {
+	text-align: right;
+	color: #13530f;
+}
+
+p.logo {
+	text-align: center;
+}
+
+*.errortext {
+	font-size: 120%;
+	text-align: center;
+	color: red;
+}
+
+*.positivemessage {
+	font-size: 150%;
+	text-align: center;
+	color: green;
+}
+
+
+*.centeredButton {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+
+*.loginTable {
+	margin: auto;
+}
+
+*.newaccount {
+	margin: auto;
+}
+
+*.headerText {
+	font-size: 200%;
+	margin: auto;
+	color: blue;
+}
+
+*.userstatus {
+	float: left;
+}
+
+td{
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+*.userinput {
+	font-weight: bold;
+}
+
