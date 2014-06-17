@@ -16,9 +16,9 @@
 		   <td>Topic:</td>
 			<td><select name="topicId">
 					<option value="1">Sports
-					<option value="2">Porn
+					<option value="2">Monster Movies
 					<option value="3">Arthur
-					<option value="4">Movies</td>
+					<option value="4">Horror Movies</td>
 		</tr>
 
 		<tr>

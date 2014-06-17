@@ -65,14 +65,14 @@ public class GenerateDB {
 	
 	public static void generateTopics(PrintWriter writer) {
 		writer.println(" INSERT INTO TOPICS VALUES ('DEFAULT', 'Sports');");
-		writer.println(" INSERT INTO TOPICS VALUES ('DEFAULT', 'Porn');");
+		writer.println(" INSERT INTO TOPICS VALUES ('DEFAULT', 'Monster Movies');");
 		writer.println(" INSERT INTO TOPICS VALUES ('DEFAULT', 'Arthur');");
-		writer.println(" INSERT INTO TOPICS VALUES ('DEFAULT', 'Movies');");
+		writer.println(" INSERT INTO TOPICS VALUES ('DEFAULT', 'Horror Movies');");
 	}
 	
 	public static void generateQuestions(PrintWriter writer) {
 		writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 1, 'What sport was played by Arthur Ashe ?', 'Football', 'Baseball', 'Tennis', 'Auto Racing', 2);");
-	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 2, 'Which is a classic ?', 'Behind the Green Door', 'Pocahotass', 'Tigers Wood', 'Lara Croft - Womb Raider', 0);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 2, 'Name the actor who played Godzilla originally ?', 'Buddy Zilla', 'Raymond Burr', 'it was a model', 'James Dean', 2);");
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What kind of animal is Binky Barnes ?', 'Who knows?', 'Aardvark', 'Lemur', 'Hippo', 3);");
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 4, 'Which horror movie ended with a burning house ?', 'The Amityville Horror', 'Carrie', 'all of them', 'The Shining', 2);");
 

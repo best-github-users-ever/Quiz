@@ -3,10 +3,10 @@ use QUIZDB;create Table IF NOT EXISTS USERS (USERID   VARBINARY(40)  UNIQUE NOT 
 use QUIZDB;create Table IF NOT EXISTS QUESTIONS (QUESTIONID     MEDIUMINT  AUTO_INCREMENT,TOPICID   MEDIUMINT DEFAULT NULL,QUESTION  VARBINARY(200)  NOT NULL,OPTION1   VARBINARY(200)  NOT NULL,OPTION2   VARBINARY(200)  NOT NULL,OPTION3   VARBINARY(200)  NOT NULL,OPTION4   VARBINARY(200)  NOT NULL,ANSWERIDX SMALLINT NOT NULL,KEY QUESTIONID (QUESTIONID) ) ENGINE=InnoDB;  COMMIT;
 use QUIZDB;ALTER TABLE QUESTIONS ADD FOREIGN KEY (TOPICID) REFERENCES TOPICS (TOPICID)ON UPDATE CASCADE ON DELETE RESTRICT; COMMIT;
  INSERT INTO TOPICS VALUES ('DEFAULT', 'Sports');
- INSERT INTO TOPICS VALUES ('DEFAULT', 'Porn');
+ INSERT INTO TOPICS VALUES ('DEFAULT', 'Monster Movies');
  INSERT INTO TOPICS VALUES ('DEFAULT', 'Arthur');
- INSERT INTO TOPICS VALUES ('DEFAULT', 'Movies');
+ INSERT INTO TOPICS VALUES ('DEFAULT', 'Horror Movies');
  INSERT INTO QUESTIONS VALUES ('DEFAULT', 1, 'What sport was played by Arthur Ashe ?', 'Football', 'Baseball', 'Tennis', 'Auto Racing', 2);
- INSERT INTO QUESTIONS VALUES ('DEFAULT', 2, 'Which is a classic ?', 'Behind the Green Door', 'Pocahotass', 'Tigers Wood', 'Lara Croft - Womb Raider', 0);
+ INSERT INTO QUESTIONS VALUES ('DEFAULT', 2, 'Name the actor who played Godzilla originally ?', 'Buddy Zilla', 'Raymond Burr', 'it was a model', 'James Dean', 2);
  INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What kind of animal is Binky Barnes ?', 'Who knows?', 'Aardvark', 'Lemur', 'Hippo', 3);
  INSERT INTO QUESTIONS VALUES ('DEFAULT', 4, 'Which horror movie ended with a burning house ?', 'The Amityville Horror', 'Carrie', 'all of them', 'The Shining', 2);

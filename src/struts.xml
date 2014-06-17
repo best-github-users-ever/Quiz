@@ -43,13 +43,13 @@
 		</action>
 		
 		<action name="chooseQuizTopic-u" class="com.quiz.action.ChooseQuizTopicAction">
-			<result name="success">/quiz-u.jsp</result>
+			<result name="success">/quiz-javascript-u.jsp</result>
 			<result name="error">/topics-u.jsp</result>
 		</action>
 		
 		<action name="answerQuestion-u" class="com.quiz.action.AnswerQuestionAction">
-			<result name="success">/quiz-u.jsp</result>
-			<result name="error">/quiz-u.jsp</result>
+			<result name="success">/quiz-javascript-u.jsp</result>
+			<result name="error">/quiz-javascript-u.jsp</result>
 		</action>
 		
 		<action name="createTopic-u" class="com.quiz.action.CreateTopicAction">
