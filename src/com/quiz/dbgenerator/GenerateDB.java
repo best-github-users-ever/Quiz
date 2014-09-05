@@ -44,6 +44,25 @@ public class GenerateDB {
 	    		        +       ") ENGINE=InnoDB;" + "  COMMIT;");
 	
 		writer.println("use QUIZDB;"
+				+       "create Table IF NOT EXISTS GAMES ("
+				+       "GAMEID  MEDIUMINT  AUTO_INCREMENT,"
+				+       "TOPICID   MEDIUMINT NOT NULL,"
+		        +       "TOTPLAYERS SMALLINT NOT NULL,"
+		        +       "NUMPLAYERS SMALLINT DEFAULT 0,"
+		        +       "PLAYER1   VARBINARY(40)  DEFAULT NULL,"
+		        +       "PLAYER2   VARBINARY(40)  DEFAULT NULL,"
+		        +       "PLAYER3   VARBINARY(40)  DEFAULT NULL,"
+		        +       "PLAYER4   VARBINARY(40)  DEFAULT NULL,"
+		        +       "PLAYER5   VARBINARY(40)  DEFAULT NULL,"
+		        +       "KEY GAMEID (GAMEID) "
+                +       ") ENGINE=InnoDB;" + "  COMMIT;");
+
+		writer.println("use QUIZDB;"
+				+       "ALTER TABLE GAMES ADD FOREIGN KEY (TOPICID) REFERENCES TOPICS (TOPICID)"
+				+       "ON UPDATE CASCADE "
+                +       "ON DELETE RESTRICT; COMMIT;");	
+
+		writer.println("use QUIZDB;"
 				+       "create Table IF NOT EXISTS QUESTIONS ("
 				+       "QUESTIONID     MEDIUMINT  AUTO_INCREMENT,"
 				+       "TOPICID   MEDIUMINT DEFAULT NULL,"

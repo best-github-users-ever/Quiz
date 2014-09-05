@@ -1,7 +1,7 @@
 /**
  * 
  */
-function runQuiz(){
+runQuiz: function (){
 	
     var jQuiz = {
         answers: { q1: 'd', q2: 'd', q3: 'a', q4: 'c', q5: 'a' },

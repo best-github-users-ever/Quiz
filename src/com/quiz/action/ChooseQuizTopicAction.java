@@ -8,6 +8,7 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ModelDriven;
 import com.quiz.dao.DBAccess;
 import com.quiz.dao.IQuizDbAccess;
+import com.quiz.model.Game;
 import com.quiz.model.Question;
 import com.quiz.model.User;
 
@@ -16,8 +17,9 @@ public class ChooseQuizTopicAction extends BaseAction implements Serializable {
 	/**
 	 * 
 	 */
-    private int topicId;
-		
+	private int topicId;
+	private int numberPlayers;
+
 	private static Logger log = Logger.getLogger(ChooseQuizTopicAction.class);
 
 	private static final long serialVersionUID = 3522866317711753644L;
@@ -26,7 +28,6 @@ public class ChooseQuizTopicAction extends BaseAction implements Serializable {
 
 	}
 
-	
 	@Override
 	public String executeAction() {
 
@@ -35,33 +36,87 @@ public class ChooseQuizTopicAction extends BaseAction implements Serializable {
 		ActionContext context = ActionContext.getContext();
 
 		IQuizDbAccess dao = DBAccess.getDbAccess();
-		
-		//need to 'randomly' get a question from the topic.
-		Question question = dao.getQuestion(getTopicId());
 
-		if (question != null) {
+		int numberPlayers = getNumberPlayers();
 
-			getSession().put("question", question);
+		getSession().put("numberPlayers", numberPlayers);
+/*
+		if (numberPlayers == 1) {
 
-			return SUCCESS;
+			// need to 'randomly' get a question from the topic.
+			Question question = dao.getQuestion(getTopicId());
+
+			if (question != null) {
+
+				getSession().put("question", question);
+
+				return SUCCESS;
+			} else {
+				// no questions for topic
+
+				getRequest().put("reqErrorMessage",
+						"No Questions available for this topic");
+				return ERROR;
+			}
 		} else {
-			//no questions for topic
+		*/
+			Game game = null;
 
-			getRequest().put("reqErrorMessage", "No Questions available for this topic");
-			return ERROR;
-		}
+			game = dao.findGameForNewPlayer(getTopicId(), getNumberPlayers(),
+					((User) getSession().get("user")).getUserId());
+
+			if (game != null) {
+
+				if (game.getTotalPlayers() == game.getNumPlayers()) {
+					// temporary code printed as error msg
+					getRequest().put("reqErrorMessage", "All Players found");
+					// need to 'randomly' get a question from the topic.
+					Question question = dao.getQuestion(getTopicId());
+
+					if (question != null) {
+
+						getSession().put("question", question);
+
+						return SUCCESS;
+					} else {
+						// no questions for topic
+
+						getRequest().put("reqErrorMessage",
+								"No Questions available for this topic");
+						return ERROR;
+					}
+
+				}
+				else {
+					// temporary code printed as error msg
+					getRequest().put("reqErrorMessage",
+							"Waiting for other players");
+					return ERROR;
+				}
+			} else {
+				getRequest()
+						.put("reqErrorMessage",
+								"Error finding a game for selected Topic and number of players");
+				return ERROR;
+			}
+
+		//}
 	}
-
 
 	public int getTopicId() {
 		return topicId;
 	}
 
-
 	public void setTopicId(int topicId) {
 		this.topicId = topicId;
 	}
 
+	public int getNumberPlayers() {
+		return numberPlayers;
+	}
 
+	public void setNumberPlayers(int numberPlayers) {
+		this.numberPlayers = numberPlayers;
+	}
 
 }

@@ -25,6 +25,17 @@
 			<td>&nbsp</td>
 			<td>&nbsp</td>
 		</tr>
+		<tr>
+		   <td>Number of Players</td>
+			<td><select name="numberPlayers">
+					<option value="1">1
+					<option value="2">2</td>
+		</tr>
+
+		<tr>
+			<td>&nbsp</td>
+			<td>&nbsp</td>
+		</tr>
 
 
 		<tr>

@@ -6,9 +6,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.quiz.model.Game;
 import com.quiz.model.Question;
 import com.quiz.model.User;
 
@@ -127,24 +130,215 @@ public class DBAccess implements IQuizDbAccess {
 
 	@Override
 	public User getUser(User user) {
-//		log.error(user.toString());
-		//need to include password below
+		// log.error(user.toString());
+		// need to include password below
 		final String GET_USER = "SELECT * FROM users WHERE userid = ? AND password = ?";
-		try{
-		return (User) jdbcTemplate.queryForObject(GET_USER,
-				new Object[] { user.getUserId(), user.getPassword() }, new UserMapper());
-		}
-		catch (EmptyResultDataAccessException e){
+		try {
+			return (User) jdbcTemplate.queryForObject(GET_USER, new Object[] {
+					user.getUserId(), user.getPassword() }, new UserMapper());
+		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
 	}
-
 
 	@Override
 	public Question getQuestion(int topicId) {
 		final String GET_QUESTION = "SELECT * FROM questions WHERE topicid = ?";
 		return (Question) jdbcTemplate.queryForObject(GET_QUESTION,
 				new Object[] { topicId }, new QuestionMapper());
+	}
+
+	private static class GamePreparedStatementCreator implements
+			PreparedStatementCreator {
+		private String GAME_INSERT = "INSERT INTO games (topicid, totplayers) VALUES(?,?)";
+		private Game game;
+
+		@Override
+		public PreparedStatement createPreparedStatement(Connection conn)
+				throws SQLException {
+			PreparedStatement ps = conn.prepareStatement(GAME_INSERT,
+					Statement.RETURN_GENERATED_KEYS);
+			ps.setInt(1, game.getTopicId());
+			ps.setInt(2, game.getTotalPlayers());
+			return ps;
+		}
+
+		public GamePreparedStatementCreator(Game game, int topicId, int totalPlayers) {
+			this.game = game;
+			this.game.setTopicId(topicId);
+			this.game.setTotalPlayers(totalPlayers);
+		}
+	}
+
+	private static final class GameMapper implements RowMapper<Object> {
+
+		@Override
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			Game localGame = new Game();
+			localGame.setGameId(rs.getInt("gameId"));
+			localGame.setTopicId(rs.getInt("topicid"));
+			localGame.setNumPlayers(rs.getInt("numplayers"));
+			localGame.setTotalPlayers(rs.getInt("totplayers"));
+			localGame.setPlayer1(rs.getString("player1"));
+			localGame.setPlayer2(rs.getString("player2"));
+			localGame.setPlayer3(rs.getString("player3"));
+			localGame.setPlayer4(rs.getString("player4"));
+			localGame.setPlayer5(rs.getString("player5"));
+			// TODO Auto-generated method stub
+			return localGame;
+		}
+	}
+
+	public Game retrieveGamefromId(int gameId){
+		final String GET_GAME = "SELECT * FROM games WHERE gameid = ?";
+		return (Game) jdbcTemplate.queryForObject(GET_GAME,
+				new Object[] { gameId }, new GameMapper());
+		
+	}
+
+	@Override
+	public Game addGame(int topicId, int totalPlayers) {
+		Game game = new Game();
+		GamePreparedStatementCreator creator = new GamePreparedStatementCreator(game,
+				topicId, totalPlayers);
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		jdbcTemplate.update(creator, keyHolder);
+		if (keyHolder.getKey() != null){
+			return retrieveGamefromId(keyHolder.getKey().intValue());
+		}
+		else {
+			return null;
+	
+		}
+		
+	}
+
+	@Override
+	public Game joinGame(int gameId, String username) {
+		Game game = retrieveGamefromId(gameId);
+		
+		if (game != null){
+			if (game.getNumPlayers() < game.getTotalPlayers()){
+				int playerNumber = game.getNumPlayers() + 1;
+
+				switch (playerNumber) {
+				case 1:
+					game.setPlayer1(username);
+					break;
+				case 2:
+					game.setPlayer2(username);
+					break;
+				case 3:
+					game.setPlayer3(username);
+					break;
+				case 4:
+					game.setPlayer4(username);
+					break;
+				case 5:
+					game.setPlayer5(username);
+					break;
+
+				default:
+					break;
+				}
+				
+				game.setNumPlayers(game.getNumPlayers() + 1);
+				log.info(game.toString());
+			}
+		}
+		else {
+			log.info("couldn't find game based on gameid of:" + gameId);
+
+		}
+		return game;
+		
+	}
+
+	@Override
+	public Game searchForFirstMatchingQueuedGame(int topicId, int totalPlayers) {
+		final String GET_GAME = "SELECT * FROM games WHERE topicid = ? AND totplayers = ? AND numplayers < totplayers";
+		List<Map<String, Object>> candidateGames = null;
+		
+		candidateGames = jdbcTemplate.queryForList(GET_GAME,
+				new Object[]{topicId, totalPlayers});
+		
+		if (!candidateGames.isEmpty() ){
+			//just return the first one
+			//NOTE: can't cast Map entry to Game. so we fail on lookups where we find a game.
+			//Need to revisit this db lookup.
+			return (Game) candidateGames.get(0);
+		}
+		else {
+			return null;
+		}
+
+	}
+
+	@Override
+	public Game findGameForNewPlayer(int topicId, int totalPlayers,
+			String username) {
+		
+		Game game = searchForFirstMatchingQueuedGame(topicId, totalPlayers);
+		
+		if (game != null){
+			game = joinGame(game.getGameId(), username);
+			
+			updateGame(game);
+			return game;
+		}
+		else{
+			game = addGame(topicId, totalPlayers);
+
+			if (game != null){
+				game = joinGame(game.getGameId(), username);
+
+				log.info("added new game");
+				updateGame(game);
+
+				return game;
+			}
+			
+		}
+		
+		return null;
+	}
+
+	public void updateGame(Game game) {
+		String playerString = null;
+		String playerUserId = null;
+		
+		switch (game.getNumPlayers()) {
+	case 1:
+		playerString = "player1";
+		playerUserId = game.getPlayer1();
+		break;
+	case 2:
+		playerString = "player2";
+		playerUserId = game.getPlayer2();
+		break;
+	case 3:
+		playerString = "player3";
+		playerUserId = game.getPlayer3();
+		break;
+	case 4:
+		playerString = "player4";
+		playerUserId = game.getPlayer4();
+		break;
+	case 5:
+		playerString = "player5";
+		playerUserId = game.getPlayer5();
+		break;
+
+	default:
+		break;
+	}
+		  String updateStatement = " UPDATE games"
+                  + " SET numplayers= ?," + playerString + " = ?"
+                  + " WHERE gameid= ?";
+		  
+		  jdbcTemplate.update(updateStatement, new Object[] {game.getNumPlayers(), playerUserId, game.getGameId()});
+		
 	}
 
 }
