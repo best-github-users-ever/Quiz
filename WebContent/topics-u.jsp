@@ -7,6 +7,9 @@
 	<p class="errortext">Error: ${reqErrorMessage}</p>
 	<br>
 </c:if>
+<c:if test="${not empty reqPositiveMessage}">
+<p class="positivemessage">${reqPositiveMessage}</p>
+</c:if>
 
 <form action='<%=response.encodeURL("chooseQuizTopic-u.action")%>' method='POST'>
 
@@ -29,7 +32,10 @@
 		   <td>Number of Players</td>
 			<td><select name="numberPlayers">
 					<option value="1">1
-					<option value="2">2</td>
+					<option value="2">2
+					<option value="3">3
+					<option value="4">4
+					<option value="5">5</td>
 		</tr>
 
 		<tr>

@@ -163,7 +163,8 @@ public class DBAccess implements IQuizDbAccess {
 			return ps;
 		}
 
-		public GamePreparedStatementCreator(Game game, int topicId, int totalPlayers) {
+		public GamePreparedStatementCreator(Game game, int topicId,
+				int totalPlayers) {
 			this.game = game;
 			this.game.setTopicId(topicId);
 			this.game.setTotalPlayers(totalPlayers);
@@ -190,86 +191,100 @@ public class DBAccess implements IQuizDbAccess {
 		}
 	}
 
-	public Game retrieveGamefromId(int gameId){
+	public Game retrieveGamefromId(int gameId) {
 		final String GET_GAME = "SELECT * FROM games WHERE gameid = ?";
 		return (Game) jdbcTemplate.queryForObject(GET_GAME,
 				new Object[] { gameId }, new GameMapper());
-		
+
 	}
 
 	@Override
 	public Game addGame(int topicId, int totalPlayers) {
 		Game game = new Game();
-		GamePreparedStatementCreator creator = new GamePreparedStatementCreator(game,
-				topicId, totalPlayers);
+		GamePreparedStatementCreator creator = new GamePreparedStatementCreator(
+				game, topicId, totalPlayers);
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		jdbcTemplate.update(creator, keyHolder);
-		if (keyHolder.getKey() != null){
+		if (keyHolder.getKey() != null) {
 			return retrieveGamefromId(keyHolder.getKey().intValue());
-		}
-		else {
+		} else {
 			return null;
-	
+
 		}
-		
+
 	}
 
 	@Override
 	public Game joinGame(int gameId, String username) {
 		Game game = retrieveGamefromId(gameId);
-		
-		if (game != null){
-			if (game.getNumPlayers() < game.getTotalPlayers()){
+
+		if (game != null) {
+			if (game.getNumPlayers() < game.getTotalPlayers()) {
+				String playerString = null;
+				String playerUserId = null;
+
 				int playerNumber = game.getNumPlayers() + 1;
+
+				playerUserId = username;
 
 				switch (playerNumber) {
 				case 1:
 					game.setPlayer1(username);
+					playerString = "player1";
 					break;
 				case 2:
 					game.setPlayer2(username);
+					playerString = "player2";
 					break;
 				case 3:
 					game.setPlayer3(username);
+					playerString = "player3";
 					break;
 				case 4:
 					game.setPlayer4(username);
+					playerString = "player4";
 					break;
 				case 5:
 					game.setPlayer5(username);
+					playerString = "player5";
 					break;
 
 				default:
+					log.severe("Incorrect player number: " + playerNumber);
 					break;
 				}
-				
+
 				game.setNumPlayers(game.getNumPlayers() + 1);
 				log.info(game.toString());
+
+				String updateStatement = " UPDATE games"
+						+ " SET numplayers= ?," + playerString + " = ?"
+						+ " WHERE gameid= ?";
+
+				jdbcTemplate.update(
+						updateStatement,
+						new Object[] { game.getNumPlayers(), playerUserId,
+								game.getGameId() });
+
 			}
-		}
-		else {
+		} else {
 			log.info("couldn't find game based on gameid of:" + gameId);
 
 		}
 		return game;
-		
+
 	}
 
 	@Override
 	public Game searchForFirstMatchingQueuedGame(int topicId, int totalPlayers) {
 		final String GET_GAME = "SELECT * FROM games WHERE topicid = ? AND totplayers = ? AND numplayers < totplayers";
-		List<Map<String, Object>> candidateGames = null;
-		
-		candidateGames = jdbcTemplate.queryForList(GET_GAME,
-				new Object[]{topicId, totalPlayers});
-		
-		if (!candidateGames.isEmpty() ){
-			//just return the first one
-			//NOTE: can't cast Map entry to Game. so we fail on lookups where we find a game.
-			//Need to revisit this db lookup.
+
+		List<Object> candidateGames = jdbcTemplate.query(GET_GAME,
+				new Object[] { topicId, totalPlayers }, new GameMapper());
+
+		if (!candidateGames.isEmpty()) {
 			return (Game) candidateGames.get(0);
-		}
-		else {
+		} else {
 			return null;
 		}
 
@@ -278,67 +293,28 @@ public class DBAccess implements IQuizDbAccess {
 	@Override
 	public Game findGameForNewPlayer(int topicId, int totalPlayers,
 			String username) {
-		
+
 		Game game = searchForFirstMatchingQueuedGame(topicId, totalPlayers);
-		
-		if (game != null){
+
+		if (game != null) {
 			game = joinGame(game.getGameId(), username);
-			
-			updateGame(game);
+
+			log.info("joined existing game");
 			return game;
-		}
-		else{
+		} else {
 			game = addGame(topicId, totalPlayers);
 
-			if (game != null){
+			if (game != null) {
 				game = joinGame(game.getGameId(), username);
 
 				log.info("added new game");
-				updateGame(game);
 
 				return game;
 			}
-			
+
 		}
-		
+
 		return null;
-	}
-
-	public void updateGame(Game game) {
-		String playerString = null;
-		String playerUserId = null;
-		
-		switch (game.getNumPlayers()) {
-	case 1:
-		playerString = "player1";
-		playerUserId = game.getPlayer1();
-		break;
-	case 2:
-		playerString = "player2";
-		playerUserId = game.getPlayer2();
-		break;
-	case 3:
-		playerString = "player3";
-		playerUserId = game.getPlayer3();
-		break;
-	case 4:
-		playerString = "player4";
-		playerUserId = game.getPlayer4();
-		break;
-	case 5:
-		playerString = "player5";
-		playerUserId = game.getPlayer5();
-		break;
-
-	default:
-		break;
-	}
-		  String updateStatement = " UPDATE games"
-                  + " SET numplayers= ?," + playerString + " = ?"
-                  + " WHERE gameid= ?";
-		  
-		  jdbcTemplate.update(updateStatement, new Object[] {game.getNumPlayers(), playerUserId, game.getGameId()});
-		
 	}
 
 }

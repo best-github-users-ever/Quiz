@@ -40,67 +40,48 @@ public class ChooseQuizTopicAction extends BaseAction implements Serializable {
 		int numberPlayers = getNumberPlayers();
 
 		getSession().put("numberPlayers", numberPlayers);
-/*
-		if (numberPlayers == 1) {
 
-			// need to 'randomly' get a question from the topic.
-			Question question = dao.getQuestion(getTopicId());
+		Game game = null;
 
-			if (question != null) {
+		game = dao.findGameForNewPlayer(getTopicId(), getNumberPlayers(),
+				((User) getSession().get("user")).getUserId());
 
-				getSession().put("question", question);
+		if (game != null) {
 
-				return SUCCESS;
+			getSession().put("game", game);
+
+			if (game.getTotalPlayers() == game.getNumPlayers()) {
+
+				getRequest().put("reqPositiveMessage", "All Players found! Start Quiz Now!");
+				// need to 'randomly' get a question from the topic.
+				Question question = dao.getQuestion(getTopicId());
+
+				if (question != null) {
+
+					getSession().put("question", question);
+
+					return SUCCESS;
+				} else {
+					// no questions for topic
+
+					getRequest().put("reqErrorMessage",
+							"No Questions available for this topic");
+					return ERROR;
+				}
+
 			} else {
-				// no questions for topic
-
-				getRequest().put("reqErrorMessage",
-						"No Questions available for this topic");
+				// temporary code printed as error msg
+				getRequest()
+						.put("reqPositiveMessage", "Game Found! Please wait until other players join.");
 				return ERROR;
 			}
 		} else {
-		*/
-			Game game = null;
+			getRequest()
+					.put("reqErrorMessage",
+							"Error finding a game for selected Topic and number of players");
+			return ERROR;
+		}
 
-			game = dao.findGameForNewPlayer(getTopicId(), getNumberPlayers(),
-					((User) getSession().get("user")).getUserId());
-
-			if (game != null) {
-
-				if (game.getTotalPlayers() == game.getNumPlayers()) {
-					// temporary code printed as error msg
-					getRequest().put("reqErrorMessage", "All Players found");
-					// need to 'randomly' get a question from the topic.
-					Question question = dao.getQuestion(getTopicId());
-
-					if (question != null) {
-
-						getSession().put("question", question);
-
-						return SUCCESS;
-					} else {
-						// no questions for topic
-
-						getRequest().put("reqErrorMessage",
-								"No Questions available for this topic");
-						return ERROR;
-					}
-
-				}
-				else {
-					// temporary code printed as error msg
-					getRequest().put("reqErrorMessage",
-							"Waiting for other players");
-					return ERROR;
-				}
-			} else {
-				getRequest()
-						.put("reqErrorMessage",
-								"Error finding a game for selected Topic and number of players");
-				return ERROR;
-			}
-
-		//}
 	}
 
 	public int getTopicId() {

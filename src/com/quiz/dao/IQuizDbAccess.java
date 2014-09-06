@@ -12,8 +12,6 @@ public interface IQuizDbAccess {
 	
 	Game addGame(int topicId, int totalPlayers);
 	
-	void updateGame(Game game);
-
 	Game searchForFirstMatchingQueuedGame(int topicId, int totalPlayers);
 
 	Game retrieveGamefromId(int gameId);
