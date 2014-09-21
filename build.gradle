@@ -1,0 +1,114 @@
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/libs-release" }
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.6.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'base'
+apply plugin: 'jetty'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'war'
+apply plugin: 'spring-boot'
+apply plugin: 'maven'
+
+configurations {
+   all*.exclude group: 'javax.jms', module: 'jms'
+   all*.exclude group: 'com.sun.jdmk', module: 'jmxtools'
+   all*.exclude group: 'com.sun.jmx', module: 'jmxri'
+   published
+}
+
+jar {
+    baseName = 'gs-rest-service'
+    version =  '0.1.0'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-release" }
+}
+
+// Javax:
+def javaxServletAPIVersion = '3.1-b01'
+def javaxServletAPI        = "javax.servlet:javax.servlet-api:${javaxServletAPIVersion}"
+
+def javaxJspApiVersion     = '2.1'
+def javaxJspApi            = "javax.servlet.jsp:jsp-api:${javaxJspApiVersion}"
+
+def javaxJSTLVersion       = '1.2'
+def javaxJSTL              = "javax.servlet:jstl:${javaxJSTLVersion}"
+
+def javaxInjectVersion     = '1'
+def javaxInject            = "javax.inject:javax.inject:${javaxInjectVersion}"
+
+def javaxValidationVersion = '1.0.0.GA'
+def javaxValidation        = "javax.validation:validation-api:${javaxValidationVersion}"
+
+def springVersion          = '3.2.3.RELEASE'
+def springContext          = "org.springframework:spring-context:${springVersion}"
+
+def springAop              = "org.springframework:spring-aop:${springVersion}"
+//def springAsm              = "org.springframework:spring-asm:${springVersion}"
+def springAspects          = "org.springframework:spring-aspects:${springVersion}"
+def springBeans            = "org.springframework:spring-beans:${springVersion}"
+def springContextSupport   = "org.springframework:spring-context-support:${springVersion}"
+def springCore             = "org.springframework:spring-core:${springVersion}"
+def springExpression       = "org.springframework:spring-expression:${springVersion}"
+def springJdbc             = "org.springframework:spring-jdbc:${springVersion}"
+def springTx               = "org.springframework:spring-tx:${springVersion}"
+
+def javassistVersion       = '3.0'
+def javassist              = 'javassist:javassist:${javassistVersion}'
+
+
+//Struts 2 module defs
+def struts2Version         = '2.3.1.2'
+def xworkCore              = 'org.apache.struts.xwork:xwork-core:${struts2Version}'
+def struts2RestPlugin      = "org.apache.struts:struts2-rest-plugin:${struts2Version}"
+
+
+dependencies {
+    compile "log4j:log4j:1.2.15"
+    compile("org.springframework.boot:spring-boot-starter-web",
+	        springContext, springAop, //springAsm, 
+			springAspects, springBeans, springContextSupport, 
+			springCore, springExpression, springJdbc, springTx)
+			
+    testCompile("junit:junit")
+	
+        // Javax:
+        compile(
+            javaxInject,        javaxValidation,        javaxJSTL
+        )
+        providedCompile(
+            javaxServletAPI,    javaxJspApi
+        )
+    compile (javassist)
+
+	    // struts 2
+    compile "org.apache.struts:struts2-core:${struts2Version}"
+    compile "org.apache.struts:struts2-convention-plugin:${struts2Version}"
+    compile "org.apache.struts.xwork:xwork-core:${struts2Version}"
+	compile struts2RestPlugin
+	
+
+	runtime "ognl:ognl:3.0.4"
+	runtime "org.freemarker:freemarker:2.3.19"
+    runtime xworkCore 
+    runtime 'commons-dbcp:commons-dbcp:1.4'
+	runtime 'mysql:mysql-connector-java:5.1.17'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.11'
+}
+
+

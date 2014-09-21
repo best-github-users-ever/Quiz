@@ -10,5 +10,5 @@ use QUIZDB;ALTER TABLE QUESTIONS ADD FOREIGN KEY (TOPICID) REFERENCES TOPICS (TO
  INSERT INTO TOPICS VALUES ('DEFAULT', 'Horror Movies');
  INSERT INTO QUESTIONS VALUES ('DEFAULT', 1, 'What sport was played by Arthur Ashe ?', 'Football', 'Baseball', 'Tennis', 'Auto Racing', 2);
  INSERT INTO QUESTIONS VALUES ('DEFAULT', 2, 'Name the actor who played Godzilla originally ?', 'Buddy Zilla', 'Raymond Burr', 'it was a model', 'James Dean', 2);
- INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What kind of animal is Binky Barnes ?', 'Who knows?', 'Aardvark', 'Lemur', 'Hippo', 3);
+ INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What kind of animal is Binky Barnes ?', 'Who knows?', 'Hippo', 'Lemur', 'Bulldog', 3);
  INSERT INTO QUESTIONS VALUES ('DEFAULT', 4, 'Which horror movie ended with a burning house ?', 'The Amityville Horror', 'Carrie', 'all of them', 'The Shining', 2);
