@@ -97,7 +97,7 @@ dependencies {
     compile "org.apache.struts:struts2-core:${struts2Version}"
     compile "org.apache.struts:struts2-convention-plugin:${struts2Version}"
     compile "org.apache.struts.xwork:xwork-core:${struts2Version}"
-	compile struts2RestPlugin
+//	compile struts2RestPlugin
 	
 
 	runtime "ognl:ognl:3.0.4"
