@@ -6,7 +6,9 @@ import com.quiz.model.User;
 
 public interface IQuizDbAccess {
 	
-	void addUser(User u);
+	boolean addUser(User u);
+	
+	String showHint(String userId);
 	
 	Game findGameForNewPlayer(int topicId, int totalPlayers, String username);
 	

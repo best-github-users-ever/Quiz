@@ -6,17 +6,24 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.6.RELEASE")
+        classpath 'com.eriwen:gradle-js-plugin:1.11.1'
     }
 }
 
 apply plugin: 'java'
+apply plugin: 'js'
 apply plugin: 'base'
 apply plugin: 'jetty'
 apply plugin: 'eclipse'
+apply plugin: 'eclipse-wtp'
 apply plugin: 'idea'
 apply plugin: 'war'
 apply plugin: 'spring-boot'
 apply plugin: 'maven'
+
+// Uses JDK 7
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 configurations {
    all*.exclude group: 'javax.jms', module: 'jms'
@@ -28,6 +35,9 @@ configurations {
 jar {
     baseName = 'gs-rest-service'
     version =  '0.1.0'
+    
+    baseName = 'gs-serving-web-content'
+    version  = '0.1.0'
 }
 
 repositories {
@@ -52,7 +62,8 @@ def javaxInject            = "javax.inject:javax.inject:${javaxInjectVersion}"
 def javaxValidationVersion = '1.0.0.GA'
 def javaxValidation        = "javax.validation:validation-api:${javaxValidationVersion}"
 
-def springVersion          = '3.2.3.RELEASE'
+//def springVersion          = '3.2.3.RELEASE'
+def springVersion          = '4.0.7.RELEASE'
 def springContext          = "org.springframework:spring-context:${springVersion}"
 
 def springAop              = "org.springframework:spring-aop:${springVersion}"

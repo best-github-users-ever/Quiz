@@ -10,11 +10,12 @@
 </c:if>
 <hr>
 
-<s:form action="login.action" method="post">
+<sf:form action="login.action" method="post">
 	<table class="loginTable">
 		<tr>
-			<td class='userinput' ><b>Username:</b></td>
-			<td class='userinput' ><input type='text' name='userId' value=''></td>
+			<td class='userinput'><b>Username:</b></td>
+			<td class='userinput'><input type='text' id="userId"
+				name='userId'></td>
 		</tr>
 		<tr>
 			<td><b>Password:</b></td>
@@ -33,31 +34,51 @@
 				value='login'></td>
 		</tr>
 		<tr>
-            <s:url var="newAccountURL" action="request-new-account.action" >  </s:url>  
-			<td colspan="2">Click <a
-					href="<s:property value="#newAccountURL"/>">
-					here</a> to open a new account.
+			<c:url var="newAccountURL" value="/request-new-account.action">
+			</c:url>
+			<td colspan="2">Click <a href="${newAccountURL}"> here</a> to
+				open a new account.
 			</td>
 		</tr>
 
 		<c:if test="${not empty reqErrorMessage}">
 			<tr>
-				<td colspan="2">
-				
-                <s:url var="hintURL" action="show-hint.action" >  </s:url>  
-				Click <a
-					href="<s:property value="#hintURL"/>"> here</a> to
-					see your password hint.
-				</td>
+				<td colspan="2"><c:url var="hintURL" value="/show-hint.action">
+					</c:url> Click <a id="hintLink" href="${hintURL}"> here</a> to see your
+					password hint.</td>
 			</tr>
 		</c:if>
 	</table>
-	</s:form>
-	<br>
+</sf:form>
+<br>
 
-	
+
 <br>
 <br>
 <c:import url="footer.jsp" />
 </body>
+<script>
+	function hintClick(event) {
+		var userId = $("#userId").val();
+
+		if (!userId.match(/^[0-9a-z]+$/)) {
+			window.alert("Enter valid Username");
+			$("#userId").val("");
+			$("#userId").focus();
+			event.preventDefault();
+			//		$("#hintLink").attr("href", "login-again.action");
+		} else {
+
+			$("#hintLink").attr("href",
+					$("#hintLink").attr("href") + "/" + userId);
+		}
+		console.log("value of userId:" + userId);
+	}
+
+	$(document).ready(function() {
+		$("#hintLink").click(function(event) {
+			hintClick(event);
+		});
+	});
+</script>
 </html>

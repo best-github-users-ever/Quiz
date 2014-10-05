@@ -6,7 +6,7 @@
 		</c:if>
         <hr>
         
-        <s:form action="new-account.action" method="post">
+        <sf:form action="new-account.action" method="post">
         
         <table class="newaccount" >
             <tr> 
@@ -27,7 +27,7 @@
         </table>
         <br>
         <input class="centeredButton" type='submit' value='create account'>
-        </s:form>
+        </sf:form>
         
         <br><br>
         <c:import url="footer.jsp"/>

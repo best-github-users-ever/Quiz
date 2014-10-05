@@ -121,11 +121,18 @@ public class DBAccess implements IQuizDbAccess {
 	// DB Access methods below
 
 	@Override
-	public void addUser(User user) {
+	public boolean addUser(User user) {
 		UserPreparedStatementCreator creator = new UserPreparedStatementCreator(
 				user);
 		// KeyHolder keyHolder = new GeneratedKeyHolder();
-		jdbcTemplate.update(creator);
+		try {
+			jdbcTemplate.update(creator);
+			return true;
+
+		} catch (Exception e) {
+			return false;
+		}
+
 	}
 
 	@Override
@@ -315,6 +322,31 @@ public class DBAccess implements IQuizDbAccess {
 		}
 
 		return null;
+	}
+
+	@Override
+	public String showHint(String userId) {
+		final String GET_HINT = "SELECT * FROM users WHERE userid = ?";
+		User user = null;
+		
+		try {
+	    	user = (User) jdbcTemplate.queryForObject(GET_HINT,
+				new Object[] { userId }, new UserMapper());
+		    } 
+		catch (EmptyResultDataAccessException e) {
+			return "";
+		}
+
+		if (user != null) {
+
+			if (user.getHint() == null) {
+				return "";
+			} else {
+				return user.getHint();
+			}
+		} else {
+			return null;
+		}
 	}
 
 }

@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 import org.apache.log4j.Logger;
 
-import com.quiz.action.ChooseQuizTopicAction;
-
 public class User implements Serializable {
 	
 	private static final long serialVersionUID = 2274657357128107147L;

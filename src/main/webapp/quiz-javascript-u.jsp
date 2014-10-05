@@ -17,16 +17,16 @@
 
 		<tr>
 			<td> <b>Question:</b><br>
-			<s:property value="#session.question.question"/></td>
+			${question.question}</td>
 		</tr>
 		<br>
 		
 		<tr>
 		<td><b>Answer</b> <br> 
-		<input type="radio" name="option" value="0"><s:property value="#session.question.option1"/><br>
-			<input type="radio" name="option" value="1"><s:property value="#session.question.option2"/><br>
-			<input type="radio" name="option" value="2"><s:property value="#session.question.option3"/><br>
-			<input type="radio" name="option" value="3"><s:property value="#session.question.option4"/><br></td>
+		<input type="radio" name="option" value="0">${question.option1}<br>
+			<input type="radio" name="option" value="1">${question.option2}<br>
+			<input type="radio" name="option" value="2">${question.option3}<br>
+			<input type="radio" name="option" value="3">${question.option4}<br></td>
 		</tr>
 
 		<tr>
