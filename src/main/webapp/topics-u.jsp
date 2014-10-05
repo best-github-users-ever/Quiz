@@ -13,7 +13,7 @@
 
 <form action='<%=response.encodeURL("chooseQuizTopic-u.action")%>' method='POST'>
 
-	<table border="0">
+	<table class="topicsTable">
 
 		<tr>
 		   <td>Topic:</td>

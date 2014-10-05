@@ -13,24 +13,23 @@
 
 <form action='<%=response.encodeURL("answerQuestion-u.action")%>' method='POST'>
 
-	<table border="0">
+	<table class="questionTable">
 
 		<tr>
 			<td> <b>Question:</b><br>
-			<s:property value="#session.question.question"/></td>
+			${sessionScope.question.question}</td>
 		</tr>
 		<br>
 		
 		<tr>
 		<td><b>Answer</b> <br> 
-		<input type="radio" name="option" value="0"><s:property value="#session.question.option1"/><br>
-			<input type="radio" name="option" value="1"><s:property value="#session.question.option2"/><br>
-			<input type="radio" name="option" value="2"><s:property value="#session.question.option3"/><br>
-			<input type="radio" name="option" value="3"><s:property value="#session.question.option4"/><br></td>
+		<input type="radio" name="option" value="0">${sessionScope.question.option1}<br>
+			<input type="radio" name="option" value="1">${sessionScope.question.option2}<br>
+			<input type="radio" name="option" value="2">${sessionScope.question.option3}<br>
+			<input type="radio" name="option" value="3">${sessionScope.question.option4}<br></td>
 		</tr>
 
 		<tr>
-			<td>&nbsp</td>
 			<td>&nbsp</td>
 		</tr>
 

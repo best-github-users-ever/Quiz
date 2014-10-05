@@ -78,6 +78,14 @@ p.logo {
 	margin: auto;
 }
 
+*.topicsTable {
+	margin: auto;
+}
+
+*.questionTable {
+	margin: auto;
+}
+
 *.newaccount {
 	margin: auto;
 }
