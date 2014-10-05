@@ -10,7 +10,7 @@
 </c:if>
 <hr>
 
-<sf:form action="login.action" method="post">
+<form action="/Quiz/login.action" method="post">
 	<table class="loginTable">
 		<tr>
 			<td class='userinput'><b>Username:</b></td>
@@ -49,7 +49,7 @@
 			</tr>
 		</c:if>
 	</table>
-</sf:form>
+<form>
 <br>
 
 
