@@ -226,7 +226,7 @@ public class QuizController implements Serializable {
 			HttpSession session) {
 
 		ModelAndView model = new ModelAndView();
-		model.setViewName("quiz-javascript-u");
+		model.setViewName("quiz-u");
 
 		log.info("in answerQuestionAction");
 		log.info("option:" + option);
