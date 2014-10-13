@@ -8,13 +8,17 @@
        <head>
       <meta charset="utf-8">
       <title>Quiz</title>
-      <link rel="icon" type="image/png" href="/Quiz/images/quiz.png">
-      <link type="text/css" rel="stylesheet" href="/Quiz/quiz.css"
+      <link rel="icon" type="image/png" href="resources/images/quiz.png">
+      <link type="text/css" rel="stylesheet" href="resources/quiz.css"
      media="screen and (min-width: 481px)">
-     <link type="text/css" rel="stylesheet" href="/Quiz/quiz.css"
+     <link type="text/css" rel="stylesheet" href="resources/quiz.css"
      media="screen and (max-width: 480px)">
-      <link type="text/css" rel="stylesheet" href="/Quiz/quiz.css" media="print">
-      <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+      <link type="text/css" rel="stylesheet" href="resources/quiz.css" media="print">
+      <script src="resources/js/jquery-1.11.1.min.js"></script>
+      <script src="resources/js/sockjs-0.3.4.min.js"></script>
+      <script src="resources/js/stomp.js"></script>
+      <script src="resources/js/websocketAdd.js"></script>
+ 	  
       </head>
       <body>
-      <h1><img src="/Quiz/images/quiz.png" alt="Quiz Icon"> Quiz</h1>
+      <h1><img src="resources/images/quiz.png" alt="Quiz Icon" height="60" width="60"></h1><br>

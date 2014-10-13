@@ -29,9 +29,15 @@
 	<br>
 	<br>
 	</div>
-
-	
+<br>
 </c:if>
+<br>
+<div class="socket">
+    <c:url var="socket" value="/start" >  </c:url>  
+	Click <a href="${socket}">
+		here</a> for a WebSocket test.
+</div>
+<br>
 
 <div class="footerdeveloper">Developed by: Team Rocket</div>
 

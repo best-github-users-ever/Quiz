@@ -192,7 +192,7 @@ public class QuizController implements Serializable {
 				Question question = dao.getQuestion(topicId);
 
 				if (question != null) {
-					model.setViewName("quiz-javascript-u");
+					model.setViewName("quiz-u");
 					session.setAttribute("question", question);
 
 					return model;

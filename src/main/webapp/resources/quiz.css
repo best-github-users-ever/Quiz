@@ -82,6 +82,10 @@ p.logo {
 	margin: auto;
 }
 
+*.websocketDiv {
+	margin: 0 auto;
+}
+
 *.questionTable {
 	margin: auto;
 }
@@ -97,6 +101,10 @@ p.logo {
 }
 
 *.userstatus {
+	float: left;
+}
+
+*.socket {
 	float: left;
 }
 

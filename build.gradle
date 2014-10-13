@@ -46,6 +46,10 @@ repositories {
     maven { url "http://repo.spring.io/libs-release" }
 }
 
+bootRepackage {
+    enabled false
+}
+
 // Javax:
 def javaxServletAPIVersion = '3.1-b01'
 def javaxServletAPI        = "javax.servlet:javax.servlet-api:${javaxServletAPIVersion}"
@@ -85,10 +89,15 @@ def struts2Version         = '2.3.1.2'
 def xworkCore              = 'org.apache.struts.xwork:xwork-core:${struts2Version}'
 def struts2RestPlugin      = "org.apache.struts:struts2-rest-plugin:${struts2Version}"
 
+configurations {
+    compile.exclude module: "spring-boot-starter-tomcat"
+}
 
 dependencies {
     compile "log4j:log4j:1.2.15"
     compile("org.springframework.boot:spring-boot-starter-web",
+	        "org.springframework.boot:spring-boot-starter-websocket",
+			"org.springframework:spring-messaging",
 	        springContext, springAop, //springAsm, 
 			springAspects, springBeans, springContextSupport, 
 			springCore, springExpression, springJdbc, springTx)
@@ -100,8 +109,9 @@ dependencies {
             javaxInject,        javaxValidation,        javaxJSTL
         )
         providedCompile(
-            javaxServletAPI,    javaxJspApi
-        )
+            javaxServletAPI,    javaxJspApi,
+            "org.apache.tomcat.embed:tomcat-embed-websocket"
+       )
     compile (javassist)
 
 	    // struts 2
@@ -116,6 +126,7 @@ dependencies {
     runtime xworkCore 
     runtime 'commons-dbcp:commons-dbcp:1.4'
 	runtime 'mysql:mysql-connector-java:5.1.17'
+
 }
 
 task wrapper(type: Wrapper) {
