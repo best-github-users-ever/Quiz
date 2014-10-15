@@ -3,8 +3,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import com.quiz.socket.vo.CalcInput;
-import com.quiz.socket.vo.Result;
+
+import com.quiz.socket.demologic.CalcInput;
+import com.quiz.socket.demologic.Result;
 @Controller
 public class WebSocketController {
     @MessageMapping("/add" )

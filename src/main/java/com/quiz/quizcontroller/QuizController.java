@@ -188,6 +188,14 @@ public class QuizController implements Serializable {
 
 				request.setAttribute("reqPositiveMessage",
 						"All Players found! Start Quiz Now!");
+				request.setAttribute("allPlayersFound", true);
+				
+				if(game.getTotalPlayers() > 1){
+					//message the other players that game is ready
+					
+				}
+				
+				
 				// need to 'randomly' get a question from the topic.
 				Question question = dao.getQuestion(topicId);
 

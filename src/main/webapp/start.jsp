@@ -6,8 +6,8 @@
 <div class="websocketDiv">
 	<div>
 		<div>
-			<button id="connect" onclick="connect();">Connect</button>
-			<button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+			<button id="connect" onclick="connectDemo();">Connect</button>
+			<button id="disconnect" disabled="disabled" onclick="disconnectDemo();">Disconnect</button>
 			<br />
 			<br />
 		</div>

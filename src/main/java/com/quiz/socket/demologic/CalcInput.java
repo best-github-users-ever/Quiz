@@ -1,4 +1,4 @@
-package com.quiz.socket.vo;
+package com.quiz.socket.demologic;
 public class CalcInput {
     private int num1;
     private int num2;

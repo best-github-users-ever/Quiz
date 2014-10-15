@@ -6,7 +6,7 @@
             document.getElementById('calculationDiv').style.visibility = connected ? 'visible' : 'hidden';
             document.getElementById('calResponse').innerHTML = '';
         }
-        function connect() {
+        function connectDemo() {
             var socket = new SockJS('/Quiz/add');
 			stompClient = Stomp.over(socket);
             stompClient.connect({}, function(frame) {
@@ -17,7 +17,7 @@
                 });
             });
         }
-        function disconnect() {
+        function disconnectDemo() {
             stompClient.disconnect();
             setConnected(false);
             console.log("Disconnected");

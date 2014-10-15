@@ -8,8 +8,14 @@
 	<br>
 </c:if>
 <c:if test="${not empty reqPositiveMessage}">
-<p class="positivemessage">${reqPositiveMessage}</p>
+<p id="positivemessage" class="positivemessage">${reqPositiveMessage}</p>
 </c:if>
+
+<c:if test="${allPlayersFound}">
+<script>connect(${game.gameId});</script>
+<p id="confirmationMessage" class="positivemessage"> </p>
+</c:if>
+
 
 <form action='<%=response.encodeURL("answerQuestion-u.action")%>' method='POST'>
 

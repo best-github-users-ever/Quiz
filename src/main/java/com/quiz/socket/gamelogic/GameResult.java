@@ -1,7 +1,7 @@
-package com.quiz.socket.vo;
-public class Result {
+package com.quiz.socket.gamelogic;
+public class GameResult {
     private String result;
-    public Result(String result) {
+    public GameResult(String result) {
         this.result = result;
     }
 	public String getResult() {
