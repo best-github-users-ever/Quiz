@@ -93,6 +93,8 @@ public class GenerateDB {
 		writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 1, 'What sport was played by Arthur Ashe ?', 'Football', 'Baseball', 'Tennis', 'Auto Racing', 2);");
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 2, 'Name the actor who played Godzilla originally ?', 'Buddy Zilla', 'Raymond Burr', 'it was a model', 'James Dean', 2);");
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What kind of animal is Binky Barnes ?', 'Who knows?', 'Hippo', 'Lemur', 'Bulldog', 3);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'Which two characters in the Arthur gang share the same middle name?', 'Arthur and Binkey', 'Francine and Muffy', 'Carlos and Wanda', 'Buster and Brain', 1);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What is the real name of Binkey?', 'Shelley', 'Bernard', 'Bincard', 'Binthrope', 0);");
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 4, 'Which horror movie ended with a burning house ?', 'The Amityville Horror', 'Carrie', 'all of them', 'The Shining', 2);");
 
 	}

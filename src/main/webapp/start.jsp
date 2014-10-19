@@ -16,7 +16,7 @@
 				Two:</label><input type="text" id="num2" /><br />
 			<br />
 			<button id="sendNum" onclick="sendNum();">Send to Add</button>
-			<p id="calResponse"></p>
+			<p id="calResponse"> </p>
 		</div>
 	</div>
 </div>

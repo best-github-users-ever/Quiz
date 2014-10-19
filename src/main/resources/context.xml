@@ -53,4 +53,11 @@
     <bean id="namedJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
        <constructor-arg ref="dataSource" />
     </bean>
+<!--     
+    <bean id="executorSC" class="org.springframework.messaging.support.ExecutorSubscribableChannel"/>
+
+    <bean id="template" class="org.springframework.messaging.simp.SimpMessagingTemplate">
+    <constructor-arg index="0" ref="executorSC"/>
+    </bean>
+    -->
 </beans>

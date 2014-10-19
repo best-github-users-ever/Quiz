@@ -21,7 +21,8 @@
 					<option value="1">Sports
 					<option value="2">Monster Movies
 					<option value="3">Arthur
-					<option value="4">Horror Movies</td>
+					<option value="4">Horror Movies
+					</select></td>
 		</tr>
 
 		<tr>
@@ -35,7 +36,8 @@
 					<option value="2">2
 					<option value="3">3
 					<option value="4">4
-					<option value="5">5</td>
+					<option value="5">5
+					</select></td>
 		</tr>
 
 		<tr>

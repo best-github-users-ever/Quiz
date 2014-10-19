@@ -24,4 +24,8 @@ public interface IQuizDbAccess {
 
 	Question getQuestion(int topicId);
 
+	Question getQuestionFromQuestionId(int questionId);
+
+	Question getRandomQuestion(int topicId);
+
 }

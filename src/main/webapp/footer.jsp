@@ -31,18 +31,11 @@
 	</div>
 <br>
 </c:if>
-<br>
-<div class="socket">
-    <c:url var="socket" value="/start" >  </c:url>  
-	Click <a href="${socket}">
-		here</a> for a WebSocket test.
-</div>
-<br>
 
 <div class="footerdeveloper">Developed by: Team Rocket</div>
 
 <div class="footerdate">
 	Current Date/Time:
 	<%=Utility.getFooterDate()%></div>
-<%-- <%@ include file='debug.jsp'%> --%>
+ <%-- <%@ include file='debug.jsp'%> --%>
 	

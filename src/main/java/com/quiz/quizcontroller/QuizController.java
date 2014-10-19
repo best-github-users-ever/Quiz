@@ -6,7 +6,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,14 +28,17 @@ import com.quiz.dao.IQuizDbAccess;
 import com.quiz.model.Game;
 import com.quiz.model.Question;
 import com.quiz.model.User;
+import com.quiz.socket.controller.JoinGameWebSocketController;
+import com.quiz.socket.gamelogic.GameResult;
 
 @Controller
-public class QuizController implements Serializable {
+public class QuizController implements Serializable, BeanFactoryAware {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6321821026030843446L;
 	private static Logger log = Logger.getLogger(QuizController.class);
+	private SimpMessagingTemplate template;
 
 	@RequestMapping("/")
 	public ModelAndView welcomeAction() {
@@ -74,8 +83,8 @@ public class QuizController implements Serializable {
 	}
 
 	@RequestMapping(value = "/new-account.action", method = RequestMethod.POST)
-	public ModelAndView newAccountAction(
-			@ModelAttribute("user") User user, HttpServletRequest request) {
+	public ModelAndView newAccountAction(@ModelAttribute("user") User user,
+			HttpServletRequest request) {
 
 		ModelAndView model = new ModelAndView("login");
 
@@ -89,15 +98,15 @@ public class QuizController implements Serializable {
 			request.setAttribute("reqPositiveMessage",
 					"User " + user.getUserId() + " added! Please login.");
 		}
-		
-		//@ModelAttribute added user to model. remove it so user will login
+
+		// @ModelAttribute added user to model. remove it so user will login
 		model.getModelMap().remove("user");
 
 		return model;
 	}
 
 	@RequestMapping(value = "/show-hint.action/{userId}", method = RequestMethod.GET)
-	public ModelAndView showHintAction(@PathVariable ("userId") String userId,
+	public ModelAndView showHintAction(@PathVariable("userId") String userId,
 			HttpServletRequest request) {
 
 		log.info("in showHintAction.");
@@ -111,11 +120,11 @@ public class QuizController implements Serializable {
 
 		if ("".equals(hint)) {
 			request.setAttribute("reqErrorMessage",
-					"No hint available for Username of '" + userId + "'. This may not be a valid user.");
+					"No hint available for Username of '" + userId
+							+ "'. This may not be a valid user.");
 
 		} else {
-			request.setAttribute("reqPositiveMessage",
-					"Hint: '" + hint + "'");
+			request.setAttribute("reqPositiveMessage", "Hint: '" + hint + "'");
 		}
 
 		return model;
@@ -129,8 +138,8 @@ public class QuizController implements Serializable {
 		log.info(user.toString());
 
 		ModelAndView model = new ModelAndView();
-		
-		//ensure old user removed from session
+
+		// ensure old user removed from session
 		session.removeAttribute("user");
 
 		IQuizDbAccess dao = DBAccess.getDbAccess();
@@ -148,12 +157,11 @@ public class QuizController implements Serializable {
 
 			request.setAttribute("reqErrorMessage",
 					"Username Password combination is not correct");
-			//@ModelAttribute added user to model. remove it so user will login
+			// @ModelAttribute added user to model. remove it so user will login
 			model.getModelMap().remove("user");
 		}
 
-
-		//remove from request to prevent jsp from using it.
+		// remove from request to prevent jsp from using it.
 		request.removeAttribute("user");
 
 		return model;
@@ -173,35 +181,44 @@ public class QuizController implements Serializable {
 		IQuizDbAccess dao = DBAccess.getDbAccess();
 		log.info("value of dao is null:" + (dao == null));
 
+		session.removeAttribute("question");
 		model.addObject("numberPlayers", numberPlayers);
 
 		Game game = null;
 
-		game = dao.findGameForNewPlayer(topicId, numberPlayers,
-				((User) session.getAttribute("user")).getUserId());
+		String thisUserId = ((User) session.getAttribute("user")).getUserId();
+
+		game = dao.findGameForNewPlayer(topicId, numberPlayers, thisUserId);
 
 		if (game != null) {
 
-			model.addObject("game", game);
+			session.setAttribute("game", game);
+
+			request.setAttribute("gameFound", true);
 
 			if (game.getTotalPlayers() == game.getNumPlayers()) {
 
-				request.setAttribute("reqPositiveMessage",
-						"All Players found! Start Quiz Now!");
+				request.setAttribute("reqPositiveMessage", "Game with user '"
+						+ game.getPlayer1() + "' can now begin!");
 				request.setAttribute("allPlayersFound", true);
-				
-				if(game.getTotalPlayers() > 1){
-					//message the other players that game is ready
-					
+
+				if (game.getTotalPlayers() > 1) {
+					// message the other players that game is ready
+					log.info("just before invocation of sendgame...");
+
+					JoinGameWebSocketController.sendGameReadyMessage(template,
+							game.getGameId(), game.getPlayer1(), thisUserId);
 				}
-				
-				
-				// need to 'randomly' get a question from the topic.
-				Question question = dao.getQuestion(topicId);
+
+				Question question = dao.getRandomQuestion(topicId);
 
 				if (question != null) {
 					model.setViewName("quiz-u");
-					session.setAttribute("question", question);
+					session.setAttribute("questionId", question.getQuestionId());
+					// don't send a question yet. wait for ready button coming
+					// back before sending via sockets to both
+					// players at the same time.
+					// session.setAttribute("question", question);
 
 					return model;
 				} else {
@@ -214,7 +231,27 @@ public class QuizController implements Serializable {
 				}
 
 			} else {
-				model.setViewName("topics-u");
+				
+				//temp code until same question is sent via websockets
+				Question question = dao.getRandomQuestion(topicId);
+
+				if (question != null) {
+					model.setViewName("quiz-u");
+					session.setAttribute("questionId", question.getQuestionId());
+					// don't send a question yet. wait for ready button coming
+					// back before sending via sockets to both
+					// players at the same time.
+					// session.setAttribute("question", question);
+
+				} else {
+					// no questions for topic
+
+					model.setViewName("topics-u");
+					request.setAttribute("reqErrorMessage",
+							"No Questions available for this topic");
+					return model;
+				}
+
 				request.setAttribute("reqPositiveMessage",
 						"Game Found! Please wait until other players join.");
 				return model;
@@ -226,6 +263,38 @@ public class QuizController implements Serializable {
 			return model;
 		}
 
+	}
+
+	@RequestMapping(value = "/ready-u.action", method = RequestMethod.POST)
+	public ModelAndView startQuizAction(HttpServletRequest request,
+			HttpSession session) {
+
+		ModelAndView model = new ModelAndView();
+
+		log.info("in ready action");
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+
+		int questionId = (int) session.getAttribute("questionId");
+
+		Question question = dao.getQuestionFromQuestionId(questionId);
+
+		if (question != null) {
+			model.setViewName("quiz-u");
+
+			// we should be sending the *same* questions over the socket so that
+			// both
+			// are sent at the same time
+			session.setAttribute("question", question);
+
+			return model;
+		} else {
+			// no questions for topic
+
+			model.setViewName("topics-u");
+			request.setAttribute("reqErrorMessage",
+					"No Questions available for this topic");
+			return model;
+		}
 	}
 
 	@RequestMapping(value = "/answerQuestion-u.action", method = RequestMethod.POST)
@@ -246,6 +315,29 @@ public class QuizController implements Serializable {
 			if (question.getAnswerIdx() == option) {
 				request.setAttribute("reqPositiveMessage", "Correct!");
 
+				IQuizDbAccess dao = DBAccess.getDbAccess();
+
+				// 'randomly' get a question from the topic.
+				// should really get one we're sure that hasn't been asked yet.
+				// for now just picks one at random & may be the same one
+				// repeatedly
+				Question nextQuestion = dao.getRandomQuestion(question
+						.getTopicId());
+
+				if (nextQuestion != null) {
+					model.setViewName("quiz-u");
+					session.setAttribute("question", nextQuestion);
+
+					return model;
+				} else {
+					// no questions for topic
+
+					model.setViewName("topics-u");
+					request.setAttribute("reqErrorMessage",
+							"No Questions available for this topic");
+					return model;
+				}
+
 			} else {
 
 				request.setAttribute("reqErrorMessage", "Wrong!");
@@ -258,6 +350,14 @@ public class QuizController implements Serializable {
 		}
 
 		return model;
+	}
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		template = ((JoinGameWebSocketController) beanFactory
+				.getBean("joinGameWebSocketController")).getTemplate();
+		// TODO Auto-generated method stub
+
 	}
 
 }

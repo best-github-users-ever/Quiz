@@ -147,14 +147,56 @@ public class DBAccess implements IQuizDbAccess {
 			return null;
 		}
 	}
+	
+	@Override
+	public Question getQuestionFromQuestionId(int questionId) {
+		final String GET_QUESTION = "SELECT * FROM questions WHERE questionid = ?";
+
+		try {
+			return (Question) jdbcTemplate.queryForObject(GET_QUESTION, new Object[] {
+					questionId}, new QuestionMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+
+	}
 
 	@Override
 	public Question getQuestion(int topicId) {
 		final String GET_QUESTION = "SELECT * FROM questions WHERE topicid = ?";
-		return (Question) jdbcTemplate.queryForObject(GET_QUESTION,
-				new Object[] { topicId }, new QuestionMapper());
+		int questionIndex = 0;
+
+		List<Object> candidateQuestions = jdbcTemplate.query(GET_QUESTION,
+				new Object[] { topicId}, new QuestionMapper());
+
+		if (!candidateQuestions.isEmpty()) {
+			//just return the first question
+			return (Question) candidateQuestions.get(questionIndex);
+		} else {
+			return null;
+		}
+
 	}
 
+	@Override
+	public Question getRandomQuestion(int topicId) {
+
+		final String GET_QUESTION = "SELECT * FROM questions WHERE topicid = ?";
+
+		List<Object> candidateQuestions = jdbcTemplate.query(GET_QUESTION,
+				new Object[] { topicId}, new QuestionMapper());
+
+		if (!candidateQuestions.isEmpty()) {
+
+			int questionIndex = (int) Math.round(  Math.random() * (candidateQuestions.size()-1)  );
+			
+			return (Question) candidateQuestions.get(questionIndex);
+		} else {
+			return null;
+		}
+
+	}
+	
 	private static class GamePreparedStatementCreator implements
 			PreparedStatementCreator {
 		private String GAME_INSERT = "INSERT INTO games (topicid, totplayers) VALUES(?,?)";

@@ -1,8 +1,8 @@
 package com.quiz.socket.gamelogic;
-public class GameResult {
+public class GameReadyResult {
 	private String messageName;
     private String result;
-    public GameResult(String messageName, String result) {
+    public GameReadyResult(String messageName, String result) {
     	this.messageName = messageName;
         this.result = result;
     }
@@ -12,4 +12,5 @@ public class GameResult {
 	public String getMessageName() {
 		return messageName;
 	}
+	
 } 

@@ -15,8 +15,8 @@
  <mvc:resources mapping="/*.png" location="/images/"/>
  <mvc:annotation-driven />
  <context:component-scan base-package="com.quiz" /> 
-
-<!--  
+ 
+ <!--  
    <bean id="viewResolver"
          class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
          <property name="prefix">

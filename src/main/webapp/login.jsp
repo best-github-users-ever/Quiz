@@ -49,7 +49,7 @@
 			</tr>
 		</c:if>
 	</table>
-<form>
+</form>
 <br>
 
 

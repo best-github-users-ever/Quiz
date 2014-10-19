@@ -9,11 +9,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
-import com.quiz.socket.config.AppWebSocketConfig;
+import com.quiz.socket.config.JoinGameWebSocketConfig;
 @Configuration 
 @ComponentScan("com.quiz") 
 @EnableWebMvc
-@Import({ AppWebSocketConfig.class })
+@Import({ JoinGameWebSocketConfig.class })
 public class AppWebConfig extends WebMvcConfigurerAdapter {
     @Bean  
     public UrlBasedViewResolver setupViewResolver() {  
