@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.opensymphony.xwork2.ActionContext;
@@ -203,9 +204,8 @@ public class QuizController implements Serializable, BeanFactoryAware {
 				request.setAttribute("allPlayersFound", true);
 
 				if (game.getTotalPlayers() > 1) {
-					// message the other players that game is ready
-					log.info("just before invocation of sendgame...");
 
+					// below assumes only 2 players for now.
 					JoinGameWebSocketController.sendGameReadyMessage(template,
 							game.getGameId(), game.getPlayer1(), thisUserId);
 				}
@@ -214,11 +214,6 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 				if (question != null) {
 					model.setViewName("quiz-u");
-					session.setAttribute("questionId", question.getQuestionId());
-					// don't send a question yet. wait for ready button coming
-					// back before sending via sockets to both
-					// players at the same time.
-					// session.setAttribute("question", question);
 
 					return model;
 				} else {
@@ -231,17 +226,11 @@ public class QuizController implements Serializable, BeanFactoryAware {
 				}
 
 			} else {
-				
-				//temp code until same question is sent via websockets
+
 				Question question = dao.getRandomQuestion(topicId);
 
 				if (question != null) {
 					model.setViewName("quiz-u");
-					session.setAttribute("questionId", question.getQuestionId());
-					// don't send a question yet. wait for ready button coming
-					// back before sending via sockets to both
-					// players at the same time.
-					// session.setAttribute("question", question);
 
 				} else {
 					// no questions for topic
@@ -274,17 +263,39 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		log.info("in ready action");
 		IQuizDbAccess dao = DBAccess.getDbAccess();
 
-		int questionId = (int) session.getAttribute("questionId");
+		Question question = null;
+		
+		String user = ((User) session.getAttribute("user")).getUserId();
+		Game game = (Game) session.getAttribute("game");
 
-		Question question = dao.getQuestionFromQuestionId(questionId);
+		game = dao.setPlayerReady(user, game);
+
+		if (game != null) {
+			// update game with ready indication
+			session.setAttribute("game", game);
+		} else {
+			model.setViewName("topics-u");
+			request.setAttribute("reqErrorMessage",
+					"Error updating ready status. Please choose topic again.");
+			return model;
+		}
+
+		if (dao.allPlayersReady(game.getGameId())) {
+			question = dao.getRandomQuestion(game.getTopicId());
+		} else {
+			model.setViewName("quiz-u");
+
+			return model;
+			
+		}
 
 		if (question != null) {
 			model.setViewName("quiz-u");
 
-			// we should be sending the *same* questions over the socket so that
-			// both
-			// are sent at the same time
-			session.setAttribute("question", question);
+			session.setAttribute("questionNumber", 1);
+			session.setAttribute("totalNumberOfQuestions", Game.NUMBER_QUESTIONS_PER_GAME);
+			
+//			JoinGameWebSocketController.sendQuestion(template, game.getGameId(), 1, Game.NUMBER_QUESTIONS_PER_GAME, question);
 
 			return model;
 		} else {
@@ -354,9 +365,15 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		template = ((JoinGameWebSocketController) beanFactory
-				.getBean("joinGameWebSocketController")).getTemplate();
-		// TODO Auto-generated method stub
+		// kludge. should be able to find this in the context but w/ the msg
+		// broker
+		// initialized w/ annotations not sure where the websocket context is
+		// defined.
+		// it's separate from the context.xml or web.xml one as it can't be
+		// found
+		// via the context path lookup. so, finding it in the bean factory.
+		template = (SimpMessagingTemplate) beanFactory
+				.getBean("brokerMessagingTemplate");
 
 	}
 

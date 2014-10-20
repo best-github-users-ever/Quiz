@@ -147,14 +147,14 @@ public class DBAccess implements IQuizDbAccess {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public Question getQuestionFromQuestionId(int questionId) {
 		final String GET_QUESTION = "SELECT * FROM questions WHERE questionid = ?";
 
 		try {
-			return (Question) jdbcTemplate.queryForObject(GET_QUESTION, new Object[] {
-					questionId}, new QuestionMapper());
+			return (Question) jdbcTemplate.queryForObject(GET_QUESTION,
+					new Object[] { questionId }, new QuestionMapper());
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -167,10 +167,10 @@ public class DBAccess implements IQuizDbAccess {
 		int questionIndex = 0;
 
 		List<Object> candidateQuestions = jdbcTemplate.query(GET_QUESTION,
-				new Object[] { topicId}, new QuestionMapper());
+				new Object[] { topicId }, new QuestionMapper());
 
 		if (!candidateQuestions.isEmpty()) {
-			//just return the first question
+			// just return the first question
 			return (Question) candidateQuestions.get(questionIndex);
 		} else {
 			return null;
@@ -184,19 +184,20 @@ public class DBAccess implements IQuizDbAccess {
 		final String GET_QUESTION = "SELECT * FROM questions WHERE topicid = ?";
 
 		List<Object> candidateQuestions = jdbcTemplate.query(GET_QUESTION,
-				new Object[] { topicId}, new QuestionMapper());
+				new Object[] { topicId }, new QuestionMapper());
 
 		if (!candidateQuestions.isEmpty()) {
 
-			int questionIndex = (int) Math.round(  Math.random() * (candidateQuestions.size()-1)  );
-			
+			int questionIndex = (int) Math.round(Math.random()
+					* (candidateQuestions.size() - 1));
+
 			return (Question) candidateQuestions.get(questionIndex);
 		} else {
 			return null;
 		}
 
 	}
-	
+
 	private static class GamePreparedStatementCreator implements
 			PreparedStatementCreator {
 		private String GAME_INSERT = "INSERT INTO games (topicid, totplayers) VALUES(?,?)";
@@ -231,10 +232,15 @@ public class DBAccess implements IQuizDbAccess {
 			localGame.setNumPlayers(rs.getInt("numplayers"));
 			localGame.setTotalPlayers(rs.getInt("totplayers"));
 			localGame.setPlayer1(rs.getString("player1"));
+			localGame.setP1Ready(rs.getBoolean("p1_ready"));
 			localGame.setPlayer2(rs.getString("player2"));
+			localGame.setP2Ready(rs.getBoolean("p2_ready"));
 			localGame.setPlayer3(rs.getString("player3"));
+			localGame.setP3Ready(rs.getBoolean("p3_ready"));
 			localGame.setPlayer4(rs.getString("player4"));
+			localGame.setP4Ready(rs.getBoolean("p4_ready"));
 			localGame.setPlayer5(rs.getString("player5"));
+			localGame.setP5Ready(rs.getBoolean("p5_ready"));
 			// TODO Auto-generated method stub
 			return localGame;
 		}
@@ -325,6 +331,80 @@ public class DBAccess implements IQuizDbAccess {
 	}
 
 	@Override
+	public Game setPlayerReady(String username, Game inputGame) {
+		int gameId = inputGame.getGameId();
+		Game game = retrieveGamefromId(gameId);
+
+		if (game != null) {
+			String playerReadyString = null;
+
+			if (username.equals(inputGame.getPlayer1())) {
+				game.setP1Ready(true);
+				playerReadyString = "p1_ready";
+			} else if (username.equals(inputGame.getPlayer2())) {
+				game.setP2Ready(true);
+				playerReadyString = "p2_ready";
+			} else if (username.equals(inputGame.getPlayer3())) {
+				game.setP3Ready(true);
+				playerReadyString = "p3_ready";
+			} else if (username.equals(inputGame.getPlayer4())) {
+				game.setP4Ready(true);
+				playerReadyString = "p4_ready";
+			} else if (username.equals(inputGame.getPlayer5())) {
+				game.setP5Ready(true);
+				playerReadyString = "p5_ready";
+			}
+
+			else {
+				log.severe("Incorrect username: " + username);
+				return null;
+			}
+
+			String updateStatement = " UPDATE games" + " SET "
+					+ playerReadyString + " = true" + " WHERE gameId = ?";
+
+			jdbcTemplate.update(updateStatement, new Object[] { gameId });
+
+			return game;
+		} else {
+			log.info("couldn't find game based on gameid of:" + gameId);
+			return null;
+
+		}
+
+	}
+
+	@Override
+	public boolean allPlayersReady(int gameId) {
+		Game game = retrieveGamefromId(gameId);
+
+		if (game != null) {
+
+			if (game.getTotalPlayers() == 2) {
+				return (game.isP1Ready() & game.isP2Ready());
+			} else if (game.getTotalPlayers() == 3) {
+				return game.isP1Ready() & game.isP2Ready() & game.isP3Ready();
+			} else if (game.getTotalPlayers() == 4) {
+				return game.isP1Ready() & game.isP2Ready() & game.isP3Ready()
+						& game.isP4Ready();
+			} else if (game.getTotalPlayers() == 5) {
+				return game.isP1Ready() & game.isP2Ready() & game.isP3Ready()
+						& game.isP4Ready() & game.isP5Ready();
+			} else if (game.getTotalPlayers() == 1) {
+				return game.isP1Ready();
+			} else {
+				log.info("value of total players is invalid in gameId: "
+						+ gameId);
+				return false;
+			}
+
+		} else {
+			log.info("couldn't find game based on gameId of:" + gameId);
+			return false;
+		}
+	}
+
+	@Override
 	public Game searchForFirstMatchingQueuedGame(int topicId, int totalPlayers) {
 		final String GET_GAME = "SELECT * FROM games WHERE topicid = ? AND totplayers = ? AND numplayers < totplayers";
 
@@ -370,12 +450,11 @@ public class DBAccess implements IQuizDbAccess {
 	public String showHint(String userId) {
 		final String GET_HINT = "SELECT * FROM users WHERE userid = ?";
 		User user = null;
-		
+
 		try {
-	    	user = (User) jdbcTemplate.queryForObject(GET_HINT,
-				new Object[] { userId }, new UserMapper());
-		    } 
-		catch (EmptyResultDataAccessException e) {
+			user = (User) jdbcTemplate.queryForObject(GET_HINT,
+					new Object[] { userId }, new UserMapper());
+		} catch (EmptyResultDataAccessException e) {
 			return "";
 		}
 

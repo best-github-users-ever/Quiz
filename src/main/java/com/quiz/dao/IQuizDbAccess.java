@@ -19,7 +19,11 @@ public interface IQuizDbAccess {
 	Game retrieveGamefromId(int gameId);
 	
 	Game joinGame(int gameId, String username);
-
+	
+	Game setPlayerReady (String username, Game inputGame);
+	
+	boolean allPlayersReady (int gameId);
+	
 	User getUser(User user);
 
 	Question getQuestion(int topicId);

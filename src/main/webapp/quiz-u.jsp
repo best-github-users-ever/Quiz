@@ -15,37 +15,37 @@
 </c:if>
 
 <p id="confirmationMessage" class="positivemessage"></p>
-<p id="confirmationMessage2" class="positivemessage"></p>
+<p id="errorMessage" class="errortext"></p>
 
-<form action='<%=response.encodeURL("ready-u.action")%>' method='POST'>
-	<input type="submit" name="submit" id="readyButton"
-		class="centeredButton" value="Click When Ready to Start Game">
-		
-	<c:if test="${empty allPlayersFound}">
-		<script>setButtonVisible(false);</script>
-	</c:if>
-	<c:if test="${not empty allPlayersFound}">
-		<script>setButtonVisible(true);</script>
-	</c:if>
-</form>
+<input type="button" name="submit" id="readyButton"
+	class="centeredButton" value="Click When Ready to Start Game"
+	onclick="readyPressed(${game.gameId},'${sessionScope.user.userId}');">
 
-<c:if test="${not empty sessionScope.question }">
+<c:if test="${empty allPlayersFound}">
+	<script>setReadyButtonVisiblity(false);</script>
+</c:if>
+<c:if test="${not empty allPlayersFound}">
+	<script>setReadyButtonVisiblity(true);</script>
+</c:if>
 
-	<form action='<%=response.encodeURL("answerQuestion-u.action")%>'
-		method='POST'>
+<!--  	<form action='<%=response.encodeURL("answerQuestion-u.action")%>'
+		method='POST'> -->
 
-		<table class="questionTable">
+		<table id="questionTable" class="questionTable" hidden="true">
 
 			<tr>
-				<td><b>Question:</b><br> ${sessionScope.question.question}</td>
+				<td><b>Question:</b><br>
+				<p id="question"></p>
+				<p id="questionId" hidden="true"></p></td>
 			</tr>
 
 			<tr>
-				<td><b>Answer</b> <br> <input type="radio" name="option"
-					value="0">${sessionScope.question.option1}<br> <input
-					type="radio" name="option" value="1">${sessionScope.question.option2}<br>
-					<input type="radio" name="option" value="2">${sessionScope.question.option3}<br>
-					<input type="radio" name="option" value="3">${sessionScope.question.option4}<br></td>
+				<td><b>Answer</b> <br>
+						<input type="radio" name="option" value="0"><label id="ansOpt1" ></label>
+						<br> <input type="radio" name="option" value="1"><label id="ansOpt2" ></label>
+						<br> <input type="radio" name="option" value="2"><label id="ansOpt3" ></label>
+						<br> <input type="radio" name="option" value="3"><label id="ansOpt4" ></label>
+						<br>
 			</tr>
 
 			<tr>
@@ -55,14 +55,13 @@
 
 			<tr>
 				<td colspan="2"><br> <input type="submit" name="submit"
-					value="Submit"></td>
+					value="Submit" onclick="answerSubmitted(${game.gameId},'${sessionScope.user.userId}');"></td>
 			</tr>
 
 		</table>
 
-	</form>
-</c:if>
-
+<!--  </form> -->	
+	
 <br>
 
 <c:import url="footer.jsp" />

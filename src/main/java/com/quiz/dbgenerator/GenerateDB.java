@@ -50,10 +50,15 @@ public class GenerateDB {
 		        +       "TOTPLAYERS SMALLINT NOT NULL,"
 		        +       "NUMPLAYERS SMALLINT DEFAULT 0,"
 		        +       "PLAYER1   VARBINARY(40)  DEFAULT NULL,"
+		        +       "P1_READY  BOOL           DEFAULT FALSE,"
 		        +       "PLAYER2   VARBINARY(40)  DEFAULT NULL,"
+		        +       "P2_READY  BOOL           DEFAULT FALSE,"
 		        +       "PLAYER3   VARBINARY(40)  DEFAULT NULL,"
+		        +       "P3_READY  BOOL           DEFAULT FALSE,"
 		        +       "PLAYER4   VARBINARY(40)  DEFAULT NULL,"
+		        +       "P4_READY  BOOL           DEFAULT FALSE,"
 		        +       "PLAYER5   VARBINARY(40)  DEFAULT NULL,"
+		        +       "P5_READY  BOOL           DEFAULT FALSE,"
 		        +       "KEY GAMEID (GAMEID) "
                 +       ") ENGINE=InnoDB;" + "  COMMIT;");
 

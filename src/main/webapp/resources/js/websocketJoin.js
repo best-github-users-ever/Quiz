@@ -9,13 +9,32 @@ function connect(gameId, userId) {
 				+ '/gameUpdates', function(message) {
 			processMessage(JSON.parse(message.body));
 		});
-		// just testing out STOMP interface for the game
-		// not very useful invocation of sendGameInfo since all it does
-		// is send the gameId that we got from the server, send it back
-		// to the server
-		// and get it back a second time to output in a screen message
-		sendGameInfo(gameId, userId);
+		stompClient.subscribe('/topic/' + gameId + '/gameUpdates', function(
+				message) {
+			processMessage(JSON.parse(message.body));
+		});
+		// sendGameInfo(gameId, userId);
 	});
+}
+
+function readyPressed(gameId, userId) {
+	console.log('in readyPressed' + gameId + userId)
+	stompClient.send("/gameApp/joinGame/ready", {}, JSON.stringify({
+		'gameId' : gameId,
+		'userId' : userId
+	}));
+
+}
+
+function answerSubmitted(gameId, userId) {
+	console.log('in answerSubmitted' + gameId + userId)
+	stompClient.send("/gameApp/joinGame/answer", {}, JSON.stringify({
+		'gameId' : gameId,
+		'userId' : userId,
+		'questionId': $('#questionId').text(),
+		'guess' : $("input[name=option]:checked").val()
+	}));
+
 }
 
 function disconnect() {
@@ -23,35 +42,71 @@ function disconnect() {
 	setConnected(false);
 	console.log("Disconnected");
 }
-function sendGameInfo(gameId, userId) {
-	console.log('in sendGameInfo' + gameId + userId)
-	stompClient.send("/gameApp/joinGame", {}, JSON.stringify({
-		'gameId' : gameId,
-		'userId' : userId
-	}));
-}
-function processMessage(message) {
-	var screenMsg = $('#confirmationMessage');
-	var screenMsg2 = $('#confirmationMessage2');
 
-	if (message.messageName === 'gameFound') {
-		screenMsg.text(message.result);
-//		readyButton = $('#readyButton').hide();
-	} else if (message.messageName === 'gameReady') {
-		// create button also to indicate ready to start
-		screenMsg.text("");
-		$('#positivemessage').text("");
-		screenMsg2.text(message.result);
-		var readyButton = $('#readyButton').show();
-
-	}
-}
-
-function setButtonVisible(visible) {
+function setReadyButtonVisiblity(visible) {
 	if (visible) {
 		$('#readyButton').show();
 	} else {
 		$('#readyButton').hide();
+
+	}
+}
+
+function processMessage(message) {
+	var screenMsg = $('#confirmationMessage');
+	var errorMsg = $('#errorMessage');
+
+	if (message.messageName === 'gameFound') {
+		screenMsg.text(message.result);
+
+	} else if (message.messageName === 'gameReady') {
+		// create button also to indicate ready to start
+		screenMsg.text("");
+		$('#positivemessage').text("");
+		screenMsg.text(message.result);
+		setReadyButtonVisiblity(true);
+
+	} else if (message.messageName === 'delayBeforeStart') {
+		setReadyButtonVisiblity(false);
+		screenMsg.text("");
+		$('#positivemessage').text("");
+
+		var counter = parseInt(message.result);
+
+		var interval = setInterval(function() {
+			if (counter == 0) {
+				clearInterval(interval);
+				screenMsg.text("");
+			} else {
+				screenMsg.text("Game will begin in " + counter);
+				counter--;
+			}
+		}, 1000);
+
+	} else if (message.messageName === 'continueWaiting') {
+		errorMsg.text("");
+		setReadyButtonVisiblity(false);
+		screenMsg.text(message.result);
+
+	} else if (message.messageName === 'question') {
+		setReadyButtonVisiblity(false);
+		errorMsg.text("");
+		$('#question').text(message.question);
+		$('#ansOpt1').text(message.option1);
+		$('#ansOpt2').text(message.option2);
+		$('#ansOpt3').text(message.option3);
+		$('#ansOpt4').text(message.option4);
+		$('#questionTable').show();
+		$('#questionId').text(message.questionId);
+
+	} else if (message.messageName === 'answerRight') {
+		screenMsg.text(message.result);
+		errorMsg.text("");
+
+	}
+	else if (message.messageName === 'answerWrong') {
+		screenMsg.text("");
+		errorMsg.text(message.result);
 
 	}
 }

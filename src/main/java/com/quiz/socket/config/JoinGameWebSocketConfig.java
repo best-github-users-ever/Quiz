@@ -10,7 +10,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
   public class JoinGameWebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
   	@Override
   	public void configureMessageBroker(MessageBrokerRegistry config) {
-  		config.enableSimpleBroker("/queue");
+  		config.enableSimpleBroker("/queue", "/topic");
   		config.setApplicationDestinationPrefixes("/gameApp");
   	}
   	@Override
