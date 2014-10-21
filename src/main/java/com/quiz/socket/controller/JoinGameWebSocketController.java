@@ -73,7 +73,7 @@ public class JoinGameWebSocketController  {
 		}
     
     }
-    public static void sendGameReadyMessage(SimpMessagingTemplate templateIn, int gameId, String userId, String opponent){
+    public static void sendGameReadyMessageToOpponent(SimpMessagingTemplate templateIn, int gameId, String userId, String opponent){
        GameResult result = new GameResult("gameReady", "Game with user '" + opponent + "' can now begin!"); 
        log.info("result:" + result);
        log.info("template is null:" + (templateIn == null));

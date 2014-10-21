@@ -199,16 +199,17 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 			if (game.getTotalPlayers() == game.getNumPlayers()) {
 
-				request.setAttribute("reqPositiveMessage", "Game with user '"
-						+ game.getPlayer1() + "' can now begin!");
 				request.setAttribute("allPlayersFound", true);
-
+				
 				if (game.getTotalPlayers() > 1) {
 
-					// below assumes only 2 players for now.
-					JoinGameWebSocketController.sendGameReadyMessage(template,
+					request.setAttribute("reqPositiveMessage", "Game with user '"
+							+ game.getPlayer1() + "' can now begin!");
+
+					// below assumes only one opponent...more than 1 requires multiple msgs
+					JoinGameWebSocketController.sendGameReadyMessageToOpponent(template,
 							game.getGameId(), game.getPlayer1(), thisUserId);
-				}
+				} 
 
 				Question question = dao.getRandomQuestion(topicId);
 

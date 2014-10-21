@@ -1,7 +1,6 @@
 body {
 	font-size: small;
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	line-height: 1.6em;
 	background-color: #daeab8;
 }
 
@@ -189,7 +188,6 @@ input {
 }
 h1 {
 	color: #0063d1;
-	border-bottom: 1px solid #CCCCCC;
  	font-size: 300%; 
     text-align: center;
     height: 22px;
