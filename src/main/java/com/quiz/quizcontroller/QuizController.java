@@ -1,6 +1,9 @@
 package com.quiz.quizcontroller;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -12,13 +15,19 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -105,6 +114,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 		return model;
 	}
+
 
 	@RequestMapping(value = "/show-hint.action/{userId}", method = RequestMethod.GET)
 	public ModelAndView showHintAction(@PathVariable("userId") String userId,
@@ -200,16 +210,19 @@ public class QuizController implements Serializable, BeanFactoryAware {
 			if (game.getTotalPlayers() == game.getNumPlayers()) {
 
 				request.setAttribute("allPlayersFound", true);
-				
+
 				if (game.getTotalPlayers() > 1) {
 
-					request.setAttribute("reqPositiveMessage", "Game with user '"
-							+ game.getPlayer1() + "' can now begin!");
+					request.setAttribute("reqPositiveMessage",
+							"Game with user '" + game.getPlayer1()
+									+ "' can now begin!");
 
-					// below assumes only one opponent...more than 1 requires multiple msgs
-					JoinGameWebSocketController.sendGameReadyMessageToOpponent(template,
-							game.getGameId(), game.getPlayer1(), thisUserId);
-				} 
+					// below assumes only one opponent...more than 1 requires
+					// multiple msgs
+					JoinGameWebSocketController.sendGameReadyMessageToOpponent(
+							template, game.getGameId(), game.getPlayer1(),
+							thisUserId);
+				}
 
 				Question question = dao.getRandomQuestion(topicId);
 
@@ -265,7 +278,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		IQuizDbAccess dao = DBAccess.getDbAccess();
 
 		Question question = null;
-		
+
 		String user = ((User) session.getAttribute("user")).getUserId();
 		Game game = (Game) session.getAttribute("game");
 
@@ -287,16 +300,18 @@ public class QuizController implements Serializable, BeanFactoryAware {
 			model.setViewName("quiz-u");
 
 			return model;
-			
+
 		}
 
 		if (question != null) {
 			model.setViewName("quiz-u");
 
 			session.setAttribute("questionNumber", 1);
-			session.setAttribute("totalNumberOfQuestions", Game.NUMBER_QUESTIONS_PER_GAME);
-			
-//			JoinGameWebSocketController.sendQuestion(template, game.getGameId(), 1, Game.NUMBER_QUESTIONS_PER_GAME, question);
+			session.setAttribute("totalNumberOfQuestions",
+					Game.NUMBER_QUESTIONS_PER_GAME);
+
+			// JoinGameWebSocketController.sendQuestion(template,
+			// game.getGameId(), 1, Game.NUMBER_QUESTIONS_PER_GAME, question);
 
 			return model;
 		} else {
@@ -375,6 +390,104 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		// via the context path lookup. so, finding it in the bean factory.
 		template = (SimpMessagingTemplate) beanFactory
 				.getBean("brokerMessagingTemplate");
+
+	}
+	
+	//************* REST Methods below *************
+	
+	@RequestMapping(value = "/users", method = RequestMethod.POST, headers = "content-type=application/json")
+	ResponseEntity<String> newAccountRest(@RequestBody User user,
+			HttpServletRequest request) {
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+		String message = null;
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+		if (!dao.addUser(user)) {
+			message = "Username " + user.getUserId() + " already exists.";
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.CONFLICT);
+
+		} else {
+			message = "User " + user.getUserId() + " was successfully created!";
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.CREATED);
+
+		}
+
+	}
+
+	@RequestMapping(value = "/users/login", method = RequestMethod.POST, headers = "content-type=application/json")
+	ResponseEntity<Map <String, String>> loginRest(@RequestBody User tempUser,
+			HttpServletRequest request, HttpSession session) {
+
+		String sessionId = "";
+		Map<String, String> parameterMap = new LinkedHashMap<String, String>();
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+		// ensure old user removed from session
+		session.removeAttribute("user");
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+
+		User localUser = dao.getUser(tempUser);
+
+		if (localUser != null) {
+
+			session.setAttribute("user", localUser);
+
+			parameterMap.put("JSESSIONID", session.getId());
+			parameterMap.put("maxPlayers", "5");
+			parameterMap.put("topic1", "Sports");
+			parameterMap.put("topic2", "Monster Movies");
+			parameterMap.put("topic3", "Arthur");
+			parameterMap.put("topic4", "Horror Movies");
+
+			return new ResponseEntity<Map<String,String>>(parameterMap, httpHeaders,
+					HttpStatus.OK);
+
+		} else {
+
+			parameterMap.put("", "");
+			return new ResponseEntity<Map<String,String>>(parameterMap, httpHeaders,
+					HttpStatus.UNAUTHORIZED);
+
+		}
+
+	}
+
+	@RequestMapping(value = "/users/hint", method = RequestMethod.POST, headers = "content-type=application/json")
+	ResponseEntity<String> hintRest(@RequestBody User tempUser,
+			HttpServletRequest request, HttpSession session) {
+
+		String message = null;
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+		// ensure old user removed from session
+		session.removeAttribute("user");
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+
+		message = dao.showHint(tempUser.getUserId());
+
+		if (!"".equals(message)) {
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.OK);
+
+		} else {
+
+			message = "User " + tempUser.getUserId() + " not found";
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.UNAUTHORIZED);
+
+		}
 
 	}
 

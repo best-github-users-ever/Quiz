@@ -91,13 +91,13 @@ function processMessage(message) {
 	} else if (message.messageName === 'question') {
 		setReadyButtonVisiblity(false);
 		errorMsg.text("");
-		$('#question').text(message.question);
-		$('#ansOpt1').text(message.option1);
-		$('#ansOpt2').text(message.option2);
-		$('#ansOpt3').text(message.option3);
-		$('#ansOpt4').text(message.option4);
+		$('#question').text(message.question.question);
+		$('#ansOpt1').text(message.question.option1);
+		$('#ansOpt2').text(message.question.option2);
+		$('#ansOpt3').text(message.question.option3);
+		$('#ansOpt4').text(message.question.option4);
 		$('#questionTable').show();
-		$('#questionId').text(message.questionId);
+		$('#questionId').text(message.question.questionId);
 
 	} else if (message.messageName === 'answerRight') {
 		screenMsg.text(message.result);
