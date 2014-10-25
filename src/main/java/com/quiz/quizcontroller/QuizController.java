@@ -3,6 +3,7 @@ package com.quiz.quizcontroller;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -115,7 +116,6 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		return model;
 	}
 
-
 	@RequestMapping(value = "/show-hint.action/{userId}", method = RequestMethod.GET)
 	public ModelAndView showHintAction(@PathVariable("userId") String userId,
 			HttpServletRequest request) {
@@ -206,6 +206,8 @@ public class QuizController implements Serializable, BeanFactoryAware {
 			session.setAttribute("game", game);
 
 			request.setAttribute("gameFound", true);
+			
+			session.setAttribute("JSESSIONID", session.getId());
 
 			if (game.getTotalPlayers() == game.getNumPlayers()) {
 
@@ -213,15 +215,35 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 				if (game.getTotalPlayers() > 1) {
 
-					request.setAttribute("reqPositiveMessage",
-							"Game with user '" + game.getPlayer1()
-									+ "' can now begin!");
+					String message = null;
+					String opponentNameList = "";
 
-					// below assumes only one opponent...more than 1 requires
-					// multiple msgs
-					JoinGameWebSocketController.sendGameReadyMessageToOpponent(
-							template, game.getGameId(), game.getPlayer1(),
-							thisUserId);
+					List<String> opponentList = dao.getOtherPlayerUserIds(game.getGameId(), thisUserId);
+
+					if (opponentList != null) {
+						if (opponentList.size() > 1) {
+							message = "Game with users ";
+
+							for (String user : opponentList) {
+								opponentNameList = opponentNameList + "'"+ user + "' ";
+							}
+
+							message = message + opponentNameList + "can now begin!";
+
+						} else {
+							message = "Game with user '" + opponentList.get(0)
+									+ "' can now begin!";
+						}
+						
+						request.setAttribute("reqPositiveMessage", message);
+
+					}
+					
+					//send messages to other players
+                    for (String recipient : opponentList){
+					   JoinGameWebSocketController.sendGameReadyMessageToOpponent(
+						   	template, game.getGameId(), recipient);
+                    }
 				}
 
 				Question question = dao.getRandomQuestion(topicId);
@@ -339,11 +361,16 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 		if (question != null) {
 
+			IQuizDbAccess dao = DBAccess.getDbAccess();
+			String thisUserId = ((User) session.getAttribute("user")).getUserId();
+			Game game = (Game) session.getAttribute("game");
+			
+			List<String> opponentList = dao.getOtherPlayerUserIds(game.getGameId(), thisUserId);
+
 			if (question.getAnswerIdx() == option) {
 				request.setAttribute("reqPositiveMessage", "Correct!");
 
-				IQuizDbAccess dao = DBAccess.getDbAccess();
-
+                
 				// 'randomly' get a question from the topic.
 				// should really get one we're sure that hasn't been asked yet.
 				// for now just picks one at random & may be the same one
@@ -392,9 +419,9 @@ public class QuizController implements Serializable, BeanFactoryAware {
 				.getBean("brokerMessagingTemplate");
 
 	}
-	
-	//************* REST Methods below *************
-	
+
+	// ************* REST Methods below *************
+
 	@RequestMapping(value = "/users", method = RequestMethod.POST, headers = "content-type=application/json")
 	ResponseEntity<String> newAccountRest(@RequestBody User user,
 			HttpServletRequest request) {
@@ -421,7 +448,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 	}
 
 	@RequestMapping(value = "/users/login", method = RequestMethod.POST, headers = "content-type=application/json")
-	ResponseEntity<Map <String, String>> loginRest(@RequestBody User tempUser,
+	ResponseEntity<Map<String, String>> loginRest(@RequestBody User tempUser,
 			HttpServletRequest request, HttpSession session) {
 
 		String sessionId = "";
@@ -447,14 +474,14 @@ public class QuizController implements Serializable, BeanFactoryAware {
 			parameterMap.put("topic3", "Arthur");
 			parameterMap.put("topic4", "Horror Movies");
 
-			return new ResponseEntity<Map<String,String>>(parameterMap, httpHeaders,
-					HttpStatus.OK);
+			return new ResponseEntity<Map<String, String>>(parameterMap,
+					httpHeaders, HttpStatus.OK);
 
 		} else {
 
 			parameterMap.put("", "");
-			return new ResponseEntity<Map<String,String>>(parameterMap, httpHeaders,
-					HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<Map<String, String>>(parameterMap,
+					httpHeaders, HttpStatus.UNAUTHORIZED);
 
 		}
 

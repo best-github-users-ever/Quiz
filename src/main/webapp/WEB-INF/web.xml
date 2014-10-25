@@ -5,6 +5,11 @@
   http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
 
 	<display-name>Quiz</display-name>
+
+<listener>
+    <listener-class>com.quiz.listener.HttpSessionCollector</listener-class>
+</listener>
+
 <!--
 	<servlet>
 		<servlet-name>spring-dispatcher</servlet-name>

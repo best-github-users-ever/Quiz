@@ -32,7 +32,8 @@ function answerSubmitted(gameId, userId) {
 		'gameId' : gameId,
 		'userId' : userId,
 		'questionId': $('#questionId').text(),
-		'guess' : $("input[name=option]:checked").val()
+		'guess' : $("input[name=option]:checked").val(),
+		'jsessionId' : $("#JSESSIONID").text()
 	}));
 
 }
@@ -87,6 +88,11 @@ function processMessage(message) {
 		errorMsg.text("");
 		setReadyButtonVisiblity(false);
 		screenMsg.text(message.result);
+
+	} else if (message.messageName === 'playerGuessed') {
+		errorMsg.text("");
+		setReadyButtonVisiblity(false);
+		screenMsg.text(screenMsg.text() + " (" + message.result + ")");
 
 	} else if (message.messageName === 'question') {
 		setReadyButtonVisiblity(false);

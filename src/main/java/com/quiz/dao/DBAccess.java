@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -468,6 +469,31 @@ public class DBAccess implements IQuizDbAccess {
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public List<String> getOtherPlayerUserIds(int gameId, String userId) {
+
+		Game game = retrieveGamefromId(gameId);
+		List <String> opponentList = new ArrayList<String>();
+
+		log.info(game.toString());
+ 		if ((game.getPlayer1() != null) & (game.getPlayer1() != "") & (!userId.equals(game.getPlayer1()))){
+ 			opponentList.add(game.getPlayer1());
+		} 
+ 		if ((game.getPlayer2() != null) & (game.getPlayer2() != "") & (!userId.equals(game.getPlayer2()))){
+ 			opponentList.add(game.getPlayer2());
+		} 
+ 		if ((game.getPlayer3() != null) & (game.getPlayer3() != "") & (!userId.equals(game.getPlayer3()))){
+ 			opponentList.add(game.getPlayer3());
+		} 
+ 		if ((game.getPlayer4() != null) & (game.getPlayer4() != "") & (!userId.equals(game.getPlayer4()))){
+ 			opponentList.add(game.getPlayer4());
+		} 
+ 		if ((game.getPlayer5() != null) & (game.getPlayer5() != "") & (!userId.equals(game.getPlayer5()))){
+ 			opponentList.add(game.getPlayer5());
+		} 
+		return opponentList;
 	}
 
 }

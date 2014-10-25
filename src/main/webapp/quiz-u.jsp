@@ -63,6 +63,7 @@
 <!--  </form> -->	
 	
 <br>
+<p id="JSESSIONID" hidden="true">${sessionScope.JSESSIONID }</p>
 
 <c:import url="footer.jsp" />
 </body>
