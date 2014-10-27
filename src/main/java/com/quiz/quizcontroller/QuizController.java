@@ -304,7 +304,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		String user = ((User) session.getAttribute("user")).getUserId();
 		Game game = (Game) session.getAttribute("game");
 
-		game = dao.setPlayerReady(user, game);
+		game = dao.setPlayerReady(user, game.getGameId());
 
 		if (game != null) {
 			// update game with ready indication

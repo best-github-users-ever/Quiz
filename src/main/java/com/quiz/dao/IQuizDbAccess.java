@@ -12,28 +12,38 @@ public interface IQuizDbAccess {
 
 	boolean addUser(User u);
 
+	boolean allPlayersFinishedQuestion(int gameId);
+
 	boolean allPlayersReady(int gameId);
 
 	Game findGameForNewPlayer(int topicId, int totalPlayers, String username);
 
+	List<String> getOtherPlayerUserIds(int gameId, String userId);
+
 	Question getQuestion(int topicId);
 
 	Question getQuestionFromQuestionId(int questionId);
-
-	Question getRandomQuestion(int topicId);
 	
-	List<String> getOtherPlayerUserIds(int gameId, String userId);
+	Question getRandomQuestion(int topicId);
 
 	User getUser(User user);
+	
+	int incrementQuestionNumber(int gameId);
 
 	Game joinGame(int gameId, String username);
+
+	Game resetPlayersQDone(Game inputGame);
 
 	Game retrieveGamefromId(int gameId);
 
 	Game searchForFirstMatchingQueuedGame(int topicId, int totalPlayers);
+	
+	Game setPlayerCorrectAnswer(String username, int gameId);
+	
+	Game setPlayerReady(String username, int gameId);
 
-	Game setPlayerReady(String username, Game inputGame);
-
+	Game setPlayerFinishedQuestion(String username, int gameId);
+	
 	String showHint(String userId);
 
 }

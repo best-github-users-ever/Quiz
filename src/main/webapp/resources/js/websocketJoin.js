@@ -1,4 +1,5 @@
 var stompClient = null;
+var myUserId = null;
 
 function connect(gameId, userId) {
 	var socket = new SockJS('/Quiz/joinGame');
@@ -19,6 +20,7 @@ function connect(gameId, userId) {
 
 function readyPressed(gameId, userId) {
 	console.log('in readyPressed' + gameId + userId)
+	myUserId = userId;
 	stompClient.send("/gameApp/joinGame/ready", {}, JSON.stringify({
 		'gameId' : gameId,
 		'userId' : userId
@@ -31,7 +33,7 @@ function answerSubmitted(gameId, userId) {
 	stompClient.send("/gameApp/joinGame/answer", {}, JSON.stringify({
 		'gameId' : gameId,
 		'userId' : userId,
-		'questionId': $('#questionId').text(),
+		'questionId' : $('#questionId').text(),
 		'guess' : $("input[name=option]:checked").val(),
 		'jsessionId' : $("#JSESSIONID").text()
 	}));
@@ -53,26 +55,84 @@ function setReadyButtonVisiblity(visible) {
 	}
 }
 
+function addTextBeforeNode(message, node) {
+	var p = $("<p></p>");
+	p.text(message);
+
+	node.children().first().css("color", "gray")
+	node.prepend(p);
+}
+
+function addOpponentToSelectList(message, node) {
+	var option = $("<option value='" + message + "'>" + message + "</option>");
+	node.append(option);
+}
+
+function addOpponentToList(message, node) {
+	var p = $("<p id='player_" + message + "'></p>");
+	node.append(p);
+}
+
+function addMyselfToList(message, node) {
+	var p = $("<p id='player_" + message + "' class='my_user_statistics'></p>");
+	node.prepend(p);
+}
+
 function processMessage(message) {
 	var screenMsg = $('#confirmationMessage');
 	var errorMsg = $('#errorMessage');
+	var updateMsg = $('#updateMessage');
+	var opponentSelectList = $("#opponentSelectList");
+	var playerList = $("#playerList");
 
 	if (message.messageName === 'gameFound') {
 		screenMsg.text(message.result);
 
 	} else if (message.messageName === 'gameReady') {
-		// create button also to indicate ready to start
-		screenMsg.text("");
 		$('#positivemessage').text("");
-		screenMsg.text(message.result);
+		addTextBeforeNode(message.result, updateMsg);
 		setReadyButtonVisiblity(true);
 
 	} else if (message.messageName === 'delayBeforeStart') {
+
+		$('#positivemessage').text("");
+
+		if ((message.playerList.player1 != null)
+				& (message.playerList.player1 != "")) {
+			addOpponentToSelectList(message.playerList.player1,
+					opponentSelectList);
+			addOpponentToList(message.playerList.player1, playerList);
+		}
+		if ((message.playerList.player2 != null)
+				& (message.playerList.player2 != "")) {
+			addOpponentToSelectList(message.playerList.player2,
+					opponentSelectList);
+			addOpponentToList(message.playerList.player2, playerList);
+		}
+		if ((message.playerList.player3 != null)
+				& (message.playerList.player3 != "")) {
+			addOpponentToSelectList(message.playerList.player3,
+					opponentSelectList);
+			addOpponentToList(message.playerList.player3, playerList);
+		}
+		if ((message.playerList.player4 != null)
+				& (message.playerList.player4 != "")) {
+			addOpponentToSelectList(message.playerList.player4,
+					opponentSelectList);
+			addOpponentToList(message.playerList.player4, playerList);
+		}
+
+		if ((message.playerList.player1 === null)
+				| (message.playerList.player1 === "")) {
+			$("#content-upper-right").hide();
+			$("#content-lower-right").hide();
+		}
+
 		setReadyButtonVisiblity(false);
 		screenMsg.text("");
 		$('#positivemessage').text("");
 
-		var counter = parseInt(message.result);
+		var counter = parseInt(message.delayTime);
 
 		var interval = setInterval(function() {
 			if (counter == 0) {
@@ -86,16 +146,17 @@ function processMessage(message) {
 
 	} else if (message.messageName === 'continueWaiting') {
 		errorMsg.text("");
+		$('#positivemessage').text("");
 		setReadyButtonVisiblity(false);
-		screenMsg.text(message.result);
+		addTextBeforeNode(message.result, updateMsg);
 
 	} else if (message.messageName === 'playerGuessed') {
-		errorMsg.text("");
 		setReadyButtonVisiblity(false);
-		screenMsg.text(screenMsg.text() + " (" + message.result + ")");
+		addTextBeforeNode(message.result, updateMsg);
 
 	} else if (message.messageName === 'question') {
 		setReadyButtonVisiblity(false);
+		$('#positivemessage').text("");
 		errorMsg.text("");
 		$('#question').text(message.question.question);
 		$('#ansOpt1').text(message.question.option1);
@@ -105,12 +166,78 @@ function processMessage(message) {
 		$('#questionTable').show();
 		$('#questionId').text(message.question.questionId);
 
+	} else if (message.messageName === 'questionResults') {
+		setReadyButtonVisiblity(false);
+		// $('#positivemessage').text("");
+		errorMsg.text("");
+		if ((message.game.player1 != null) & (message.game.player1 != "")) {
+			var player_id = "#player_" + message.game.player1;
+			if (message.game.player1 === myUserId) {
+
+				addMyselfToList(myUserId, playerList);
+			}
+			$(player_id).text(
+					"'" + message.game.player1 + "' : "
+							+ message.game.p1NumCorrect + "/"
+							+ message.game.currQIndex);
+		}
+		if ((message.game.player2 != null) & (message.game.player2 != "")) {
+			var player_id = "#player_" + message.game.player2;
+			if (message.game.player2 === myUserId) {
+
+				addMyselfToList(myUserId, playerList);
+			}
+			$(player_id).text(
+					"'" + message.game.player2 + "' : "
+							+ message.game.p2NumCorrect + "/"
+							+ message.game.currQIndex);
+		}
+		if ((message.game.player3 != null) & (message.game.player3 != "")) {
+			var player_id = "#player_" + message.game.player3;
+			if (message.game.player3 === myUserId) {
+
+				addMyselfToList(myUserId, playerList);
+			}
+			$(player_id).text(
+					"'" + message.game.player3 + "' : "
+							+ message.game.p3NumCorrect + "/"
+							+ message.game.currQIndex);
+
+		}
+		if ((message.game.player4 != null) & (message.game.player4 != "")) {
+			var player_id = "#player_" + message.game.player4;
+			if (message.game.player4 === myUserId) {
+
+				addMyselfToList(myUserId, playerList);
+			}
+			$(player_id).text(
+					"'" + message.game.player4 + "' : "
+							+ message.game.p4NumCorrect + "/"
+							+ message.game.currQIndex);
+
+		}
+		if ((message.game.player5 != null) & (message.game.player5 != "")) {
+			var player_id = "#player_" + message.game.player5;
+			if (message.game.player5 === myUserId) {
+
+				addMyselfToList(myUserId, playerList);
+			}
+			$(player_id).text(
+					"'" + message.game.player5 + "' : "
+							+ message.game.p5NumCorrect + "/"
+							+ message.game.currQIndex);
+
+		}
+
+		if ((message.game.player2 != null) & (message.game.player2 != "")) {
+			$("#playerList").show();
+		}
+		
 	} else if (message.messageName === 'answerRight') {
 		screenMsg.text(message.result);
 		errorMsg.text("");
 
-	}
-	else if (message.messageName === 'answerWrong') {
+	} else if (message.messageName === 'answerWrong') {
 		screenMsg.text("");
 		errorMsg.text(message.result);
 

@@ -22,4 +22,6 @@
  	  
       </head>
       <body>
+	<div id="header">
       <h1><img src="resources/images/quizsmall.png" alt="Quiz Icon" height="60" width="60"></h1><br>
+    </div>

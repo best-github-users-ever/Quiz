@@ -60,9 +60,15 @@ p.logo {
 }
 
 *.positivemessage {
-	font-size: 150%;
+	font-size: 120%;
 	text-align: center;
 	color: green;
+}
+
+*.updatemessage {
+	font-size: 120%;
+	text-align: left;
+	color: blue;
 }
 
 
@@ -205,3 +211,74 @@ a {
     background: #FFF;
     cursor: pointer;
 }
+
+	#wrapper {
+		width:100%;
+		margin:0px auto;
+		border:1px solid #bbb;
+		padding:10px;
+	}
+	#header {
+		border:1px solid #bbb;
+		height:80px;
+		padding:10px;
+	}
+	#content {
+		margin-top:10px;
+		padding-bottom:10px;
+        word-wrap: break-word;
+  	}
+	.content-header {
+	    font-size: 130%;
+        font-weight: bold;
+    }
+	.oldText {
+	    color: gray;
+    }
+	.my_user_statistics {
+	    color: green;
+    }
+	#content div {
+		padding:10px;
+		border:1px solid #bbb;
+		float:left;
+	    font-size: 110%;
+	    overflow: auto; 
+	}
+	#content-left {
+        width:26%;
+		float: left;
+	    height: 300px;
+	}
+	#content-main {
+		margin-left:10px;
+        width:38%;
+	    height: 300px;
+	}
+	#content-upper-right {
+		margin-left:10px;
+        width:26%;
+		float: right;
+	    height: 175px;		
+	}
+	#content-lower-right {
+		margin-left:10px;
+        width:26%;
+		float: right;
+	    height: 105px;		
+	}
+	#playerList {
+		clear: right;
+	    float: right;
+	    float: top;
+		border:none;
+	}
+
+	#footer {
+		float:left;
+		margin-top:10px;
+		margin-bottom:10px;
+		padding:10px;
+		border:1px solid #bbb;
+		width:100%;
+	}
