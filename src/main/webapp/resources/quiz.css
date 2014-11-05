@@ -239,33 +239,39 @@ a {
 	    color: green;
     }
 	#content div {
-		padding:10px;
-		border:1px solid #bbb;
-		float:left;
-	    font-size: 110%;
-	    overflow: auto; 
+	/*	padding:10px;*/
+	 /*	border:1px solid #bbb;  */
+	 	float:left; 
+	/*    font-size: 110%;*/
+	 /*    overflow: auto;  */
 	}
 	#content-left {
+	 	border:1px solid #bbb;  
         width:26%;
 		float: left;
-	    height: 300px;
+	    height: 400px;
+	    overflow: auto;
 	}
 	#content-main {
+	 	border:1px solid #bbb;  
 		margin-left:10px;
-        width:38%;
-	    height: 300px;
+        width:18%; /* was 38*/
+	    height: 400px; 
 	}
 	#content-upper-right {
+	 	border:1px solid #bbb;  
 		margin-left:10px;
-        width:26%;
+        width:46%; /* this and below were 26*/
 		float: right;
-	    height: 175px;		
+	    height: 250px;		
 	}
 	#content-lower-right {
+	 	border:1px solid #bbb;  
 		margin-left:10px;
-        width:26%;
+        width:46%;
 		float: right;
-	    height: 105px;		
+	    height: 148px;	
+        overflow: auto;		
 	}
 	#playerList {
 		clear: right;
@@ -282,3 +288,292 @@ a {
 		border:1px solid #bbb;
 		width:100%;
 	}
+	
+.progressbar-control {
+
+    position:relative;
+    top:0px;
+    left:0px;
+    padding:0px;
+    margin:0px;
+
+    border-radius: 2px;
+    border:1px solid #BBBBBB;
+    
+   /* Safari 4-5, Chrome 1-9 */
+   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CCCCCC), to(#EEEEEE));
+
+   /* Safari 5.1, Chrome 10+ */
+   background: -webkit-linear-gradient(top, #CCCCCC, #EEEEEE);
+
+   /* Firefox 3.6+ */
+   background: -moz-linear-gradient(top, #CCCCCC, #EEEEEE);
+
+   /* IE 10 */
+   background: -ms-linear-gradient(top, #CCCCCC, #EEEEEE);
+
+   /* Opera 11.10+ */
+   background: -o-linear-gradient(top, #CCCCCC, #EEEEEE);
+    
+   overflow: visible;
+    
+}
+
+.progressbar-control .item-bar {
+
+    top:0px;
+    height:100%;
+    padding:0px;
+    margin: -1px;
+
+    border-radius: 2px;
+    
+    -webkit-transition: all 500ms ease-out;
+    -moz-transition: all 500ms ease-out;
+    -o-transition: all 500ms ease-out;
+    transition: all 500ms ease-out;
+
+}
+
+.progressbar-control .item-bar.blue {
+
+   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#249AEE), to(#2082C9));
+   background: -webkit-linear-gradient(top, #249AEE, #2082C9);
+   background: -moz-linear-gradient(top, #249AEE, #2082C9);
+   background: -ms-linear-gradient(top, #249AEE, #2082C9);
+   background: -o-linear-gradient(top, #249AEE, #2082C9);
+
+   border:1px solid #000000;
+
+}
+
+.progressbar-control .item-bar.green {
+
+   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#A8CA68), to(#82B530));
+   background: -webkit-linear-gradient(top, #A8CA68, #82B530);
+   background: -moz-linear-gradient(top, #A8CA68, #82B530);
+   background: -ms-linear-gradient(top, #A8CA68, #82B530);
+   background: -o-linear-gradient(top, #A8CA68, #82B530);
+ 
+   border:1px solid #000000;
+
+}
+
+.progressbar-control .item-bar.yellow {
+
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFD12B), to(#F9CD2B));
+    background: -webkit-linear-gradient(top, #FFD12B, #F9CD2B);
+    background: -moz-linear-gradient(top, #FFD12B, #F9CD2B);
+    background: -ms-linear-gradient(top, #FFD12B, #F9CD2B);
+    background: -o-linear-gradient(top, #FFD12B, #F9CD2B);
+  
+    border:1px solid #000000;
+
+}
+
+.progressbar-control .item-bar.orange {
+
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FF8000), to(#FF4000));
+    background: -webkit-linear-gradient(top, #FF8000, #FF4000);
+    background: -moz-linear-gradient(top, #FF8000, #FF4000);
+    background: -ms-linear-gradient(top, #FF8000, #FF4000);
+    background: -o-linear-gradient(top, #FF8000, #FF4000);
+
+    border:1px solid #000000;
+
+}
+
+.progressbar-control .item-bar.red {
+
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F73D22), to(#D6351F));
+    background: -webkit-linear-gradient(top, #F73D22, #D6351F);
+    background: -moz-linear-gradient(top, #F73D22, #D6351F);
+    background: -ms-linear-gradient(top, #F73D22, #D6351F);
+    background: -o-linear-gradient(top, #F73D22, #D6351F);
+    
+    border:1px solid #000000;
+
+}
+
+.progressbar-control .item-bar.white {
+
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#EEEEEE));
+    background: -webkit-linear-gradient(top, #FFFFFF, #EEEEEE);
+    background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE);
+    background: -ms-linear-gradient(top, #FFFFFF, #EEEEEE);
+    background: -o-linear-gradient(top, #FFFFFF, #EEEEEE);
+    
+    border:1px solid #000000;
+
+}
+
+.progressbar-control .item-bar.black {
+
+    background-color: black;
+    border:1px solid #000000;
+
+}
+
+.progressbar-control .item-line {
+
+    top:-100%;
+    width:1px;
+    height:300%;
+    padding:0px;
+    margin: 0px 0px 0px -1px;
+
+}
+
+.progressbar-control .item-line.blue {
+
+    background-color: #2082C9;
+
+}
+
+.progressbar-control .item-line.green {
+
+    background-color: #82B530;
+
+}
+
+.progressbar-control .item-line.yellow {
+
+    background-color: #F9CD2B;
+
+}
+
+.progressbar-control .item-line.orange {
+
+    background-color: #FF4000;
+
+}
+
+.progressbar-control .item-line.red {
+
+    background-color: #D6351F;
+
+}
+
+.progressbar-control .item-line.white {
+
+    background-color: #EEEEEE;
+
+}
+
+.progressbar-control .item-line.black {
+
+    background-color: #000000;
+
+}
+
+.progressbar-control .item-text {
+
+    
+    
+}
+
+            .my-progressbar-container {
+                float: none !important;
+                position: absolute;
+                width: 300px; /* my-progressbar width */
+                 padding: 15px 0px 0px 0px; /* Space for progresbar-texts */
+                background-color: transparent;
+                
+            }
+            
+            .progressbar-text.top-left1 {
+               font-size:145%;
+                top:0px;
+                left:7px;
+                color: green;
+            }
+            #my-progressbar1 {
+                position: absolute;
+				top:20px;
+				left:10px;
+				}
+				
+           .progressbar-text.top-left2{
+                font-size:145%;
+                top:40px;
+                left:7px;
+            }
+            #my-progressbar2 {
+                position: absolute;
+				top:60px;
+				left:10px;
+            }
+			
+           .progressbar-text.top-left3{
+                font-size:145%;
+                top:80px;
+                left:7px;
+            }
+            #my-progressbar3 {
+                position: absolute;
+				top:100px;
+				left:10px;
+            }
+			
+           .progressbar-text.top-left4{
+                font-size:145%;
+                top:120px;
+                left:7px;
+            }
+            #my-progressbar4 {
+                position: absolute;
+				top:140px;
+				left:10px;
+            }
+			
+           .progressbar-text.top-left5{
+                font-size:145%;
+                top:160px;
+                left:7px;
+            }
+            #my-progressbar5 {
+                position: absolute;
+				top:180px;
+				left:10px;
+            }
+			
+            
+            .progressbar-text {
+                
+                position: absolute;
+                font-family: Arial;
+                font-size: 10px;
+                color: #333333;
+                
+            }
+            
+            .progressbar-text.top-right {
+                
+                top:5px;
+                right:7px;
+                
+            }
+            
+            .progressbar-text.top-left {
+                
+                top:5px;
+                left:7px;
+                
+            }
+            
+            .progressbar-text.bottom-right {
+                
+                bottom:5px;
+                right:7px;
+                
+            }
+            
+            .progressbar-text.bottom-left {
+                
+                bottom:5px;
+                left:7px;
+                
+            }
+
+
+           

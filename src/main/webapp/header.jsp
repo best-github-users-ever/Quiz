@@ -17,7 +17,8 @@
       <script src="resources/js/jquery-1.11.1.min.js"></script>
       <script src="resources/js/sockjs-0.3.4.min.js"></script>
       <script src="resources/js/stomp.js"></script>
-      <script src="resources/js/websocketAdd.js"></script>
+      <script src="resources/js/progressbar.js"></script>
+      <script src="resources/js/jquery.timer.js"></script>
       <script src="resources/js/websocketJoin.js"></script>
  	  
       </head>

@@ -18,6 +18,8 @@ public interface IQuizDbAccess {
 
 	Game findGameForNewPlayer(int topicId, int totalPlayers, String username);
 
+	List<String> getAllPlayerUserIds(int gameId);
+
 	List<String> getOtherPlayerUserIds(int gameId, String userId);
 
 	Question getQuestion(int topicId);
@@ -38,11 +40,17 @@ public interface IQuizDbAccess {
 
 	Game searchForFirstMatchingQueuedGame(int topicId, int totalPlayers);
 	
-	Game setPlayerCorrectAnswer(String username, int gameId);
+	Game setPlayerCorrectAnswer(String username, double answerTime, int gameId);
+	
+	Game setPlayerNoAnswer(String username, int gameId);
 	
 	Game setPlayerReady(String username, int gameId);
 
+	Game setPlayerWrongAnswer(String username, int gameId);
+	
 	Game setPlayerFinishedQuestion(String username, int gameId);
+	
+	Game setRemainingPlayersNoAnswer(int gameId);
 	
 	String showHint(String userId);
 

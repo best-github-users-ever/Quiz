@@ -4,6 +4,7 @@ public class AnswerInput {
     private String userId;
     private int questionId;
     private int guess;
+    private double answerTime;
     private String jsessionId;
     
 	public int getGameId() {
@@ -37,6 +38,14 @@ public class AnswerInput {
 	public void setJsessionId(String jsessionId){
 		this.jsessionId = jsessionId;
 	}
+	public double getAnswerTime() {
+		return answerTime;
+	}
+	public void setAnswerTime(double answerTime) {
+		this.answerTime = answerTime;
+	}
+	
+	
 	
 	
 } 

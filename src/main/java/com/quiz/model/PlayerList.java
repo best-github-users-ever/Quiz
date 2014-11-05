@@ -3,6 +3,7 @@ package com.quiz.model;
 import java.util.List;
 
 public class PlayerList {
+	int numberOfPlayers;
 	private String player1;
 	private String player2;
 	private String player3;
@@ -29,6 +30,7 @@ public class PlayerList {
 			}
 			member++;
 		}
+		this.setNumberOfPlayers(playerList.size());
 	}
 
 	public String getPlayer1() {
@@ -63,12 +65,27 @@ public class PlayerList {
 		this.player4 = player4;
 	}
 
+	public int getNumberOfPlayers() {
+		return numberOfPlayers;
+	}
+
+	public void setNumberOfPlayers(int numberOfPlayers) {
+		this.numberOfPlayers = numberOfPlayers;
+	}
+
 	public String getPlayer5() {
 		return player5;
 	}
 
 	public void setPlayer5(String player5) {
 		this.player5 = player5;
+	}
+
+	@Override
+	public String toString() {
+		return "PlayerList [numberOfPlayers=" + numberOfPlayers + ", player1="
+				+ player1 + ", player2=" + player2 + ", player3=" + player3
+				+ ", player4=" + player4 + ", player5=" + player5 + "]";
 	}
 
 }

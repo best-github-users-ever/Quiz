@@ -218,8 +218,8 @@ public class QuizController implements Serializable, BeanFactoryAware {
 					String message = null;
 					String opponentNameList = "";
 
-					List<String> opponentList = dao.getOtherPlayerUserIds(game.getGameId(), thisUserId);
-
+ 					List<String> opponentList = dao.getOtherPlayerUserIds(game.getGameId(), thisUserId);
+					
 					if (opponentList != null) {
 						if (opponentList.size() > 1) {
 							message = "Game with users ";
