@@ -203,7 +203,6 @@ function ProgressBar($elementID, $options)
 
             case _optionValue.POSITION.RELATIVE:
             	
-            	console.log("my name: " + _items[$itemIndex][_optionName.ITEM_ID]);
 
                 for(var i = 0, j = _items.length; i < j; i++ ){
 
@@ -211,7 +210,6 @@ function ProgressBar($elementID, $options)
                         _items[i][_optionName.POSITION] == _optionValue.POSITION.RELATIVE){
 
                         totalUsedPercent += _items[i][_optionName.PERCENT];
-                        console.log("item index:" + i + " percent:" + _items[i][_optionName.PERCENT] + " name:" + _items[i][_optionName.ITEM_ID]);
 
                     }
 
@@ -430,7 +428,6 @@ function ProgressBar($elementID, $options)
 
         _exValues[$itemID] = $value;
         var result = ($maxValue) ? $value * this.getMaxValue($maxValue) : $value * _centesimal;
-console.log("actual updated value:" + _exValues[$itemID] + "value returned to set percent:" + result);
         return parseInt(result);
 
     };
@@ -478,9 +475,7 @@ console.log("actual updated value:" + _exValues[$itemID] + "value returned to se
                 switch(item[_optionName.TYPE]) {
 
                     case _optionValue.TYPE.BAR:
-console.log("in setOptionValue before calculate: itemId:" + $itemID + " value:" + $value + " actual current val:" + item[_optionName.PERCENT]);
                             $value = _calculateAvailablePercent($value, itemIndex);
-console.log("in setOptionValue after calculate: itemId:" + $itemID + " value:" + $value);
                             itemElement.style.width = $value + '%';
                             item[_optionName.PERCENT] = $value;
 

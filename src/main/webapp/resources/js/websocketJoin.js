@@ -1,12 +1,12 @@
 var totalNumberOfQuestions = 10;
 var stompClient = null;
 var myUserId = null;
+var myGameId = null;
 var currentQuestionIdx = 0;
-var guessedMessage; // used for temp storage of message when other user
-// guesses
+var guessedMessage; // used for temp storage of message when other user guesses
+var remainingTime;
 
 var timer = null;
-var remainingTime;
 var incrementTime = 80;
 var startingTime = 10000;
 var currentTime = 10000; // 10 seconds (in milliseconds
@@ -19,10 +19,69 @@ var progressBar5 = null;
 
 var userProgressMap = {};
 
+$(document).keypress(function(e) {
+	if (e.which == 13) {
+
+		if ($.trim($("#chatbox").val()) !== "") {
+			sendPressed(myGameId);
+		}
+		e.preventDefault();
+	}
+});
+
+function sendPressed(gameId) {
+	var filters = [];
+	var chatMessage = "Sent";
+
+	$('#opponentSelectList option').each(function() {
+		if ($(this).is(':selected')) {
+			filters.push(this.value);
+		}
+	});
+
+	if (filters.length !== 0) {
+
+		chatMessage = chatMessage + " Private Msg to";
+
+		$.each(filters, function(index, value) {
+			chatMessage = chatMessage + " " + value;
+		});
+
+		stompClient.send("/gameApp/joinGame/chat", {}, JSON.stringify({
+			'msgType' : "private",
+			'gameId' : gameId,
+			'userId' : myUserId,
+			'jsessionId' : $("#JSESSIONID").text(),
+			'chatMessage' : $("#chatbox").val(),
+			'recipients' : filters
+		}));
+	} else {
+
+		stompClient.send("/gameApp/joinGame/chat", {}, JSON.stringify({
+			'msgType' : "public",
+			'gameId' : gameId,
+			'userId' : myUserId,
+			'jsessionId' : $("#JSESSIONID").text(),
+			'chatMessage' : $("#chatbox").val()
+		}));
+	}
+
+	chatMessage = chatMessage + ": ";
+
+	chatMessage = chatMessage + $("#chatbox").val();
+
+	$("#chatbox").val("");
+
+	addTextAfterNode(chatMessage, $("#messages"));
+
+	$("#messages").scrollTop($("#messages")[0].scrollHeight);
+
+}
+
 function formatSeconds(milliseconds) {
 	var seconds = Math.floor(milliseconds / 1000);
 	var milli = Math.floor(milliseconds % 1000);
-	return ( seconds + "." + milli);
+	return (seconds + "." + milli);
 }
 
 function stopGetRemaining() {
@@ -192,9 +251,9 @@ var create_progressbar = function(id) {
 };
 
 function readyPressed(gameId, userId) {
-	console.log('in readyPressed' + gameId + userId);
-	remainingTime = $("#countdown");
+
 	myUserId = userId;
+	myGameId = gameId;
 	stompClient.send("/gameApp/joinGame/ready", {}, JSON.stringify({
 		'gameId' : gameId,
 		'userId' : userId,
@@ -204,7 +263,6 @@ function readyPressed(gameId, userId) {
 }
 
 function answerSubmitted(gameId, userId) {
-	console.log('in answerSubmitted' + gameId + userId)
 	var answerTime = stopGetRemaining();
 	stompClient.send("/gameApp/joinGame/answer", {}, JSON.stringify({
 		'gameId' : gameId,
@@ -239,6 +297,14 @@ function addTextBeforeNode(message, node) {
 
 	node.children().first().css("color", "gray");
 	node.prepend(p);
+}
+
+function addTextAfterNode(message, node) {
+	var p = $("<p></p>");
+	p.text(message);
+
+	node.children().last().css("color", "gray");
+	node.append(p);
 }
 
 function addOpponentToSelectList(message, node) {
@@ -307,8 +373,11 @@ function addMyselfToList(inUserId) {
 function processMessage(message) {
 	var screenMsg = $('#confirmationMessage');
 	var errorMsg = $('#errorMessage');
-	var updateMsg = $('#updateMessage');
 	var opponentSelectList = $("#opponentSelectList");
+	var updateMsg = $('#updateMessage');
+	var chatMsgField = $("#messages");
+
+	remainingTime = $("#countdown");
 
 	if (message.messageName === 'gameFound') {
 		screenMsg.text(message.result);
@@ -475,17 +544,6 @@ function processMessage(message) {
 			progBarIndex = userProgressMap[message.game.player1];
 			switch (progBarIndex) {
 			case 1:
-				console.log("num correct p1-" + message.game.p1NumCorrect * 10
-						+ " old value: "
-						+ progressBar1.getPercent("successData"));
-				;
-				console
-						.log("num wrong p1-" + message.game.p1NumWrong * 10
-								+ " old value: "
-								+ progressBar1.getPercent("errorData"));
-				console.log("num no resp p1-" + message.game.p1NumNoAnswer * 10
-						+ " old value: "
-						+ progressBar1.getPercent("noResponseData"));
 				progressBar1.setPercent(progressBar1.getPercentByValue(
 						message.game.p1NumCorrect, "successData"),
 						"successData");
@@ -498,17 +556,6 @@ function processMessage(message) {
 				break;
 
 			case 2:
-				console.log("num correct p1-" + message.game.p1NumCorrect * 10
-						+ " old value: "
-						+ progressBar2.getPercent("successData"));
-				;
-				console
-						.log("num wrong p1-" + message.game.p1NumWrong * 10
-								+ " old value: "
-								+ progressBar2.getPercent("errorData"));
-				console.log("num no resp p1-" + message.game.p1NumNoAnswer * 10
-						+ " old value: "
-						+ progressBar2.getPercent("noResponseData"));
 				progressBar2.setPercent(progressBar2.getPercentByValue(
 						message.game.p1NumCorrect, "successData"),
 						"successData");
@@ -529,17 +576,6 @@ function processMessage(message) {
 			progBarIndex = userProgressMap[message.game.player2];
 			switch (progBarIndex) {
 			case 1:
-				console.log("num correct p2-" + message.game.p2NumCorrect * 10
-						+ " old value: "
-						+ progressBar1.getPercent("successData"));
-				;
-				console
-						.log("num wrong p2-" + message.game.p2NumWrong * 10
-								+ " old value: "
-								+ progressBar1.getPercent("errorData"));
-				console.log("num no resp p2-" + message.game.p2NumNoAnswer * 10
-						+ " old value: "
-						+ progressBar1.getPercent("noResponseData"));
 				progressBar1.setPercent(progressBar1.getPercentByValue(
 						message.game.p2NumCorrect, "successData"),
 						"successData");
@@ -552,17 +588,6 @@ function processMessage(message) {
 				break;
 
 			case 2:
-				console.log("num correct p2-" + message.game.p2NumCorrect * 10
-						+ " old value: "
-						+ progressBar2.getPercent("successData"));
-				;
-				console
-						.log("num wrong p2-" + message.game.p2NumWrong * 10
-								+ " old value: "
-								+ progressBar2.getPercent("errorData"));
-				console.log("num no resp p2-" + message.game.p2NumNoAnswer * 10
-						+ " old value: "
-						+ progressBar2.getPercent("noResponseData"));
 				progressBar2.setPercent(progressBar2.getPercentByValue(
 						message.game.p2NumCorrect, "successData"),
 						"successData");
@@ -653,6 +678,20 @@ function processMessage(message) {
 		screenMsg.text("");
 		errorMsg.text(message.result);
 
+	} else if (message.messageName === 'chat') {
+		chatMessage = "";
+
+		if (message.chatMsgType === 'private') {
+			chatMessage = "Private Msg from ";
+		}
+
+		chatMessage = chatMessage + message.senderId + ": "
+				+ message.chatMessage;
+
+		addTextAfterNode(chatMessage, chatMsgField);
+
+		$("#messages").scrollTop($("#messages")[0].scrollHeight);
+
 	}
 }
 
@@ -660,7 +699,6 @@ function connect(gameId, userId) {
 	var socket = new SockJS('/Quiz/joinGame');
 	stompClient = Stomp.over(socket);
 	stompClient.connect({}, function(frame) {
-		console.log('Joined game: ' + frame);
 		stompClient.subscribe('/queue/' + gameId + '/' + userId
 				+ '/gameUpdates', function(message) {
 			processMessage(JSON.parse(message.body));
@@ -670,4 +708,5 @@ function connect(gameId, userId) {
 			processMessage(JSON.parse(message.body));
 		});
 	});
+
 }

@@ -23,6 +23,8 @@ import com.quiz.model.PlayerList;
 import com.quiz.model.Question;
 import com.quiz.model.User;
 import com.quiz.socket.gamelogic.AnswerInput;
+import com.quiz.socket.gamelogic.ChatInput;
+import com.quiz.socket.gamelogic.ChatResult;
 import com.quiz.socket.gamelogic.GameFinishedResult;
 import com.quiz.socket.gamelogic.GameQuestionFinishedResult;
 import com.quiz.socket.gamelogic.GameQuestionResult;
@@ -45,6 +47,36 @@ public class JoinGameWebSocketController {
 
 	public SimpMessagingTemplate getTemplate() {
 		return template;
+	}
+
+	@MessageMapping("/joinGame/chat")
+	public void chatMessage(ChatInput input) throws Exception {
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+		ChatResult chatMessage;
+		List<String> playerList = null;
+
+		if ("public".equals(input.getMsgType())){
+		    playerList = dao.getOtherPlayerUserIds(input.getGameId(),
+			   	input.getUserId());
+		 
+		    if (playerList != null){
+		    	playerList.toString();
+		    }
+		} else {
+			playerList = input.getRecipients();
+		}
+
+		for (String otherPlayer : playerList) {
+
+			chatMessage = new ChatResult("chat", input.getUserId(),
+					input.getChatMessage(), input.getMsgType());
+
+			template.convertAndSend("/queue/" + input.getGameId() + "/"
+					+ otherPlayer + "/gameUpdates", chatMessage);
+
+		}
+
 	}
 
 	@MessageMapping("/joinGame/ready")
@@ -114,7 +146,7 @@ public class JoinGameWebSocketController {
 				int newNumber = dao.incrementQuestionNumber(game.getGameId());
 
 				if (newNumber > 1) {
-                    // delay after 1st question
+					// delay after 1st question
 					try {
 						// Wait between questions
 						Thread.sleep(2000);
@@ -122,7 +154,7 @@ public class JoinGameWebSocketController {
 						Thread.currentThread().interrupt();
 					}
 				}
-				
+
 				GameQuestionResult result = new GameQuestionResult("question",
 						newNumber, question);
 				log.info("result:" + result.toString());

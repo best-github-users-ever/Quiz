@@ -249,14 +249,14 @@ a {
 	 	border:1px solid #bbb;  
         width:26%;
 		float: left;
-	    height: 400px;
+	    height: 550px;
 	    overflow: auto;
 	}
 	#content-main {
 	 	border:1px solid #bbb;  
 		margin-left:10px;
         width:18%; /* was 38*/
-	    height: 400px; 
+	    height: 550px; 
 	}
 	#content-upper-right {
 	 	border:1px solid #bbb;  
@@ -267,10 +267,11 @@ a {
 	}
 	#content-lower-right {
 	 	border:1px solid #bbb;  
+        position:relative;
 		margin-left:10px;
         width:46%;
 		float: right;
-	    height: 148px;	
+	    height: 298px;	
         overflow: auto;		
 	}
 	#playerList {
@@ -279,6 +280,52 @@ a {
 	    float: top;
 		border:none;
 	}
+
+
+   #opponentSelectList{
+        position: relative;
+        left    : 7px;
+        float   : left;
+        padding : 10px;
+    }
+    
+        #messages{
+        border:1px solid #bbb;  
+        top: 10px;
+        right: 10px;
+        position: absolute;
+        width:80%;
+        height: 200px;
+        color: green;
+        overflow: auto;
+        font-size:120%;
+    }
+    
+    textarea {
+    resize: none;
+    }
+    
+    #chatbox{
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+		width: 75%;
+    }
+    
+    #sendButtonContainer{
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        height: 50px;
+        width: 15%;
+    }
+    
+    #chatButton {
+    position : absolute;
+    right: 10px;
+    bottom: 10px;
+    height: 40px;
+}
 
 	#footer {
 		float:left;
