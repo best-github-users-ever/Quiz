@@ -40,6 +40,16 @@ public class DBAccess implements IQuizDbAccess {
 			localGame.setNumPlayers(rs.getInt("numplayers"));
 			localGame.setTotalPlayers(rs.getInt("totplayers"));
 			localGame.setCurrQIndex(rs.getInt("curr_q_index"));
+			localGame.setQ1Id(rs.getInt("Q1ID"));
+			localGame.setQ2Id(rs.getInt("Q2ID"));
+			localGame.setQ3Id(rs.getInt("Q3ID"));
+			localGame.setQ4Id(rs.getInt("Q4ID"));
+			localGame.setQ5Id(rs.getInt("Q5ID"));
+			localGame.setQ6Id(rs.getInt("Q6ID"));
+			localGame.setQ7Id(rs.getInt("Q7ID"));
+			localGame.setQ8Id(rs.getInt("Q8ID"));
+			localGame.setQ9Id(rs.getInt("Q9ID"));
+			localGame.setQ10Id(rs.getInt("Q10ID"));
 			localGame.setPlayer1(rs.getString("player1"));
 			localGame.setP1Ready(rs.getBoolean("p1_ready"));
 			localGame.setP1NumCorrect(rs.getInt("p1_num_correct"));
@@ -404,6 +414,68 @@ log.info("game value:"+ game);
 		}
 
 	}
+	
+	@Override
+	public Question getRandomQuestionWithExclusions (int topicId, int gameId) {
+		Game game = retrieveGamefromId(gameId);
+		String exclusionText = "";
+		
+		List<Integer> questionList = new ArrayList<Integer>();
+		
+		if (game.getCurrQIndex() > 0){
+			questionList.add(game.getQ1Id());
+		}
+		if (game.getCurrQIndex() > 1){
+			questionList.add(game.getQ2Id());
+		}
+		if (game.getCurrQIndex() > 2){
+			questionList.add(game.getQ3Id());
+		}
+		if (game.getCurrQIndex() > 3){
+			questionList.add(game.getQ4Id());
+		}
+		if (game.getCurrQIndex() > 4){
+			questionList.add(game.getQ5Id());
+		}
+		if (game.getCurrQIndex() > 5){
+			questionList.add(game.getQ6Id());
+		}
+		if (game.getCurrQIndex() > 6){
+			questionList.add(game.getQ7Id());
+		}
+		if (game.getCurrQIndex() > 7){
+			questionList.add(game.getQ8Id());
+		}
+		if (game.getCurrQIndex() > 8){
+			questionList.add(game.getQ9Id());
+		}
+		if (game.getCurrQIndex() > 9){
+			questionList.add(game.getQ10Id());
+		}
+
+		for(Integer question : questionList){
+		   exclusionText = exclusionText + " AND QUESTIONID != " + question;
+		}
+		final String GET_QUESTION = "SELECT * FROM questions WHERE topicid = ?" + exclusionText;;
+
+		try {
+			List<Object> candidateQuestions = jdbcTemplate.query(GET_QUESTION,
+					new Object[] { topicId }, new QuestionMapper());
+			
+			if (!candidateQuestions.isEmpty()) {
+
+				int questionIndex = (int) Math.round(Math.random()
+						* (candidateQuestions.size() - 1));
+
+				return (Question) candidateQuestions.get(questionIndex);
+			} else {
+				return null;
+			}
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+
 
 	@Override
 	public User getUser(User user) {
@@ -418,26 +490,6 @@ log.info("game value:"+ game);
 		}
 	}
 
-	@Override
-	public int incrementQuestionNumber(int gameId){
-		Game game = retrieveGamefromId(gameId);
-		
-		if (game != null) {
-			int newIndex = game.getCurrQIndex() + 1;
-
-			String updateStatement = " UPDATE games" + 
-			" SET CURR_Q_INDEX = ? WHERE gameId = ?";
-
-			jdbcTemplate.update(updateStatement, new Object[] { newIndex, gameId });
-
-			return newIndex;
-		} else {
-			log.info("couldn't find game based on gameid of:" + gameId);
-			return -1;
-
-		}
-	}
-	
 	@Override
 	public Game joinGame(int gameId, String username) {
 		Game game = retrieveGamefromId(gameId);
@@ -950,5 +1002,66 @@ game.dump_if_discrepancy();
 		
 		return game;
 	}
+	
+	@Override
+	public Game updateQuestionInfo(int gameId, int questionId){
+		Game game = retrieveGamefromId(gameId);
+		String questionString = "";
+		
+		if (game != null) {
+			int newIndex = game.getCurrQIndex() + 1;
+			
+			switch (newIndex) {
+			case 1:
+				questionString = " Q1ID ";
+				break;
+			case 2:
+				questionString = " Q2ID ";
+				break;
+			case 3:
+				questionString = " Q3ID ";
+				break;
+			case 4:
+				questionString = " Q4ID ";
+				break;
+			case 5:
+				questionString = " Q5ID ";
+				break;
+			case 6:
+				questionString = " Q6ID ";
+				break;
+			case 7:
+				questionString = " Q7ID ";
+				break;
+			case 8:
+				questionString = " Q8ID ";
+				break;
+			case 9:
+				questionString = " Q9ID ";
+				break;
+			case 10:
+				questionString = " Q10ID ";
+				break;
+
+			default:
+				log.info("invalid question index passed in:" + newIndex);
+				return null;
+			}
+
+			String updateStatement = " UPDATE games" + 
+			" SET CURR_Q_INDEX = ?, " + questionString + "= ? WHERE gameId = ?";
+
+			jdbcTemplate.update(updateStatement, new Object[] { newIndex, questionId, gameId });
+
+			return 	retrieveGamefromId(gameId);
+
+		} else {
+			log.info("couldn't find game based on gameid of:" + gameId);
+			return null;
+
+		}
+	}
+	
+
 
 }

@@ -56,13 +56,13 @@ public class JoinGameWebSocketController {
 		ChatResult chatMessage;
 		List<String> playerList = null;
 
-		if ("public".equals(input.getMsgType())){
-		    playerList = dao.getOtherPlayerUserIds(input.getGameId(),
-			   	input.getUserId());
-		 
-		    if (playerList != null){
-		    	playerList.toString();
-		    }
+		if ("public".equals(input.getMsgType())) {
+			playerList = dao.getOtherPlayerUserIds(input.getGameId(),
+					input.getUserId());
+
+			if (playerList != null) {
+				playerList.toString();
+			}
 		} else {
 			playerList = input.getRecipients();
 		}
@@ -109,20 +109,6 @@ public class JoinGameWebSocketController {
 					delayMessage);
 			log.info("playerList" + playerList.toString());
 
-			/*
-			 * code below was for sending each player a list of opponents. Now
-			 * full list of players sent to all players for (String otherPlayer:
-			 * playerList){ List<String> remainingOpponentList = dao
-			 * .getOtherPlayerUserIds(gameId, otherPlayer);
-			 * 
-			 * delayMessage = new GameStartResult("delayBeforeStart", new
-			 * PlayerList(remainingOpponentList), delayTime);
-			 * 
-			 * template.convertAndSend("/queue/" + gameId + "/" + otherPlayer +
-			 * "/gameUpdates", delayMessage);
-			 * 
-			 * }
-			 */
 			try {
 				// sleep an extra second to allow for propagation delay
 				Thread.sleep(6000);
@@ -140,33 +126,45 @@ public class JoinGameWebSocketController {
 				}
 
 				game = dao.resetPlayersQDone(game);
+				
+				//select question that hasn't yet been asked in this game
+				question = dao.getRandomQuestionWithExclusions(
+						game.getTopicId(), game.getGameId());
 
-				question = dao.getRandomQuestion(game.getTopicId());
+				// temporary until database size is increased (if category
+				// doesn't have at least 10 questions)
+				if (question == null) {
+					log.info("All available questions have already been asked. This is a repeat question. Curr Index = "
+							+ game.getCurrQIndex());
+					question = dao.getRandomQuestion(game.getTopicId());
+				}
 
-				int newNumber = dao.incrementQuestionNumber(game.getGameId());
+				game = dao.updateQuestionInfo(game.getGameId(),
+						question.getQuestionId());
 
-				if (newNumber > 1) {
+				if (game.getCurrQIndex() > 1) {
 					// delay after 1st question
 					try {
 						// Wait between questions
-						Thread.sleep(2000);
+						Thread.sleep(3500);
 					} catch (InterruptedException ex) {
 						Thread.currentThread().interrupt();
 					}
 				}
 
 				GameQuestionResult result = new GameQuestionResult("question",
-						newNumber, question);
+						game.getCurrQIndex(), question);
 				log.info("result:" + result.toString());
 
 				template.convertAndSend("/topic/" + input.getGameId()
 						+ "/gameUpdates", result);
 
-				// set timer to 12 seconds. users will have 10
+				// set timer to 13 seconds. users will have 10
 				Timer timer = new Timer();
 
 				// pass in data needed by timer on expiration
-				TimerTask task = new QuizTimerTask(gameId, newNumber, template);
+				TimerTask task = new QuizTimerTask(gameId,
+						game.getCurrQIndex(), template);
 
 				timer.schedule(task, 13 * 1000);
 
@@ -174,7 +172,7 @@ public class JoinGameWebSocketController {
 
 			if (game.getCurrQIndex() >= Game.NUMBER_QUESTIONS_PER_GAME) {
 
-				log.info("****************** end of game. wait for results of last question***************");
+				log.info("***** end of game " + game.getGameId() + ". wait for results of last question****");
 				// send end of game message
 			}
 
@@ -245,8 +243,7 @@ public class JoinGameWebSocketController {
 		IQuizDbAccess dao = DBAccess.getDbAccess();
 
 		// Not necessary to look up session ID but will probably be useful in
-		// other
-		// websocket methods.
+		// other websocket methods.
 		//
 		// HttpSession session =
 		// HttpSessionCollector.find(input.getJsessionId());
@@ -314,10 +311,10 @@ public class JoinGameWebSocketController {
 			if (game.allPlayersFinishedQuestion()
 					&& (game.getCurrQIndex() == Game.NUMBER_QUESTIONS_PER_GAME)) {
 
-				sendPlayerGameResultsMessage(template, game);
+				sendPlayersGameResultsMessage(template, game);
 
 			} else if (game.allPlayersFinishedQuestion()) {
-				sendPlayerQuestionResultsMessage(template, game);
+				sendPlayersQuestionResultsMessage(template, game);
 			}
 
 		} else {
@@ -334,7 +331,7 @@ public class JoinGameWebSocketController {
 		}
 	}
 
-	public static void sendPlayerQuestionResultsMessage(
+	public static void sendPlayersQuestionResultsMessage(
 			SimpMessagingTemplate templateIn, Game game) {
 
 		GameQuestionFinishedResult questionResultMessage = null;
@@ -349,7 +346,7 @@ public class JoinGameWebSocketController {
 
 	}
 
-	public static void sendPlayerGameResultsMessage(
+	public static void sendPlayersGameResultsMessage(
 			SimpMessagingTemplate templateIn, Game game) {
 
 		GameFinishedResult gameResultMessage = null;

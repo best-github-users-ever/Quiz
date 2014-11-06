@@ -50,11 +50,11 @@ public class QuizTimerTask extends TimerTask {
 			if (game.allPlayersFinishedQuestion()
 					&& (game.getCurrQIndex() == Game.NUMBER_QUESTIONS_PER_GAME)) {
 
-				JoinGameWebSocketController.sendPlayerGameResultsMessage(template, game);
+				JoinGameWebSocketController.sendPlayersGameResultsMessage(template, game);
 
 			} else {
 				
-				JoinGameWebSocketController.sendPlayerQuestionResultsMessage(
+				JoinGameWebSocketController.sendPlayersQuestionResultsMessage(
 						template, game);
 			}
 

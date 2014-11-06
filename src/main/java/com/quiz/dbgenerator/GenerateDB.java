@@ -50,6 +50,16 @@ public class GenerateDB {
 		        +       "TOTPLAYERS SMALLINT NOT NULL,"
 		        +       "NUMPLAYERS SMALLINT DEFAULT 0,"
 		        +       "CURR_Q_INDEX SMALLINT DEFAULT 0,"
+		        +       "Q1ID SMALLINT DEFAULT 0,"
+		        +       "Q2ID SMALLINT DEFAULT 0,"
+		        +       "Q3ID SMALLINT DEFAULT 0,"
+		        +       "Q4ID SMALLINT DEFAULT 0,"
+		        +       "Q5ID SMALLINT DEFAULT 0,"
+		        +       "Q6ID SMALLINT DEFAULT 0,"
+		        +       "Q7ID SMALLINT DEFAULT 0,"
+		        +       "Q8ID SMALLINT DEFAULT 0,"
+		        +       "Q9ID SMALLINT DEFAULT 0,"
+		        +       "Q10ID SMALLINT DEFAULT 0,"
 		        +       "PLAYER1   VARBINARY(40)  DEFAULT NULL,"
 		        +       "P1_READY  BOOL           DEFAULT FALSE,"
 		        +       "P1_NUM_CORRECT SMALLINT  DEFAULT 0,"
@@ -124,8 +134,15 @@ public class GenerateDB {
 		writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 1, 'What sport was played by Arthur Ashe ?', 'Football', 'Baseball', 'Tennis', 'Auto Racing', 2);");
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 2, 'Name the actor who played Godzilla originally ?', 'Buddy Zilla', 'Raymond Burr', 'it was a model', 'James Dean', 2);");
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What kind of animal is Binky Barnes ?', 'Who knows?', 'Hippo', 'Lemur', 'Bulldog', 3);");
-	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'Which two characters in the Arthur gang share the same middle name?', 'Arthur and Binkey', 'Francine and Muffy', 'Carlos and Wanda', 'Buster and Brain', 1);");
-	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What is the real name of Binkey?', 'Shelley', 'Bernard', 'Bincard', 'Binthrope', 0);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'Which two characters in the Arthur gang share the same middle name ?', 'Arthur and Binkey', 'Francine and Muffy', 'Carlos and Wanda', 'Buster and Brain', 1);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What is the real name of Binkey ?', 'Shelley', 'Bernard', 'Bincard', 'Binthrope', 0);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'Where is Ladonna from ?', 'Mexico', 'Louisiana', 'Florida', 'Utah', 1);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'Who the birth mother of Pal ?', 'Ms. Woods', 'Princess', 'Pancreas', 'Perky', 3);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'Who is the current piano teacher of Arthur ?', 'Dr. Fugue', 'Mrs. Cardigan ', 'Mr. Caninus', 'Senora Perez', 0);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What song did Dr. Fugue teach to the class of Mr. Ratburn ?', 'Tea for Two', 'Hello Dolly', 'In the Good Old Summertime', 'Make Lemonade from These Lemons!', 2);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'Pal is worried she may not be top dog when this dog makes a visit ?', 'Sandy', 'Amigo', 'Hocum', 'Treenie', 1);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What is the full name of The Brain ?', 'Alan Powers', 'Reginald Smith', 'Marcus Welby', 'Fred Sanford', 0);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'In what city does Artur take place ?', 'Lakewood City', 'Elmwood City', 'Reed City', 'Sherman', 1);");
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 4, 'Which horror movie ended with a burning house ?', 'The Amityville Horror', 'Carrie', 'all of them', 'The Shining', 2);");
 
 	}

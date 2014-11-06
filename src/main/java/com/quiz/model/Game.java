@@ -24,6 +24,16 @@ public class Game implements Serializable {
 	int totalPlayers;
 	int numPlayers;
 	int currQIndex;
+	int q1Id;
+	int q2Id;
+	int q3Id;
+	int q4Id;
+	int q5Id;
+	int q6Id;
+	int q7Id;
+	int q8Id;
+	int q9Id;
+	int q10Id;
 	String player1;
 	boolean p1Ready;
 	int p1NumCorrect;
@@ -664,31 +674,116 @@ public class Game implements Serializable {
 	public void setTotalPlayers(int totalPlayers) {
 		this.totalPlayers = totalPlayers;
 	}
+	
+	
+
+	public int getQ1Id() {
+		return q1Id;
+	}
+
+	public void setQ1Id(int q1Id) {
+		this.q1Id = q1Id;
+	}
+
+	public int getQ2Id() {
+		return q2Id;
+	}
+
+	public void setQ2Id(int q2Id) {
+		this.q2Id = q2Id;
+	}
+
+	public int getQ3Id() {
+		return q3Id;
+	}
+
+	public void setQ3Id(int q3Id) {
+		this.q3Id = q3Id;
+	}
+
+	public int getQ4Id() {
+		return q4Id;
+	}
+
+	public void setQ4Id(int q4Id) {
+		this.q4Id = q4Id;
+	}
+
+	public int getQ5Id() {
+		return q5Id;
+	}
+
+	public void setQ5Id(int q5Id) {
+		this.q5Id = q5Id;
+	}
+
+	public int getQ6Id() {
+		return q6Id;
+	}
+
+	public void setQ6Id(int q6Id) {
+		this.q6Id = q6Id;
+	}
+
+	public int getQ7Id() {
+		return q7Id;
+	}
+
+	public void setQ7Id(int q7Id) {
+		this.q7Id = q7Id;
+	}
+
+	public int getQ8Id() {
+		return q8Id;
+	}
+
+	public void setQ8Id(int q8Id) {
+		this.q8Id = q8Id;
+	}
+
+	public int getQ9Id() {
+		return q9Id;
+	}
+
+	public void setQ9Id(int q9Id) {
+		this.q9Id = q9Id;
+	}
+
+	public int getQ10Id() {
+		return q10Id;
+	}
+
+	public void setQ10Id(int q10Id) {
+		this.q10Id = q10Id;
+	}
 
 	@Override
 	public String toString() {
 		return "Game [gameId=" + gameId + ", topicId=" + topicId
 				+ ", totalPlayers=" + totalPlayers + ", numPlayers="
-				+ numPlayers + ", currQIndex=" + currQIndex + ", player1="
-				+ player1 + ", p1Ready=" + p1Ready + ", p1NumCorrect="
-				+ p1NumCorrect + ", p1NumWrong=" + p1NumWrong
-				+ ", p1NumNoAnswer=" + p1NumNoAnswer + ", p1Time=" + p1Time
-				+ ", p1CurrQDone=" + p1CurrQDone + ", player2=" + player2
-				+ ", p2Ready=" + p2Ready + ", p2NumCorrect=" + p2NumCorrect
-				+ ", p2NumWrong=" + p2NumWrong + ", p2NumNoAnswer="
-				+ p2NumNoAnswer + ", p2Time=" + p2Time + ", p2CurrQDone="
-				+ p2CurrQDone + ", player3=" + player3 + ", p3Ready=" + p3Ready
-				+ ", p3NumCorrect=" + p3NumCorrect + ", p3NumWrong="
-				+ p3NumWrong + ", p3NumNoAnswer=" + p3NumNoAnswer + ", p3Time="
-				+ p3Time + ", p3CurrQDone=" + p3CurrQDone + ", player4="
-				+ player4 + ", p4Ready=" + p4Ready + ", p4NumCorrect="
-				+ p4NumCorrect + ", p4NumWrong=" + p4NumWrong
-				+ ", p4NumNoAnswer=" + p4NumNoAnswer + ", p4Time=" + p4Time
-				+ ", p4CurrQDone=" + p4CurrQDone + ", player5=" + player5
-				+ ", p5Ready=" + p5Ready + ", p5NumCorrect=" + p5NumCorrect
-				+ ", p5NumWrong=" + p5NumWrong + ", p5NumNoAnswer="
-				+ p5NumNoAnswer + ", p5Time=" + p5Time + ", p5CurrQDone="
-				+ p5CurrQDone + "]";
+				+ numPlayers + ", currQIndex=" + currQIndex + ", q1Id=" + q1Id
+				+ ", q2Id=" + q2Id + ", q3Id=" + q3Id + ", q4Id=" + q4Id
+				+ ", q5Id=" + q5Id + ", q6Id=" + q6Id + ", q7Id=" + q7Id
+				+ ", q8Id=" + q8Id + ", q9Id=" + q9Id + ", q10Id=" + q10Id
+				+ ", player1=" + player1 + ", p1Ready=" + p1Ready
+				+ ", p1NumCorrect=" + p1NumCorrect + ", p1NumWrong="
+				+ p1NumWrong + ", p1NumNoAnswer=" + p1NumNoAnswer + ", p1Time="
+				+ p1Time + ", p1CurrQDone=" + p1CurrQDone + ", player2="
+				+ player2 + ", p2Ready=" + p2Ready + ", p2NumCorrect="
+				+ p2NumCorrect + ", p2NumWrong=" + p2NumWrong
+				+ ", p2NumNoAnswer=" + p2NumNoAnswer + ", p2Time=" + p2Time
+				+ ", p2CurrQDone=" + p2CurrQDone + ", player3=" + player3
+				+ ", p3Ready=" + p3Ready + ", p3NumCorrect=" + p3NumCorrect
+				+ ", p3NumWrong=" + p3NumWrong + ", p3NumNoAnswer="
+				+ p3NumNoAnswer + ", p3Time=" + p3Time + ", p3CurrQDone="
+				+ p3CurrQDone + ", player4=" + player4 + ", p4Ready=" + p4Ready
+				+ ", p4NumCorrect=" + p4NumCorrect + ", p4NumWrong="
+				+ p4NumWrong + ", p4NumNoAnswer=" + p4NumNoAnswer + ", p4Time="
+				+ p4Time + ", p4CurrQDone=" + p4CurrQDone + ", player5="
+				+ player5 + ", p5Ready=" + p5Ready + ", p5NumCorrect="
+				+ p5NumCorrect + ", p5NumWrong=" + p5NumWrong
+				+ ", p5NumNoAnswer=" + p5NumNoAnswer + ", p5Time=" + p5Time
+				+ ", p5CurrQDone=" + p5CurrQDone + "]";
 	}
 
 }

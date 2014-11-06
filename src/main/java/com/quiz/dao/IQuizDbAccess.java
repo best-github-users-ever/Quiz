@@ -28,10 +28,10 @@ public interface IQuizDbAccess {
 	
 	Question getRandomQuestion(int topicId);
 
+	Question getRandomQuestionWithExclusions(int topicId, int gameId);
+
 	User getUser(User user);
 	
-	int incrementQuestionNumber(int gameId);
-
 	Game joinGame(int gameId, String username);
 
 	Game resetPlayersQDone(Game inputGame);
@@ -54,4 +54,5 @@ public interface IQuizDbAccess {
 	
 	String showHint(String userId);
 
+	Game updateQuestionInfo(int gameId, int questionId);
 }
