@@ -5,6 +5,7 @@ var myGameId = null;
 var currentQuestionIdx = 0;
 var guessedMessage; // used for temp storage of message when other user guesses
 var remainingTime;
+var greenTimBox = true;
 
 var timer = null;
 var incrementTime = 80;
@@ -18,6 +19,37 @@ var progressBar4 = null;
 var progressBar5 = null;
 
 var userProgressMap = {};
+
+function makeSelection(gameId, userId, guessIdx) {
+	var answerTime = stopGetRemaining();
+
+	switch (guessIdx) {
+	case 0:
+		$("#option-a-button").prop("src", "resources/images/quizsmallselected.png");
+		break;
+	case 1:
+		$("#option-b-button").prop("src", "resources/images/quizsmallselected.png");
+		break;
+	case 2:
+		$("#option-c-button").prop("src", "resources/images/quizsmallselected.png");
+		break;
+	case 3:
+		$("#option-d-button").prop("src", "resources/images/quizsmallselected.png");
+		break;
+	}
+
+	stompClient.send("/gameApp/joinGame/answer", {}, JSON.stringify({
+		'gameId' : gameId,
+		'userId' : userId,
+		'questionId' : $('#questionId').text(),
+		'guess' : guessIdx,
+		'answerTime' : answerTime,
+		'jsessionId' : $("#JSESSIONID").text()
+	}));
+	setDisableOfAnswerButtons(true, false);
+	// $("#submitButton").prop("disabled", true);
+
+}
 
 $(document).keypress(function(e) {
 	if (e.which == 13) {
@@ -79,9 +111,8 @@ function sendPressed(gameId) {
 }
 
 function formatSeconds(milliseconds) {
-	var seconds = Math.floor(milliseconds / 1000);
-	var milli = Math.floor(milliseconds % 1000);
-	return (seconds + "." + milli);
+	var timeInSec = milliseconds / 1000.00;
+	return (timeInSec.toFixed(1));
 }
 
 function stopGetRemaining() {
@@ -96,14 +127,22 @@ function stopGetRemaining() {
 function updateTimer() {
 
 	// remainingTime.text(formatSeconds(currentTime));
-	remainingTime.html(formatSeconds(currentTime));
+	remainingTime.html("Time: " + formatSeconds(currentTime));
+
+	if (greenTimBox && currentTime <= 3000) {
+		greenTimBox = false;
+		$("#countdown").css("color", "red");
+		$("#countdown").css("border", "1px solid red");
+
+	}
 
 	// If timer is complete, trigger alert
 	if (currentTime <= 0) {
 		// Example2.Timer.stop();
 		// Setup the timer
 		stopGetRemaining();
-		$("#submitButton").prop("disabled", true);
+		setDisableOfAnswerButtons(true, true);
+		// $("#submitButton").prop("disabled", true);
 
 	} else {
 
@@ -151,7 +190,7 @@ var create_progressbar = function(id) {
 	switch (id) {
 	case "my-progressbar1":
 		progressBar1 = new ProgressBar(id, {
-			'width' : '300px',
+			'width' : '350px',
 			'height' : '6px'
 		});
 
@@ -170,7 +209,7 @@ var create_progressbar = function(id) {
 
 	case "my-progressbar2":
 		progressBar2 = new ProgressBar(id, {
-			'width' : '300px',
+			'width' : '350px',
 			'height' : '6px'
 		});
 
@@ -189,7 +228,7 @@ var create_progressbar = function(id) {
 
 	case "my-progressbar3":
 		progressBar3 = new ProgressBar(id, {
-			'width' : '300px',
+			'width' : '350px',
 			'height' : '6px'
 		});
 
@@ -208,7 +247,7 @@ var create_progressbar = function(id) {
 
 	case "my-progressbar4":
 		progressBar4 = new ProgressBar(id, {
-			'width' : '300px',
+			'width' : '350px',
 			'height' : '6px'
 		});
 
@@ -227,7 +266,7 @@ var create_progressbar = function(id) {
 
 	case "my-progressbar5":
 		progressBar5 = new ProgressBar(id, {
-			'width' : '300px',
+			'width' : '350px',
 			'height' : '6px'
 		});
 
@@ -272,7 +311,9 @@ function answerSubmitted(gameId, userId) {
 		'answerTime' : answerTime,
 		'jsessionId' : $("#JSESSIONID").text()
 	}));
-	$("#submitButton").prop("disabled", true);
+	setDisableOfAnswerButtons(true, false);
+
+	// $("#submitButton").prop("disabled", true);
 
 }
 
@@ -368,6 +409,40 @@ function addMyselfToList(inUserId) {
 	userProgressMap[inUserId] = 1;
 	userProgressMap.myMapAssigned = true;
 	userProgressMap.count = userProgressMap.count + 1;
+}
+
+var setDisableOfAnswerButtons = function(disabled, force) {
+	$("#option-a-button").prop("disabled", disabled);
+	$("#option-b-button").prop("disabled", disabled);
+	$("#option-c-button").prop("disabled", disabled);
+	$("#option-d-button").prop("disabled", disabled);
+
+	if (disabled === false) {
+		$("#option-a-button").prop("src", "resources/images/quizsmall.png");
+		$("#option-b-button").prop("src", "resources/images/quizsmall.png");
+		$("#option-c-button").prop("src", "resources/images/quizsmall.png");
+		$("#option-d-button").prop("src", "resources/images/quizsmall.png");
+	} else {
+		if (force) {
+			$("#option-a-button").prop("src", "resources/images/quizsmalldisabled.png");
+			$("#option-b-button").prop("src", "resources/images/quizsmalldisabled.png");
+			$("#option-c-button").prop("src", "resources/images/quizsmalldisabled.png");
+			$("#option-d-button").prop("src", "resources/images/quizsmalldisabled.png");
+		} else {
+			if (!($("#option-a-button").prop("src").match("quizsmallselected.png"))) {
+				$("#option-a-button").prop("src", "resources/images/quizsmalldisabled.png");
+			}
+			if (!($("#option-b-button").prop("src").match("quizsmallselected.png"))) {
+				$("#option-b-button").prop("src", "resources/images/quizsmalldisabled.png");
+			}
+			if (!($("#option-c-button").prop("src").match("quizsmallselected.png"))) {
+				$("#option-c-button").prop("src", "resources/images/quizsmalldisabled.png");
+			}
+			if (!($("#option-d-button").prop("src").match("quizsmallselected.png"))) {
+				$("#option-d-button").prop("src", "resources/images/quizsmalldisabled.png");
+			}
+		}
+	}
 }
 
 function processMessage(message) {
@@ -510,22 +585,29 @@ function processMessage(message) {
 
 	} else if (message.messageName === 'question') {
 		setReadyButtonVisiblity(false);
+
+		// revert time box back to original color
+		greenTimBox = true;
+		$("#countdown").css("color", "green");
+		$("#countdown").css("border", "1px solid green");
+
 		$('#positivemessage').text("");
 		screenMsg.text("");
 		errorMsg.text("");
 		$('input:radio[name="option"]').removeAttr('checked');
-		$('#question').text(message.question.question);
-		$('#ansOpt1').text(message.question.option1);
-		$('#ansOpt2').text(message.question.option2);
-		$('#ansOpt3').text(message.question.option3);
-		$('#ansOpt4').text(message.question.option4);
+		$('#question-text').text(message.question.question);
+		$('#option-a').text(message.question.option1);
+		$('#option-b').text(message.question.option2);
+		$('#option-c').text(message.question.option3);
+		$('#option-d').text(message.question.option4);
 		$('#questionTable').show();
 		$('#questionId').text(message.question.questionId);
-		$('#questionNumber')
-				.text(
-						"# " + message.questionNumber + " of "
-								+ totalNumberOfQuestions);
-		$("#submitButton").prop("disabled", false);
+		$('#questionNumber').text(
+				"Question # " + message.questionNumber + " of "
+						+ totalNumberOfQuestions);
+		setDisableOfAnswerButtons(false, true);
+
+		// $("#submitButton").prop("disabled", false);
 		currentTime = startingTime;
 		timer.play(true);
 		remainingTime.show();
@@ -537,7 +619,9 @@ function processMessage(message) {
 		// var progBar;
 		var progBarIndex;
 		setReadyButtonVisiblity(false);
-		$("#submitButton").prop("disabled", true);
+		setDisableOfAnswerButtons(true, false);
+
+		// $("#submitButton").prop("disabled", true);
 
 		if ((message.game.player1 !== null) && (message.game.player1 !== "")) {
 			remainingTime.hide();

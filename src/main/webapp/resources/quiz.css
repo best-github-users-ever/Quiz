@@ -4,18 +4,18 @@ body {
 	background-color: #daeab8;
 }
 
-h1,h2 {
+h1, h2 {
 	color: #0063d1;
 }
 
 h1 {
- 	font-size: 300%; 
-    text-align: center;
+	font-size: 300%;
+	text-align: center;
 }
 
 h2 {
- 	font-size: 200%; 
-    text-align: center;
+	font-size: 200%;
+	text-align: center;
 	color: black;
 }
 
@@ -27,26 +27,13 @@ h2 {
 	clear: left;
 	float: left;
 }
+
 *.login {
 	float: left;
 }
 
 *.homepage {
 	float: left;
-}
-
-*.table {
-	width: 100%;
-	text-align: center;
-}
-
-*.tableCaption {
-	font-size: 140%;
-}
-
-*.price {
-	text-align: right;
-	color: #13530f;
 }
 
 p.logo {
@@ -71,13 +58,11 @@ p.logo {
 	color: blue;
 }
 
-
 *.centeredButton {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
 }
-
 
 *.loginTable {
 	margin: auto;
@@ -85,10 +70,6 @@ p.logo {
 
 *.topicsTable {
 	margin: auto;
-}
-
-*.websocketDiv {
-	margin: 0 auto;
 }
 
 *.questionTable {
@@ -109,518 +90,450 @@ p.logo {
 	float: left;
 }
 
-*.socket {
-	float: left;
-}
-
-td{
-    padding-left: 6px;
-    padding-right: 6px;
+td {
+	padding-left: 6px;
+	padding-right: 6px;
 }
 
 *.userinput {
 	font-weight: bold;
 }
 
-body{
-    margin: 0px;
-    padding: 0px;
-    background: #daeab8;
+body {
+	margin: 0px;
+	padding: 0px;
+	background: #daeab8;
 	background-color: #daeab8;
-    cursor: default;
+	cursor: default;
 	font-size: small;
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 }
-.questionContainer {
-    width: 600px;
-    border: 3px double #CFCFCF;
-    padding: 3px;
-    margin: 10px;
-}
+
 ul {
-    margin: 0px;
-    padding: 5px;
+	margin: 0px;
+	padding: 5px;
 }
+
 ul li {
-    list-style: none;
+	list-style: none;
 }
 
 a:hover {
-    background: none;
-}
-.btnContainer {
-    width: 96%;
-    margin: 10px 0px 10px 2%;
+	background: none;
 }
 
-#progressKeeper {
-    width: 600px;
-    height: 25px;
-    border: 3px double #CFCFCF;
-    margin: 0px 10px;
-    padding: 3px;
-}
-.txtStatusBar {
-    margin: 5px 10px;
-    font-weight: bold;
-}
-#progress {
-    background: green;
-    width: 0;
-    height: 25px;
-    -webkit-transition: width 0.3s ease;
-}
-.radius {
-    border-radius: 6px;
-    -moz-border-radius: 6px;
-    -webkit-border-radius: 6px;
-    -o-border-radius: 6px;
-}
-#resultKeeper {
-    width: 600px;
-    margin: 10px;
-    padding: 3px;
-    border: 3px double #CFCFCF;
-}
-#resultKeeper div {
-    line-height: 20px;
-}
-.totalScore {
-    font-weight: bold;
-}
 input {
-    position: relative;
-    top: 2px;
+	position: relative;
+	top: 2px;
 }
+
 h1 {
 	color: #0063d1;
- 	font-size: 300%; 
-    text-align: center;
-    height: 22px;
-    margin: 10px;
-    text-indent: 5px;
+	font-size: 300%;
+	text-align: center;
+	height: 22px;
+	margin: 10px;
+	text-indent: 5px;
 }
-.prev { float: left; }
-.next, .btnShowResult { float: right; }
-.clear { clear: both; }
-.hide { display: none; }
+
+.prev {
+	float: left;
+}
+
+.next, .btnShowResult {
+	float: right;
+}
+
+.clear {
+	clear: both;
+}
+
+.hide {
+	display: none;
+}
+
 a {
-    border: 1px solid #000;
-    padding: 2px 5px;
-    font-size: 10px;
-    background: #FFF;
-    cursor: pointer;
+	border: 1px solid #000;
+	padding: 2px 5px;
+	font-size: 10px;
+	background: #FFF;
+	cursor: pointer;
 }
 
-	#wrapper {
-		width:100%;
-		margin:0px auto;
-		border:1px solid #bbb;
-		padding:10px;
-	}
-	#header {
-		border:1px solid #bbb;
-		height:80px;
-		padding:10px;
-	}
-	#content {
-		margin-top:10px;
-		padding-bottom:10px;
-        word-wrap: break-word;
-  	}
-	.content-header {
-	    font-size: 130%;
-        font-weight: bold;
-    }
-	.oldText {
-	    color: gray;
-    }
-	.my_user_statistics {
-	    color: green;
-    }
-	#content div {
-	/*	padding:10px;*/
-	 /*	border:1px solid #bbb;  */
-	 	float:left; 
-	/*    font-size: 110%;*/
-	 /*    overflow: auto;  */
-	}
-	#content-left {
-	 	border:1px solid #bbb;  
-        width:26%;
-		float: left;
-	    height: 550px;
-	    overflow: auto;
-	}
-	#content-main {
-	 	border:1px solid #bbb;  
-		margin-left:10px;
-        width:18%; /* was 38*/
-	    height: 550px; 
-	}
-	#content-upper-right {
-	 	border:1px solid #bbb;  
-		margin-left:10px;
-        width:46%; /* this and below were 26*/
-		float: right;
-	    height: 250px;		
-	}
-	#content-lower-right {
-	 	border:1px solid #bbb;  
-        position:relative;
-		margin-left:10px;
-        width:46%;
-		float: right;
-	    height: 298px;	
-        overflow: auto;		
-	}
-	#playerList {
-		clear: right;
-	    float: right;
-	    float: top;
-		border:none;
-	}
-
-
-   #opponentSelectList{
-        position: relative;
-        left    : 7px;
-        float   : left;
-        padding : 10px;
-    }
-    
-        #messages{
-        border:1px solid #bbb;  
-        top: 10px;
-        right: 10px;
-        position: absolute;
-        width:80%;
-        height: 200px;
-        color: green;
-        overflow: auto;
-        font-size:120%;
-    }
-    
-    textarea {
-    resize: none;
-    }
-    
-    #chatbox{
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-		width: 75%;
-    }
-    
-    #sendButtonContainer{
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        height: 50px;
-        width: 15%;
-    }
-    
-    #chatButton {
-    position : absolute;
-    right: 10px;
-    bottom: 10px;
-    height: 40px;
+#wrapper {
+	width: 100%;
+	margin: 0px auto;
+	border: 1px solid #bbb;
+	padding: 10px;
 }
 
-	#footer {
-		float:left;
-		margin-top:10px;
-		margin-bottom:10px;
-		padding:10px;
-		border:1px solid #bbb;
-		width:100%;
-	}
-	
+#header {
+	border: 1px solid #bbb;
+	height: 80px;
+	padding: 10px;
+}
+
+#content {
+	margin-top: 10px;
+	padding-bottom: 10px;
+	word-wrap: break-word;
+}
+
+.content-header {
+	font-size: 130%;
+	font-weight: bold;
+}
+
+.oldText {
+	color: gray;
+}
+
+#content div {
+	float: left;
+}
+
+#content-left {
+	border: 1px solid #bbb;
+	width: 26%;
+	float: left;
+	height: 550px;
+	overflow: auto;
+}
+
+#content-main {
+	position: relative;
+	border: 1px solid #bbb;
+	margin-left: 10px;
+	width: 30%;
+	height: 550px;
+}
+
+#content-upper-right {
+	border: 1px solid #bbb;
+	margin-left: 10px;
+	width: 41%;
+	float: right;
+	height: 250px;
+}
+
+#content-lower-right {
+	border: 1px solid #bbb;
+	position: relative;
+	margin-left: 10px;
+	width: 41%;
+	float: right;
+	height: 298px;
+	overflow: auto;
+}
+
+#opponentSelectList {
+	position: relative;
+	left: 7px;
+	float: left;
+	padding: 10px;
+}
+
+#messages {
+	border: 1px solid #bbb;
+	top: 10px;
+	right: 10px;
+	position: absolute;
+	width: 80%;
+	height: 200px;
+	color: green;
+	overflow: auto;
+	font-size: 120%;
+}
+
+textarea {
+	resize: none;
+}
+
+#chatbox {
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	width: 75%;
+}
+
+#sendButtonContainer {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+	height: 50px;
+	width: 15%;
+}
+
+#chatButton {
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+	height: 40px;
+}
+
+#footer {
+	float: left;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 10px;
+	border: 1px solid #bbb;
+	width: 100%;
+}
+
 .progressbar-control {
-
-    position:relative;
-    top:0px;
-    left:0px;
-    padding:0px;
-    margin:0px;
-
-    border-radius: 2px;
-    border:1px solid #BBBBBB;
-    
-   /* Safari 4-5, Chrome 1-9 */
-   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CCCCCC), to(#EEEEEE));
-
-   /* Safari 5.1, Chrome 10+ */
-   background: -webkit-linear-gradient(top, #CCCCCC, #EEEEEE);
-
-   /* Firefox 3.6+ */
-   background: -moz-linear-gradient(top, #CCCCCC, #EEEEEE);
-
-   /* IE 10 */
-   background: -ms-linear-gradient(top, #CCCCCC, #EEEEEE);
-
-   /* Opera 11.10+ */
-   background: -o-linear-gradient(top, #CCCCCC, #EEEEEE);
-    
-   overflow: visible;
-    
+	position: relative;
+	top: 0px;
+	left: 0px;
+	padding: 0px;
+	margin: 0px;
+	border-radius: 2px;
+	border: 1px solid #BBBBBB;
+	/* Safari 4-5, Chrome 1-9 */
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CCCCCC),
+		to(#EEEEEE));
+	/* Safari 5.1, Chrome 10+ */
+	background: -webkit-linear-gradient(top, #CCCCCC, #EEEEEE);
+	/* Firefox 3.6+ */
+	background: -moz-linear-gradient(top, #CCCCCC, #EEEEEE);
+	/* IE 10 */
+	background: -ms-linear-gradient(top, #CCCCCC, #EEEEEE);
+	/* Opera 11.10+ */
+	background: -o-linear-gradient(top, #CCCCCC, #EEEEEE);
+	overflow: visible;
 }
 
 .progressbar-control .item-bar {
-
-    top:0px;
-    height:100%;
-    padding:0px;
-    margin: -1px;
-
-    border-radius: 2px;
-    
-    -webkit-transition: all 500ms ease-out;
-    -moz-transition: all 500ms ease-out;
-    -o-transition: all 500ms ease-out;
-    transition: all 500ms ease-out;
-
-}
-
-.progressbar-control .item-bar.blue {
-
-   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#249AEE), to(#2082C9));
-   background: -webkit-linear-gradient(top, #249AEE, #2082C9);
-   background: -moz-linear-gradient(top, #249AEE, #2082C9);
-   background: -ms-linear-gradient(top, #249AEE, #2082C9);
-   background: -o-linear-gradient(top, #249AEE, #2082C9);
-
-   border:1px solid #000000;
-
+	top: 0px;
+	height: 100%;
+	padding: 0px;
+	margin: -1px;
+	border-radius: 2px;
+	-webkit-transition: all 500ms ease-out;
+	-moz-transition: all 500ms ease-out;
+	-o-transition: all 500ms ease-out;
+	transition: all 500ms ease-out;
 }
 
 .progressbar-control .item-bar.green {
-
-   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#A8CA68), to(#82B530));
-   background: -webkit-linear-gradient(top, #A8CA68, #82B530);
-   background: -moz-linear-gradient(top, #A8CA68, #82B530);
-   background: -ms-linear-gradient(top, #A8CA68, #82B530);
-   background: -o-linear-gradient(top, #A8CA68, #82B530);
- 
-   border:1px solid #000000;
-
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#A8CA68),
+		to(#82B530));
+	background: -webkit-linear-gradient(top, #A8CA68, #82B530);
+	background: -moz-linear-gradient(top, #A8CA68, #82B530);
+	background: -ms-linear-gradient(top, #A8CA68, #82B530);
+	background: -o-linear-gradient(top, #A8CA68, #82B530);
+	border: 1px solid #000000;
 }
 
 .progressbar-control .item-bar.yellow {
-
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFD12B), to(#F9CD2B));
-    background: -webkit-linear-gradient(top, #FFD12B, #F9CD2B);
-    background: -moz-linear-gradient(top, #FFD12B, #F9CD2B);
-    background: -ms-linear-gradient(top, #FFD12B, #F9CD2B);
-    background: -o-linear-gradient(top, #FFD12B, #F9CD2B);
-  
-    border:1px solid #000000;
-
-}
-
-.progressbar-control .item-bar.orange {
-
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FF8000), to(#FF4000));
-    background: -webkit-linear-gradient(top, #FF8000, #FF4000);
-    background: -moz-linear-gradient(top, #FF8000, #FF4000);
-    background: -ms-linear-gradient(top, #FF8000, #FF4000);
-    background: -o-linear-gradient(top, #FF8000, #FF4000);
-
-    border:1px solid #000000;
-
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFD12B),
+		to(#F9CD2B));
+	background: -webkit-linear-gradient(top, #FFD12B, #F9CD2B);
+	background: -moz-linear-gradient(top, #FFD12B, #F9CD2B);
+	background: -ms-linear-gradient(top, #FFD12B, #F9CD2B);
+	background: -o-linear-gradient(top, #FFD12B, #F9CD2B);
+	border: 1px solid #000000;
 }
 
 .progressbar-control .item-bar.red {
-
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F73D22), to(#D6351F));
-    background: -webkit-linear-gradient(top, #F73D22, #D6351F);
-    background: -moz-linear-gradient(top, #F73D22, #D6351F);
-    background: -ms-linear-gradient(top, #F73D22, #D6351F);
-    background: -o-linear-gradient(top, #F73D22, #D6351F);
-    
-    border:1px solid #000000;
-
-}
-
-.progressbar-control .item-bar.white {
-
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#EEEEEE));
-    background: -webkit-linear-gradient(top, #FFFFFF, #EEEEEE);
-    background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE);
-    background: -ms-linear-gradient(top, #FFFFFF, #EEEEEE);
-    background: -o-linear-gradient(top, #FFFFFF, #EEEEEE);
-    
-    border:1px solid #000000;
-
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F73D22),
+		to(#D6351F));
+	background: -webkit-linear-gradient(top, #F73D22, #D6351F);
+	background: -moz-linear-gradient(top, #F73D22, #D6351F);
+	background: -ms-linear-gradient(top, #F73D22, #D6351F);
+	background: -o-linear-gradient(top, #F73D22, #D6351F);
+	border: 1px solid #000000;
 }
 
 .progressbar-control .item-bar.black {
-
-    background-color: black;
-    border:1px solid #000000;
-
+	background-color: black;
+	border: 1px solid #000000;
 }
 
 .progressbar-control .item-line {
-
-    top:-100%;
-    width:1px;
-    height:300%;
-    padding:0px;
-    margin: 0px 0px 0px -1px;
-
-}
-
-.progressbar-control .item-line.blue {
-
-    background-color: #2082C9;
-
+	top: -100%;
+	width: 1px;
+	height: 300%;
+	padding: 0px;
+	margin: 0px 0px 0px -1px;
 }
 
 .progressbar-control .item-line.green {
-
-    background-color: #82B530;
-
+	background-color: #82B530;
 }
 
 .progressbar-control .item-line.yellow {
-
-    background-color: #F9CD2B;
-
-}
-
-.progressbar-control .item-line.orange {
-
-    background-color: #FF4000;
-
+	background-color: #F9CD2B;
 }
 
 .progressbar-control .item-line.red {
-
-    background-color: #D6351F;
-
-}
-
-.progressbar-control .item-line.white {
-
-    background-color: #EEEEEE;
-
-}
-
-.progressbar-control .item-line.black {
-
-    background-color: #000000;
-
+	background-color: #D6351F;
 }
 
 .progressbar-control .item-text {
-
-    
-    
+	
 }
 
-            .my-progressbar-container {
-                float: none !important;
-                position: absolute;
-                width: 300px; /* my-progressbar width */
-                 padding: 15px 0px 0px 0px; /* Space for progresbar-texts */
-                background-color: transparent;
-                
-            }
-            
-            .progressbar-text.top-left1 {
-               font-size:145%;
-                top:0px;
-                left:7px;
-                color: green;
-            }
-            #my-progressbar1 {
-                position: absolute;
-				top:20px;
-				left:10px;
-				}
-				
-           .progressbar-text.top-left2{
-                font-size:145%;
-                top:40px;
-                left:7px;
-            }
-            #my-progressbar2 {
-                position: absolute;
-				top:60px;
-				left:10px;
-            }
-			
-           .progressbar-text.top-left3{
-                font-size:145%;
-                top:80px;
-                left:7px;
-            }
-            #my-progressbar3 {
-                position: absolute;
-				top:100px;
-				left:10px;
-            }
-			
-           .progressbar-text.top-left4{
-                font-size:145%;
-                top:120px;
-                left:7px;
-            }
-            #my-progressbar4 {
-                position: absolute;
-				top:140px;
-				left:10px;
-            }
-			
-           .progressbar-text.top-left5{
-                font-size:145%;
-                top:160px;
-                left:7px;
-            }
-            #my-progressbar5 {
-                position: absolute;
-				top:180px;
-				left:10px;
-            }
-			
-            
-            .progressbar-text {
-                
-                position: absolute;
-                font-family: Arial;
-                font-size: 10px;
-                color: #333333;
-                
-            }
-            
-            .progressbar-text.top-right {
-                
-                top:5px;
-                right:7px;
-                
-            }
-            
-            .progressbar-text.top-left {
-                
-                top:5px;
-                left:7px;
-                
-            }
-            
-            .progressbar-text.bottom-right {
-                
-                bottom:5px;
-                right:7px;
-                
-            }
-            
-            .progressbar-text.bottom-left {
-                
-                bottom:5px;
-                left:7px;
-                
-            }
+.my-progressbar-container {
+	float: none !important;
+	position: absolute;
+	width: 300px; /* my-progressbar width */
+	padding: 15px 0px 0px 0px; /* Space for progresbar-texts */
+	background-color: transparent;
+}
 
+.progressbar-text.top-left1 {
+	top: 0px;
+	color: green;
+    font-size: 145%;
+}
 
-           
+#my-progressbar1 {
+	position: absolute;
+	top: 20px;
+	left: 10px;
+}
+
+.progressbar-text.top-left2 {
+	top: 40px;
+    font-size: 145%;
+}
+
+#my-progressbar2 {
+	position: absolute;
+	top: 60px;
+	left: 10px;
+}
+
+.progressbar-text.top-left3 {
+	top: 80px;
+    font-size: 145%;
+}
+
+#my-progressbar3 {
+	position: absolute;
+	top: 100px;
+	left: 10px;
+}
+
+.progressbar-text.top-left4 {
+	top: 120px;
+    font-size: 145%;
+}
+
+#my-progressbar4 {
+	position: absolute;
+	top: 140px;
+	left: 10px;
+}
+
+.progressbar-text.top-left5 {
+	top: 160px;
+    font-size: 145%;
+}
+
+#my-progressbar5 {
+	position: absolute;
+	top: 180px;
+	left: 10px;
+}
+
+.progressbar-text {
+	left: 15px;
+	font-size: 145%;
+	position: absolute;
+	font-family: Arial;
+	font-size: 10px;
+	color: #333333;
+}
+
+.progressbar-text.top-left {
+    font-size: 145%;
+	top: 5px;
+	left: 15px;
+}
+
+.options {
+	float: none;
+	position: absolute;
+	width: 70%;
+	height: 40px;
+	color: green;
+	font-size: 120%;
+	left: 80px;
+}
+
+.option-button {
+	position: absolute;
+	left: 35px;
+	height: 40px;
+	width: 35px;
+}
+
+#question-text {
+	font-size: 120%;
+	color: green;
+	top: 65px;
+	font-weight: bold;
+	position: absolute;
+	left: 20px;
+}
+
+#answer-label {
+	font-size: 130%;
+	top: 160px;
+	font-weight: bold;
+	position: absolute;
+}
+
+#option-a-button {
+	top: 215px;
+}
+
+#option-a {
+	top: 220px;
+}
+
+#option-b-button {
+	top: 305px;
+}
+
+#option-b {
+	top: 310px;
+}
+
+#option-c-button {
+	top: 395px;
+}
+
+#option-c {
+	top: 400px;
+}
+
+#option-d-button {
+	top: 485px;
+}
+
+#option-d {
+	top: 490px;
+}
+
+#countdown {
+	border: 1px solid green;
+	top: 5px;
+	right: 15px;
+	position: absolute;
+	width: 30%;
+	height: 20px;
+	color: green;
+	overflow: auto;
+	font-size: 110%;
+	text-align: center;
+    -moz-border-top-right-radius:9px;
+    -moz-border-top-right-radius:9px;
+    border-top-left-radius:9px;
+    border-top-right-radius:9px;
+    -moz-border-bottom-left-radius:9px;
+    -moz-border-bottom-right-radius:9px;
+    border-bottom-left-radius:9px;
+    border-bottom-right-radius:9px;
+}

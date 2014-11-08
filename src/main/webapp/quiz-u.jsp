@@ -20,7 +20,6 @@
 <p id="confirmationMessage" class="positivemessage"></p>
 <p id="errorMessage" class="errortext"></p>
 
-<!--<div id="wrapper">-->
 <div id="content">
 	<div id="content-left">
 		<p class="content-header">Game Updates</p>
@@ -35,43 +34,38 @@
 			<script>setReadyButtonVisiblity(true);</script>
 		</c:if>
 
-		<table id="questionTable" class="questionTable" hidden="true">
+		<div id="questionTable" class="questionTable" hidden="true">
+			<p id="countdown"></p>
 
-			<tr>
-				<td><p class="content-header">Question</p> <br>
-					<p id="questionNumber"></p>
-					<p id="questionId" hidden="true"></p>
-					<p id="question"></p></td>
-			</tr>
+			<p id="questionNumber" class="content-header">Question</p>
+			<br>
 
-			<tr>
-				<td><b>Answer</b> <br> <input type="radio" name="option"
-					value="0"><label id="ansOpt1"></label> <br> <input
-					type="radio" name="option" value="1"><label id="ansOpt2"></label>
-					<br> <input type="radio" name="option" value="2"><label
-					id="ansOpt3"></label> <br> <input type="radio" name="option"
-					value="3"><label id="ansOpt4"></label> <br>
-			</tr>
+			<p id="questionId" hidden="true"></p>
+			<p id="question-text"></p>
 
-			<tr>
-				<td>&nbsp</td>
-			</tr>
+			<p id="answer-label">Possible Answers</p>
+			<br> <input type="image" id="option-a-button"
+                class="option-button" src="resources/images/quizsmall.png" alt="A"
+				onclick="makeSelection(${game.gameId}, '${sessionScope.user.userId}', 0);">
+			<div id="option-a" class="options">option A text that extends
+				over several lines of type several lines I say</div>
 
+			<input type="image" id="option-b-button"
+                class="option-button" src="resources/images/quizsmall.png" alt="B"
+				onclick="makeSelection(${game.gameId}, '${sessionScope.user.userId}', 1);">
+			<div id="option-b" class="options">option b text</div>
 
-			<tr>
-				<td colspan="2"><br> <input id="submitButton"
-					type="submit" name="submit" value="Submit"
-					onclick="answerSubmitted(${game.gameId},'${sessionScope.user.userId}');"></td>
-			</tr>
+			<input type="image" id="option-c-button"
+                class="option-button" src="resources/images/quizsmall.png" alt="C"
+				onclick="makeSelection(${game.gameId}, '${sessionScope.user.userId}', 2);">
+			<div id="option-c" class="options">option C text</div>
 
-			<tr>
-				<td>&nbsp</td>
-			</tr>
-			<tr>
-				<td><label>Time Remaining: </label><span id="countdown"></span></td>
-			</tr>
+			<input type="image" id="option-d-button"
+                class="option-button" src="resources/images/quizsmall.png" alt="D"
+				onclick="makeSelection(${game.gameId}, '${sessionScope.user.userId}', 3);">
+			<div id="option-d" class="options">option D text</div>
 
-		</table>
+		</div>
 	</div>
 
 	<div id="content-upper-right">
@@ -109,12 +103,12 @@
 				value="Send" onclick="sendPressed(${game.gameId});">
 		</div>
 	</div>
+</div>
 
-	<!--</div>-->
-	<br>
-	<p id="JSESSIONID" hidden="true">${sessionScope.JSESSIONID }</p>
+<br>
+<p id="JSESSIONID" hidden="true">${sessionScope.JSESSIONID }</p>
 
-	<c:import url="footer.jsp" />
+<c:import url="footer.jsp" />
 
-	</body>
-	</html>
+</body>
+</html>
