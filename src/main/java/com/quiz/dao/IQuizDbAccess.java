@@ -1,14 +1,20 @@
 package com.quiz.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.quiz.model.Game;
 import com.quiz.model.Question;
+import com.quiz.model.Topic;
 import com.quiz.model.User;
 
 public interface IQuizDbAccess {
 
 	Game addGame(int topicId, int totalPlayers);
+
+	int addQuestion(Question question);
+
+	int addTopic(Topic topic);
 
 	boolean addUser(User u);
 
@@ -29,6 +35,8 @@ public interface IQuizDbAccess {
 	Question getRandomQuestion(int topicId);
 
 	Question getRandomQuestionWithExclusions(int topicId, int gameId);
+	
+	List<Topic> getTopics();
 
 	User getUser(User user);
 	

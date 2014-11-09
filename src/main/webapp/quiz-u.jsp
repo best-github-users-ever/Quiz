@@ -1,5 +1,5 @@
 <%@ include file='header.jsp'%>
-<h2>Take Quiz</h2>
+<h2>Take The Quiz</h2>
 
 <br>
 <c:if test="${not empty reqErrorMessage}">

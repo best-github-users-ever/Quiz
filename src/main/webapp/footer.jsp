@@ -27,6 +27,11 @@
 			<c:url var="logoutURL" value="/logout-u.action">
 			</c:url>
 			(Click <a href="${logoutURL}"> here</a> to logout) <br> <br>
+	        <c:if test="${sessionScope.user.userId == 'admin'}">
+			<c:url var="performAdmin" value="/admin-u.action">
+			</c:url>
+			(Click <a href="${performAdmin}"> here</a> to perform Admin activities) <br> <br>
+	        </c:if>
 		</div>
 		<br>
 	</c:if>

@@ -8,21 +8,21 @@
 	<br>
 </c:if>
 <c:if test="${not empty reqPositiveMessage}">
-<p class="positivemessage">${reqPositiveMessage}</p>
+	<p class="positivemessage">${reqPositiveMessage}</p>
 </c:if>
 
-<form action='<%=response.encodeURL("chooseQuizTopic-u.action")%>' method='POST'>
+<form action='<%=response.encodeURL("chooseQuizTopic-u.action")%>'
+	method='POST'>
 
 	<table class="topicsTable">
 
 		<tr>
-		   <td>Topic:</td>
+			<td>Topic:</td>
 			<td><select name="topicId">
-					<option value="1">Sports
-					<option value="2">Monster Movies
-					<option value="3">Arthur
-					<option value="4">Horror Movies
-					</select></td>
+					<c:forEach var="topic" items="${topicList}">
+						<option value="${topic.topicId}">${topic.name}
+					</c:forEach>
+			</select></td>
 		</tr>
 
 		<tr>
@@ -30,14 +30,14 @@
 			<td>&nbsp</td>
 		</tr>
 		<tr>
-		   <td>Number of Players</td>
+			<td>Number of Players</td>
 			<td><select name="numberPlayers">
 					<option value="1">1
 					<option value="2">2
 					<option value="3">3
 					<option value="4">4
 					<option value="5">5
-					</select></td>
+			</select></td>
 		</tr>
 
 		<tr>

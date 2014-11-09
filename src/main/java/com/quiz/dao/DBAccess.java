@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import com.quiz.model.Game;
 import com.quiz.model.Question;
+import com.quiz.model.Topic;
 import com.quiz.model.User;
 
 import org.springframework.context.ApplicationContext;
@@ -133,6 +134,18 @@ public class DBAccess implements IQuizDbAccess {
 		}
 	}
 
+	private static final class TopicMapper implements RowMapper<Object> {
+
+		@Override
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			Topic localTopic = new Topic();
+			localTopic.setTopicId(rs.getInt("topicid"));
+			localTopic.setName(rs.getString("name"));
+			return localTopic;
+		}
+	}
+
 	private static final class UserMapper implements RowMapper<Object> {
 
 		@Override
@@ -148,26 +161,77 @@ public class DBAccess implements IQuizDbAccess {
 		}
 	}
 
-	private static class UserPreparedStatementCreator implements
+	private static class QuestionPreparedStatementCreator implements
 			PreparedStatementCreator {
-		private String USER_INSERT = "INSERT INTO users (userid, hint, email, password) VALUES(?,?,?,?)";
-		private User user;
+		private String QUESTION_INSERT = "INSERT INTO questions (question, option1, option2, option3, option4, "
+				+ "answerIdx, topicId) VALUES(?, ?,?,?,?,?,?)";
+		private Question question;
 
-		public UserPreparedStatementCreator(User user) {
-			this.user = user;
+		public QuestionPreparedStatementCreator(Question question) {
+			this.question = question;
 		}
 
 		@Override
 		public PreparedStatement createPreparedStatement(Connection conn)
 				throws SQLException {
-			PreparedStatement ps = conn.prepareStatement(USER_INSERT,
+			PreparedStatement ps = conn.prepareStatement(QUESTION_INSERT,
 					Statement.RETURN_GENERATED_KEYS);
-			ps.setString(1, user.getUserId());
-			ps.setString(2, user.getHint());
-			ps.setString(3, user.getEmailAddress());
-			ps.setString(4, user.getPassword());
+			ps.setString(1, question.getQuestion().trim());
+			ps.setString(2, question.getOption1().trim());
+			ps.setString(3, question.getOption2().trim());
+			ps.setString(4, question.getOption3().trim());
+			ps.setString(5, question.getOption4().trim());
+			ps.setInt(6, question.getAnswerIdx());
+			ps.setInt(7, question.getTopicId());
 			return ps;
 		}
+	}
+
+	public int addQuestion(Question question) {
+		QuestionPreparedStatementCreator creator = new QuestionPreparedStatementCreator(
+				question);
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		try {
+			jdbcTemplate.update(creator, keyHolder);
+			return keyHolder.getKey().intValue();
+
+		} catch (Exception e) {
+			return -1;
+		}
+
+	}
+
+	private static class TopicPreparedStatementCreator implements
+			PreparedStatementCreator {
+		private String TOPIC_INSERT = "INSERT INTO topics (name) VALUES(?)";
+		private Topic topic;
+
+		public TopicPreparedStatementCreator(Topic topic) {
+			this.topic = topic;
+		}
+
+		@Override
+		public PreparedStatement createPreparedStatement(Connection conn)
+				throws SQLException {
+			PreparedStatement ps = conn.prepareStatement(TOPIC_INSERT,
+					Statement.RETURN_GENERATED_KEYS);
+			ps.setString(1, topic.getName().trim());
+			return ps;
+		}
+	}
+
+	public int addTopic(Topic topic) {
+		TopicPreparedStatementCreator creator = new TopicPreparedStatementCreator(
+				topic);
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		try {
+			jdbcTemplate.update(creator, keyHolder);
+			return keyHolder.getKey().intValue();
+
+		} catch (Exception e) {
+			return -1;
+		}
+
 	}
 
 	public static IQuizDbAccess getDbAccess() {
@@ -212,6 +276,28 @@ public class DBAccess implements IQuizDbAccess {
 
 	}
 
+	private static class UserPreparedStatementCreator implements
+			PreparedStatementCreator {
+		private String USER_INSERT = "INSERT INTO users (userid, hint, email, password) VALUES(?,?,?,?)";
+		private User user;
+
+		public UserPreparedStatementCreator(User user) {
+			this.user = user;
+		}
+
+		@Override
+		public PreparedStatement createPreparedStatement(Connection conn)
+				throws SQLException {
+			PreparedStatement ps = conn.prepareStatement(USER_INSERT,
+					Statement.RETURN_GENERATED_KEYS);
+			ps.setString(1, user.getUserId());
+			ps.setString(2, user.getHint());
+			ps.setString(3, user.getEmailAddress());
+			ps.setString(4, user.getPassword());
+			return ps;
+		}
+	}
+
 	@Override
 	public boolean addUser(User user) {
 		UserPreparedStatementCreator creator = new UserPreparedStatementCreator(
@@ -228,22 +314,24 @@ public class DBAccess implements IQuizDbAccess {
 	}
 
 	@Override
-	public boolean allPlayersFinishedQuestion(int gameId){
+	public boolean allPlayersFinishedQuestion(int gameId) {
 
 		Game game = retrieveGamefromId(gameId);
-log.info("game value:"+ game);
+		log.info("game value:" + game);
 		if (game != null) {
 
 			if (game.getTotalPlayers() == 2) {
 				return game.isP1CurrQDone() & game.isP2CurrQDone();
 			} else if (game.getTotalPlayers() == 3) {
-				return game.isP1CurrQDone() & game.isP2CurrQDone() & game.isP3CurrQDone();
+				return game.isP1CurrQDone() & game.isP2CurrQDone()
+						& game.isP3CurrQDone();
 			} else if (game.getTotalPlayers() == 4) {
-				return game.isP1CurrQDone() & game.isP2CurrQDone() & game.isP3CurrQDone()
-						& game.isP4CurrQDone();
+				return game.isP1CurrQDone() & game.isP2CurrQDone()
+						& game.isP3CurrQDone() & game.isP4CurrQDone();
 			} else if (game.getTotalPlayers() == 5) {
-				return game.isP1CurrQDone() & game.isP2CurrQDone() & game.isP3CurrQDone()
-						& game.isP4CurrQDone() & game.isP5CurrQDone();
+				return game.isP1CurrQDone() & game.isP2CurrQDone()
+						& game.isP3CurrQDone() & game.isP4CurrQDone()
+						& game.isP5CurrQDone();
 			} else if (game.getTotalPlayers() == 1) {
 				return game.isP1CurrQDone();
 			} else {
@@ -257,7 +345,7 @@ log.info("game value:"+ game);
 			return false;
 		}
 	}
-	
+
 	@Override
 	public boolean allPlayersReady(int gameId) {
 		Game game = retrieveGamefromId(gameId);
@@ -319,24 +407,24 @@ log.info("game value:"+ game);
 	public List<String> getAllPlayerUserIds(int gameId) {
 
 		Game game = retrieveGamefromId(gameId);
-		List <String> playerList = new ArrayList<String>();
+		List<String> playerList = new ArrayList<String>();
 
 		log.info(game.toString());
- 		if ((game.getPlayer1() != null) & (game.getPlayer1() != "") ){
- 			playerList.add(game.getPlayer1());
-		} 
- 		if ((game.getPlayer2() != null) & (game.getPlayer2() != "") ){
- 			playerList.add(game.getPlayer2());
-		} 
- 		if ((game.getPlayer3() != null) & (game.getPlayer3() != "") ){
- 			playerList.add(game.getPlayer3());
-		} 
- 		if ((game.getPlayer4() != null) & (game.getPlayer4() != "") ){
- 			playerList.add(game.getPlayer4());
-		} 
- 		if ((game.getPlayer5() != null) & (game.getPlayer5() != "") ){
- 			playerList.add(game.getPlayer5());
-		} 
+		if ((game.getPlayer1() != null) & (game.getPlayer1() != "")) {
+			playerList.add(game.getPlayer1());
+		}
+		if ((game.getPlayer2() != null) & (game.getPlayer2() != "")) {
+			playerList.add(game.getPlayer2());
+		}
+		if ((game.getPlayer3() != null) & (game.getPlayer3() != "")) {
+			playerList.add(game.getPlayer3());
+		}
+		if ((game.getPlayer4() != null) & (game.getPlayer4() != "")) {
+			playerList.add(game.getPlayer4());
+		}
+		if ((game.getPlayer5() != null) & (game.getPlayer5() != "")) {
+			playerList.add(game.getPlayer5());
+		}
 		return playerList;
 	}
 
@@ -344,24 +432,29 @@ log.info("game value:"+ game);
 	public List<String> getOtherPlayerUserIds(int gameId, String userId) {
 
 		Game game = retrieveGamefromId(gameId);
-		List <String> opponentList = new ArrayList<String>();
+		List<String> opponentList = new ArrayList<String>();
 
 		log.info(game.toString());
- 		if ((game.getPlayer1() != null) & (game.getPlayer1() != "") & (!userId.equals(game.getPlayer1()))){
- 			opponentList.add(game.getPlayer1());
-		} 
- 		if ((game.getPlayer2() != null) & (game.getPlayer2() != "") & (!userId.equals(game.getPlayer2()))){
- 			opponentList.add(game.getPlayer2());
-		} 
- 		if ((game.getPlayer3() != null) & (game.getPlayer3() != "") & (!userId.equals(game.getPlayer3()))){
- 			opponentList.add(game.getPlayer3());
-		} 
- 		if ((game.getPlayer4() != null) & (game.getPlayer4() != "") & (!userId.equals(game.getPlayer4()))){
- 			opponentList.add(game.getPlayer4());
-		} 
- 		if ((game.getPlayer5() != null) & (game.getPlayer5() != "") & (!userId.equals(game.getPlayer5()))){
- 			opponentList.add(game.getPlayer5());
-		} 
+		if ((game.getPlayer1() != null) & (game.getPlayer1() != "")
+				& (!userId.equals(game.getPlayer1()))) {
+			opponentList.add(game.getPlayer1());
+		}
+		if ((game.getPlayer2() != null) & (game.getPlayer2() != "")
+				& (!userId.equals(game.getPlayer2()))) {
+			opponentList.add(game.getPlayer2());
+		}
+		if ((game.getPlayer3() != null) & (game.getPlayer3() != "")
+				& (!userId.equals(game.getPlayer3()))) {
+			opponentList.add(game.getPlayer3());
+		}
+		if ((game.getPlayer4() != null) & (game.getPlayer4() != "")
+				& (!userId.equals(game.getPlayer4()))) {
+			opponentList.add(game.getPlayer4());
+		}
+		if ((game.getPlayer5() != null) & (game.getPlayer5() != "")
+				& (!userId.equals(game.getPlayer5()))) {
+			opponentList.add(game.getPlayer5());
+		}
 		return opponentList;
 	}
 
@@ -414,54 +507,56 @@ log.info("game value:"+ game);
 		}
 
 	}
-	
+
 	@Override
-	public Question getRandomQuestionWithExclusions (int topicId, int gameId) {
+	public Question getRandomQuestionWithExclusions(int topicId, int gameId) {
 		Game game = retrieveGamefromId(gameId);
 		String exclusionText = "";
-		
+
 		List<Integer> questionList = new ArrayList<Integer>();
-		
-		if (game.getCurrQIndex() > 0){
+
+		if (game.getCurrQIndex() > 0) {
 			questionList.add(game.getQ1Id());
 		}
-		if (game.getCurrQIndex() > 1){
+		if (game.getCurrQIndex() > 1) {
 			questionList.add(game.getQ2Id());
 		}
-		if (game.getCurrQIndex() > 2){
+		if (game.getCurrQIndex() > 2) {
 			questionList.add(game.getQ3Id());
 		}
-		if (game.getCurrQIndex() > 3){
+		if (game.getCurrQIndex() > 3) {
 			questionList.add(game.getQ4Id());
 		}
-		if (game.getCurrQIndex() > 4){
+		if (game.getCurrQIndex() > 4) {
 			questionList.add(game.getQ5Id());
 		}
-		if (game.getCurrQIndex() > 5){
+		if (game.getCurrQIndex() > 5) {
 			questionList.add(game.getQ6Id());
 		}
-		if (game.getCurrQIndex() > 6){
+		if (game.getCurrQIndex() > 6) {
 			questionList.add(game.getQ7Id());
 		}
-		if (game.getCurrQIndex() > 7){
+		if (game.getCurrQIndex() > 7) {
 			questionList.add(game.getQ8Id());
 		}
-		if (game.getCurrQIndex() > 8){
+		if (game.getCurrQIndex() > 8) {
 			questionList.add(game.getQ9Id());
 		}
-		if (game.getCurrQIndex() > 9){
+		if (game.getCurrQIndex() > 9) {
 			questionList.add(game.getQ10Id());
 		}
 
-		for(Integer question : questionList){
-		   exclusionText = exclusionText + " AND QUESTIONID != " + question;
+		for (Integer question : questionList) {
+			exclusionText = exclusionText + " AND QUESTIONID != " + question;
 		}
-		final String GET_QUESTION = "SELECT * FROM questions WHERE topicid = ?" + exclusionText;;
+		final String GET_QUESTION = "SELECT * FROM questions WHERE topicid = ?"
+				+ exclusionText;
+		;
 
 		try {
 			List<Object> candidateQuestions = jdbcTemplate.query(GET_QUESTION,
 					new Object[] { topicId }, new QuestionMapper());
-			
+
 			if (!candidateQuestions.isEmpty()) {
 
 				int questionIndex = (int) Math.round(Math.random()
@@ -476,6 +571,21 @@ log.info("game value:"+ game);
 		}
 	}
 
+	@Override
+	public List<Topic> getTopics() {
+		final String GET_TOPICS = "SELECT * FROM topics";
+		List<Topic> topics = new ArrayList<Topic>();
+
+		List<Object> objects = jdbcTemplate.query(GET_TOPICS, new Object[] {},
+				new TopicMapper());
+
+		for (Object myObject : objects) {
+			// topics.add( ((Topic) myObject).getTopicId(), (Topic) myObject);
+			topics.add((Topic) myObject);
+		}
+
+		return topics;
+	}
 
 	@Override
 	public User getUser(User user) {
@@ -558,12 +668,11 @@ log.info("game value:"+ game);
 
 		if (game != null) {
 
-			String updateStatement = " UPDATE games" + 
-			" SET P1_CURR_Q_DONE = false, " +
-			" P2_CURR_Q_DONE = false, " +
-			" P3_CURR_Q_DONE = false, " +
-			" P4_CURR_Q_DONE = false, " +
-			" P5_CURR_Q_DONE = false  WHERE gameId = ?";
+			String updateStatement = " UPDATE games"
+					+ " SET P1_CURR_Q_DONE = false, "
+					+ " P2_CURR_Q_DONE = false, " + " P3_CURR_Q_DONE = false, "
+					+ " P4_CURR_Q_DONE = false, "
+					+ " P5_CURR_Q_DONE = false  WHERE gameId = ?";
 
 			jdbcTemplate.update(updateStatement, new Object[] { gameId });
 
@@ -650,7 +759,8 @@ log.info("game value:"+ game);
 	}
 
 	@Override
-	public Game setPlayerCorrectAnswer(String username, double answerTime, int gameId){
+	public Game setPlayerCorrectAnswer(String username, double answerTime,
+			int gameId) {
 		Game game = retrieveGamefromId(gameId);
 		int newCorrectCount = 0;
 
@@ -661,7 +771,7 @@ log.info("game value:"+ game);
 			double newTimeAmount;
 
 			if (username.equals(game.getPlayer1())) {
-				if (game.isP1CurrQDone()){
+				if (game.isP1CurrQDone()) {
 					log.info("P1: late correct");
 					return null;
 				}
@@ -674,7 +784,7 @@ log.info("game value:"+ game);
 				playerFinishedQuestionString = "P1_CURR_Q_DONE";
 				playerCorrectAnswerString = "P1_NUM_CORRECT";
 			} else if (username.equals(game.getPlayer2())) {
-				if (game.isP2CurrQDone()){
+				if (game.isP2CurrQDone()) {
 					log.info("P2: late correct");
 					return null;
 				}
@@ -687,7 +797,7 @@ log.info("game value:"+ game);
 				playerFinishedQuestionString = "P2_CURR_Q_DONE";
 				playerCorrectAnswerString = "P2_NUM_CORRECT";
 			} else if (username.equals(game.getPlayer3())) {
-				if (game.isP3CurrQDone()){
+				if (game.isP3CurrQDone()) {
 					log.info("P3: late correct");
 					return null;
 				}
@@ -700,7 +810,7 @@ log.info("game value:"+ game);
 				playerFinishedQuestionString = "P3_CURR_Q_DONE";
 				playerCorrectAnswerString = "P3_NUM_CORRECT";
 			} else if (username.equals(game.getPlayer4())) {
-				if (game.isP4CurrQDone()){
+				if (game.isP4CurrQDone()) {
 					log.info("P4: late correct");
 					return null;
 				}
@@ -713,7 +823,7 @@ log.info("game value:"+ game);
 				playerFinishedQuestionString = "P4_CURR_Q_DONE";
 				playerCorrectAnswerString = "P4_NUM_CORRECT";
 			} else if (username.equals(game.getPlayer5())) {
-				if (game.isP5CurrQDone()){
+				if (game.isP5CurrQDone()) {
 					log.info("P5: late correct");
 					return null;
 				}
@@ -733,11 +843,12 @@ log.info("game value:"+ game);
 			}
 
 			String updateStatement = " UPDATE games" + " SET "
-					+ playerFinishedQuestionString + " = true, " 
-					+ playerTimeString + " = ?, " 
-		         	+ playerCorrectAnswerString + " = ?  WHERE gameId = ?";
+					+ playerFinishedQuestionString + " = true, "
+					+ playerTimeString + " = ?, " + playerCorrectAnswerString
+					+ " = ?  WHERE gameId = ?";
 
-			jdbcTemplate.update(updateStatement, new Object[] { newTimeAmount, newCorrectCount, gameId });
+			jdbcTemplate.update(updateStatement, new Object[] { newTimeAmount,
+					newCorrectCount, gameId });
 			game.dump_if_discrepancy();
 
 			return game;
@@ -749,7 +860,7 @@ log.info("game value:"+ game);
 	}
 
 	@Override
-	public Game setPlayerFinishedQuestion(String username, int gameId){
+	public Game setPlayerFinishedQuestion(String username, int gameId) {
 		Game game = retrieveGamefromId(gameId);
 
 		if (game != null) {
@@ -790,9 +901,9 @@ log.info("game value:"+ game);
 
 		}
 	}
-	
+
 	@Override
-	public Game setPlayerNoAnswer(String username, int gameId){
+	public Game setPlayerNoAnswer(String username, int gameId) {
 		Game game = retrieveGamefromId(gameId);
 		int newNoAnswerCount = 0;
 
@@ -801,7 +912,7 @@ log.info("game value:"+ game);
 			String playerNoAnswerString = null;
 
 			if (username.equals(game.getPlayer1())) {
-				if (game.isP1CurrQDone()){
+				if (game.isP1CurrQDone()) {
 					log.info("P1: late no answer");
 					return null;
 				}
@@ -811,7 +922,7 @@ log.info("game value:"+ game);
 				playerFinishedQuestionString = "P1_CURR_Q_DONE";
 				playerNoAnswerString = "P1_NUM_NO_ANS";
 			} else if (username.equals(game.getPlayer2())) {
-				if (game.isP2CurrQDone()){
+				if (game.isP2CurrQDone()) {
 					log.info("P2: late no answer");
 					return null;
 				}
@@ -821,7 +932,7 @@ log.info("game value:"+ game);
 				playerFinishedQuestionString = "P2_CURR_Q_DONE";
 				playerNoAnswerString = "P2_NUM_NO_ANS";
 			} else if (username.equals(game.getPlayer3())) {
-				if (game.isP3CurrQDone()){
+				if (game.isP3CurrQDone()) {
 					log.info("P3: late no answer");
 					return null;
 				}
@@ -831,7 +942,7 @@ log.info("game value:"+ game);
 				playerFinishedQuestionString = "P3_CURR_Q_DONE";
 				playerNoAnswerString = "P3_NUM_NO_ANS";
 			} else if (username.equals(game.getPlayer4())) {
-				if (game.isP4CurrQDone()){
+				if (game.isP4CurrQDone()) {
 					log.info("P4: late no answer");
 					return null;
 				}
@@ -841,7 +952,7 @@ log.info("game value:"+ game);
 				playerFinishedQuestionString = "P4_CURR_Q_DONE";
 				playerNoAnswerString = "P4_NUM_NO_ANS";
 			} else if (username.equals(game.getPlayer5())) {
-				if (game.isP5CurrQDone()){
+				if (game.isP5CurrQDone()) {
 					log.info("P5: late no answer");
 					return null;
 				}
@@ -858,12 +969,13 @@ log.info("game value:"+ game);
 			}
 
 			String updateStatement = " UPDATE games" + " SET "
-					+ playerFinishedQuestionString + " = true, " 
-		         	+ playerNoAnswerString + " = ?  WHERE gameId = ?";
+					+ playerFinishedQuestionString + " = true, "
+					+ playerNoAnswerString + " = ?  WHERE gameId = ?";
 
-			jdbcTemplate.update(updateStatement, new Object[] { newNoAnswerCount, gameId });
-log.info("******GAME DAO" + game.toString());
-game.dump_if_discrepancy();
+			jdbcTemplate.update(updateStatement, new Object[] {
+					newNoAnswerCount, gameId });
+			log.info("******GAME DAO" + game.toString());
+			game.dump_if_discrepancy();
 			return game;
 		} else {
 			log.info("couldn't find game based on gameid of:" + gameId);
@@ -873,7 +985,7 @@ game.dump_if_discrepancy();
 	}
 
 	@Override
-	public Game setPlayerWrongAnswer(String username, int gameId){
+	public Game setPlayerWrongAnswer(String username, int gameId) {
 		Game game = retrieveGamefromId(gameId);
 		int newWrongCount = 0;
 
@@ -882,7 +994,7 @@ game.dump_if_discrepancy();
 			String playerWrongAnswerString = null;
 
 			if (username.equals(game.getPlayer1())) {
-				if (game.isP1CurrQDone()){
+				if (game.isP1CurrQDone()) {
 					log.info("P1: late wrong");
 					return null;
 				}
@@ -892,7 +1004,7 @@ game.dump_if_discrepancy();
 				playerFinishedQuestionString = "P1_CURR_Q_DONE";
 				playerWrongAnswerString = "P1_NUM_WRONG";
 			} else if (username.equals(game.getPlayer2())) {
-				if (game.isP2CurrQDone()){
+				if (game.isP2CurrQDone()) {
 					log.info("P2: late wrong");
 					return null;
 				}
@@ -902,7 +1014,7 @@ game.dump_if_discrepancy();
 				playerFinishedQuestionString = "P2_CURR_Q_DONE";
 				playerWrongAnswerString = "P2_NUM_WRONG";
 			} else if (username.equals(game.getPlayer3())) {
-				if (game.isP3CurrQDone()){
+				if (game.isP3CurrQDone()) {
 					log.info("P3: late wrong");
 					return null;
 				}
@@ -912,7 +1024,7 @@ game.dump_if_discrepancy();
 				playerFinishedQuestionString = "P3_CURR_Q_DONE";
 				playerWrongAnswerString = "P3_NUM_WRONG";
 			} else if (username.equals(game.getPlayer4())) {
-				if (game.isP4CurrQDone()){
+				if (game.isP4CurrQDone()) {
 					log.info("P4: late wrong");
 					return null;
 				}
@@ -922,7 +1034,7 @@ game.dump_if_discrepancy();
 				playerFinishedQuestionString = "P4_CURR_Q_DONE";
 				playerWrongAnswerString = "P4_NUM_WRONG";
 			} else if (username.equals(game.getPlayer5())) {
-				if (game.isP5CurrQDone()){
+				if (game.isP5CurrQDone()) {
 					log.info("P5: late wrong");
 					return null;
 				}
@@ -939,10 +1051,11 @@ game.dump_if_discrepancy();
 			}
 
 			String updateStatement = " UPDATE games" + " SET "
-					+ playerFinishedQuestionString + " = true, " 
-		         	+ playerWrongAnswerString + " = ?  WHERE gameId = ?";
+					+ playerFinishedQuestionString + " = true, "
+					+ playerWrongAnswerString + " = ?  WHERE gameId = ?";
 
-			jdbcTemplate.update(updateStatement, new Object[] { newWrongCount, gameId });
+			jdbcTemplate.update(updateStatement, new Object[] { newWrongCount,
+					gameId });
 			game.dump_if_discrepancy();
 
 			return game;
@@ -952,7 +1065,7 @@ game.dump_if_discrepancy();
 
 		}
 	}
-	
+
 	@Override
 	public String showHint(String userId) {
 		final String GET_HINT = "SELECT * FROM users WHERE userid = ?";
@@ -982,35 +1095,35 @@ game.dump_if_discrepancy();
 
 		Game game = retrieveGamefromId(gameId);
 		log.info("******GAME BEFORE DAO" + game.toString());
-		
-		if (game.isP1Ready() & !game.isP1CurrQDone()){
-			game = setPlayerNoAnswer(game.getPlayer1(),gameId);
+
+		if (game.isP1Ready() & !game.isP1CurrQDone()) {
+			game = setPlayerNoAnswer(game.getPlayer1(), gameId);
 		}
-		if (game.isP2Ready() & !game.isP2CurrQDone()){
-			game = setPlayerNoAnswer(game.getPlayer2(),gameId);
+		if (game.isP2Ready() & !game.isP2CurrQDone()) {
+			game = setPlayerNoAnswer(game.getPlayer2(), gameId);
 		}
-		if (game.isP3Ready() & !game.isP3CurrQDone()){
-			game = setPlayerNoAnswer(game.getPlayer3(),gameId);
+		if (game.isP3Ready() & !game.isP3CurrQDone()) {
+			game = setPlayerNoAnswer(game.getPlayer3(), gameId);
 		}
-		if (game.isP4Ready() & !game.isP4CurrQDone()){
-			game = setPlayerNoAnswer(game.getPlayer4(),gameId);
+		if (game.isP4Ready() & !game.isP4CurrQDone()) {
+			game = setPlayerNoAnswer(game.getPlayer4(), gameId);
 		}
-		if (game.isP5Ready() & !game.isP5CurrQDone()){
-			game = setPlayerNoAnswer(game.getPlayer5(),gameId);
+		if (game.isP5Ready() & !game.isP5CurrQDone()) {
+			game = setPlayerNoAnswer(game.getPlayer5(), gameId);
 		}
 		game.dump_if_discrepancy();
-		
+
 		return game;
 	}
-	
+
 	@Override
-	public Game updateQuestionInfo(int gameId, int questionId){
+	public Game updateQuestionInfo(int gameId, int questionId) {
 		Game game = retrieveGamefromId(gameId);
 		String questionString = "";
-		
+
 		if (game != null) {
 			int newIndex = game.getCurrQIndex() + 1;
-			
+
 			switch (newIndex) {
 			case 1:
 				questionString = " Q1ID ";
@@ -1048,12 +1161,14 @@ game.dump_if_discrepancy();
 				return null;
 			}
 
-			String updateStatement = " UPDATE games" + 
-			" SET CURR_Q_INDEX = ?, " + questionString + "= ? WHERE gameId = ?";
+			String updateStatement = " UPDATE games"
+					+ " SET CURR_Q_INDEX = ?, " + questionString
+					+ "= ? WHERE gameId = ?";
 
-			jdbcTemplate.update(updateStatement, new Object[] { newIndex, questionId, gameId });
+			jdbcTemplate.update(updateStatement, new Object[] { newIndex,
+					questionId, gameId });
 
-			return 	retrieveGamefromId(gameId);
+			return retrieveGamefromId(gameId);
 
 		} else {
 			log.info("couldn't find game based on gameid of:" + gameId);
@@ -1061,7 +1176,5 @@ game.dump_if_discrepancy();
 
 		}
 	}
-	
-
 
 }

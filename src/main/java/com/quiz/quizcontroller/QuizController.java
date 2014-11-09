@@ -38,6 +38,7 @@ import com.quiz.dao.DBAccess;
 import com.quiz.dao.IQuizDbAccess;
 import com.quiz.model.Game;
 import com.quiz.model.Question;
+import com.quiz.model.Topic;
 import com.quiz.model.User;
 import com.quiz.socket.controller.JoinGameWebSocketController;
 import com.quiz.socket.gamelogic.GameResult;
@@ -71,6 +72,14 @@ public class QuizController implements Serializable, BeanFactoryAware {
 	public ModelAndView loginAgainAction() {
 
 		ModelAndView model = new ModelAndView("login");
+
+		return model;
+	}
+
+	@RequestMapping("/admin-u.action")
+	public ModelAndView adminAction() {
+
+		ModelAndView model = new ModelAndView("admin");
 
 		return model;
 	}
@@ -419,6 +428,57 @@ public class QuizController implements Serializable, BeanFactoryAware {
 				.getBean("brokerMessagingTemplate");
 
 	}
+	
+	@RequestMapping(value = "/new-topic.action", method = RequestMethod.POST)
+	public ModelAndView newTopicAction(@ModelAttribute("topic") Topic topic,
+			HttpServletRequest request, HttpSession session) {
+
+		ModelAndView model = new ModelAndView("admin");
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+
+		int newTopic = dao.addTopic(topic);
+		if (newTopic < 0) {
+			request.setAttribute("reqErrorMessage",
+					"Topic '" + topic.getName() + "' already exists.");
+
+		} else {
+	        session.setAttribute("topicList", dao.getTopics());
+
+			request.setAttribute("reqPositiveMessage",
+					"Topic '" + topic.getName() + "' added with topic ID of " + newTopic + ".");
+		}
+
+		return model;
+	}
+
+	@RequestMapping(value = "/new-question.action", method = RequestMethod.POST)
+	public ModelAndView newTopicAction(@ModelAttribute("question") Question question,
+			HttpServletRequest request) {
+
+		ModelAndView model = new ModelAndView("admin");
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+		
+		if (!question.getQuestion().trim().endsWith("?")){
+			question.setQuestion(question.getQuestion() + "?");
+		}
+
+		int newQuestion = dao.addQuestion(question);
+		if (newQuestion < 0) {
+			request.setAttribute("reqErrorMessage",
+					"Question '" + question.getQuestion() + "' already exists.");
+
+		} else {
+
+			request.setAttribute("reqPositiveMessage",
+					"Question '" + question.getQuestion() + "' added with Question ID of " + newQuestion + ".");
+		}
+
+		return model;
+	}
+
+
 
 	// ************* REST Methods below *************
 
@@ -438,7 +498,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 					HttpStatus.CONFLICT);
 
 		} else {
-			message = "User " + user.getUserId() + " was successfully created!";
+			message = "User '" + user.getUserId() + "' was successfully created!";
 
 			return new ResponseEntity<String>(message, httpHeaders,
 					HttpStatus.CREATED);
@@ -469,10 +529,11 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 			parameterMap.put("JSESSIONID", session.getId());
 			parameterMap.put("maxPlayers", "5");
-			parameterMap.put("topic1", "Sports");
-			parameterMap.put("topic2", "Monster Movies");
-			parameterMap.put("topic3", "Arthur");
-			parameterMap.put("topic4", "Horror Movies");
+			
+			List<Topic> topics = dao.getTopics();
+			for (Topic topic : topics){
+				parameterMap.put("topic"+topic.getTopicId(), topic.getName());
+			}
 
 			return new ResponseEntity<Map<String, String>>(parameterMap,
 					httpHeaders, HttpStatus.OK);
@@ -517,5 +578,61 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		}
 
 	}
+
+	@RequestMapping(value = "/topics", method = RequestMethod.POST, headers = "content-type=application/json")
+	ResponseEntity<String> newTopicRest(@RequestBody Topic topic,
+			HttpServletRequest request, HttpSession session) {
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+		String message = null;
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+		
+		int newTopicId = dao.addTopic(topic);
+		
+		if (newTopicId < 0) {
+			message = "Topic '" + topic.getName() + "' already exists.";
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.CONFLICT);
+
+		} else {
+			message = "/topics/"+ newTopicId;
+			
+	        session.setAttribute("topicList", dao.getTopics());
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.CREATED);
+
+		}
+
+	}
+
+	@RequestMapping(value = "/questions", method = RequestMethod.POST, headers = "content-type=application/json")
+	ResponseEntity<String> newQuestionRest(@RequestBody Question question,
+			HttpServletRequest request) {
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+		String message = null;
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+		int newQuestionId = dao.addQuestion(question);
+		
+		if (newQuestionId < 0) {
+			message = "Question '" + question.getQuestion() + "' already exists.";
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.CONFLICT);
+
+		} else {
+			message = "/questions/"+ newQuestionId;
+			
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.CREATED);
+
+		}
+
+	}
+
 
 }

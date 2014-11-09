@@ -30,7 +30,7 @@ public class GenerateDB {
                 + "use QUIZDB;"
 	            + "create Table IF NOT EXISTS TOPICS ("
 		        +       "TOPICID MEDIUMINT AUTO_INCREMENT,"
-		        +       "NAME       VARCHAR(30)  NOT NULL,"
+		        +       "NAME       VARCHAR(30)  UNIQUE NOT NULL,"
 		        +       "PRIMARY KEY (TOPICID)"
 		        +       ") ENGINE=InnoDB;" + "  COMMIT;");
 		
@@ -107,7 +107,7 @@ public class GenerateDB {
 				+       "create Table IF NOT EXISTS QUESTIONS ("
 				+       "QUESTIONID     MEDIUMINT  AUTO_INCREMENT,"
 				+       "TOPICID   MEDIUMINT DEFAULT NULL,"
-		        +       "QUESTION  VARBINARY(200)  NOT NULL,"
+		        +       "QUESTION  VARBINARY(200)  UNIQUE NOT NULL,"
 		        +       "OPTION1   VARBINARY(200)  NOT NULL,"
 		        +       "OPTION2   VARBINARY(200)  NOT NULL,"
 		        +       "OPTION3   VARBINARY(200)  NOT NULL,"

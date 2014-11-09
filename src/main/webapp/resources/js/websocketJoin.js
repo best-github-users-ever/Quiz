@@ -22,21 +22,27 @@ var userProgressMap = {};
 
 function makeSelection(gameId, userId, guessIdx) {
 	var answerTime = stopGetRemaining();
+	var button;
 
 	switch (guessIdx) {
 	case 0:
-		$("#option-a-button").prop("src", "resources/images/quizsmallselected.png");
+		button = $("#option-a-button");
+		button.prop("src", "resources/images/quizsmallselected.png");
 		break;
 	case 1:
-		$("#option-b-button").prop("src", "resources/images/quizsmallselected.png");
+		button = $("#option-b-button");
+		button.prop("src", "resources/images/quizsmallselected.png");
 		break;
 	case 2:
-		$("#option-c-button").prop("src", "resources/images/quizsmallselected.png");
+		button = $("#option-c-button");
+		button.prop("src", "resources/images/quizsmallselected.png");
 		break;
 	case 3:
-		$("#option-d-button").prop("src", "resources/images/quizsmallselected.png");
+		button = $("#option-d-button");
+		button.prop("src", "resources/images/quizsmallselected.png");
 		break;
 	}
+	button.effect( "shake", { direction: "up", times: 5, distance: 4}, 500 );
 
 	stompClient.send("/gameApp/joinGame/answer", {}, JSON.stringify({
 		'gameId' : gameId,
