@@ -41,10 +41,10 @@
 				type="text" id="newOption3" size="80"  name="option3"><br> <label>Option
 				4</label><br> <input type="text" id="newOption4" size="80"  name="option4"><br>
 			<br> <label>Answer is 1, 2, 3 or 4</label><br> <input
-				type="radio" name="answerIdx" value="1">1<br> <input
-				type="radio" name="answerIdx" value="2">2<br> <input
-				type="radio" name="answerIdx" value="3">3<br> <input
-				type="radio" name="answerIdx" value="4">4<br> <input
+				type="radio" name="answerIdx" value="0">1<br> <input
+				type="radio" name="answerIdx" value="1">2<br> <input
+				type="radio" name="answerIdx" value="2">3<br> <input
+				type="radio" name="answerIdx" value="3">4<br> <input
 				type="submit" value="Add Question" id="addQuestionButton">
 	</div>
 	</form>
