@@ -15,7 +15,7 @@
 		<tr>
 			<td class='userinput'><b>Username:</b></td>
 			<td class='userinput'><input type='text' id="userId"
-				name='userId'></td>
+				name='userId' value="${userName }"></td>
 		</tr>
 		<tr>
 			<td><b>Password:</b></td>
@@ -58,8 +58,8 @@
 <c:import url="footer.jsp" />
 </body>
 <script>
-	function hintClick(event) {
-		var userId = $("#userId").val();
+ 	function hintClick(event) {
+		var userId = $.trim($("#userId").val());
 
 		if (!userId.match(/^[0-9a-z]+$/)) {
 			window.alert("Enter valid Username");
@@ -69,10 +69,10 @@
 			//		$("#hintLink").attr("href", "login-again.action");
 		} else {
 
-			$("#hintLink").attr("href",
-					$("#hintLink").attr("href") + "/" + userId);
+ 			$("#hintLink").attr("href",
+ 					$("#hintLink").attr("href") + "?userId=" + userId);
 		}
-		console.log("value of userId:" + userId);
+ 		console.log("value of userId:" + userId);
 	}
 
 	$(document).ready(function() {

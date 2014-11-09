@@ -110,7 +110,7 @@ public class JoinGameWebSocketController {
 			log.info("playerList" + playerList.toString());
 
 			try {
-				// sleep an extra second to allow for propagation delay
+				// sleep 3 extra seconds to allow for propagation delay
 				Thread.sleep(6000);
 			} catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
@@ -166,7 +166,8 @@ public class JoinGameWebSocketController {
 				TimerTask task = new QuizTimerTask(gameId,
 						game.getCurrQIndex(), template);
 
-				timer.schedule(task, 13 * 1000);
+				//14.5 = 10 seconds + 3 for propagation delay + 1.5 for display of question (before choices) at clent
+				timer.schedule(task, 14500);
 
 			} while (game.getCurrQIndex() < Game.NUMBER_QUESTIONS_PER_GAME);
 

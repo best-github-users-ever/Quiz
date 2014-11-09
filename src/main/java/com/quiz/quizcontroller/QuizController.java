@@ -125,9 +125,9 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		return model;
 	}
 
-	@RequestMapping(value = "/show-hint.action/{userId}", method = RequestMethod.GET)
-	public ModelAndView showHintAction(@PathVariable("userId") String userId,
-			HttpServletRequest request) {
+	@RequestMapping(value = "/show-hint.action", method = RequestMethod.GET)
+	public ModelAndView showHintAction(
+			HttpServletRequest request, @RequestParam("userId") String userId) {
 
 		log.info("in showHintAction.");
 		log.info("userid:" + userId);
@@ -145,6 +145,8 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 		} else {
 			request.setAttribute("reqPositiveMessage", "Hint: '" + hint + "'");
+			model.addObject("userName", userId.trim());
+
 		}
 
 		return model;

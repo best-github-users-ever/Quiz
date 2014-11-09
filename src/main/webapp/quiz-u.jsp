@@ -42,7 +42,7 @@
 
 			<p id="questionId" hidden="true"></p>
 			<p id="question-text"></p>
-
+          <div id="allOptions" hidden="true">
 			<p id="answer-label">Possible Answers</p>
 			<br> <input type="image" id="option-a-button"
                 class="option-button" src="resources/images/quizsmall.png" alt="A"
@@ -64,7 +64,7 @@
                 class="option-button" src="resources/images/quizsmall.png" alt="D"
 				onclick="makeSelection(${game.gameId}, '${sessionScope.user.userId}', 3);">
 			<div id="option-d" class="options">option D text</div>
-
+          </div>
 		</div>
 	</div>
 

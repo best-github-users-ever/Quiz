@@ -1,3 +1,7 @@
+$(document).ready(function(){
+	init();
+})
+
 var totalNumberOfQuestions = 10;
 var stompClient = null;
 var myUserId = null;
@@ -6,11 +10,20 @@ var currentQuestionIdx = 0;
 var guessedMessage; // used for temp storage of message when other user guesses
 var remainingTime;
 var greenTimBox = true;
+var screenMsg;
+var errorMsg;
+var opponentSelectList;
+var updateMsg;
+var chatMsgField;
+var allOptions;
 
-var timer = null;
-var incrementTime = 80;
-var startingTime = 10000;
-var currentTime = 10000; // 10 seconds (in milliseconds
+var answerTimer = null;
+var questionDisplayTimer = null;
+var incrementTime;
+var questionDisplayIncrementTime;
+var startingTime;
+var currentTime; 
+var currentQuestionDisplayTime; 
 
 var progressBar1 = null;
 var progressBar2 = null;
@@ -110,9 +123,9 @@ function sendPressed(gameId) {
 
 	$("#chatbox").val("");
 
-	addTextAfterNode(chatMessage, $("#messages"));
+	addTextAfterNode(chatMessage, chatMsgField);
 
-	$("#messages").scrollTop($("#messages")[0].scrollHeight);
+	chatMsgField.scrollTop(chatMsgField[0].scrollHeight);
 
 }
 
@@ -123,7 +136,7 @@ function formatSeconds(milliseconds) {
 
 function stopGetRemaining() {
 	var elapsed = startingTime - currentTime;
-	timer.stop();
+	answerTimer.stop();
 
 	// return time took to make guess
 	return elapsed;
@@ -142,23 +155,46 @@ function updateTimer() {
 
 	}
 
-	// If timer is complete, trigger alert
+	// If answerTimer is complete, trigger alert
 	if (currentTime <= 0) {
 		// Example2.Timer.stop();
-		// Setup the timer
+		// Setup the answerTimer
 		stopGetRemaining();
 		setDisableOfAnswerButtons(true, true);
 		// $("#submitButton").prop("disabled", true);
 
 	} else {
 
-		// Increment timer position
+		// Increment answerTimer position
 		currentTime -= incrementTime;
 		if (currentTime < 0) {
 			currentTime = 0;
 		}
 	}
 }
+
+function updateQuestionDisplayTimer() {
+
+	// If answerTimer is complete, trigger alert
+	if (currentQuestionDisplayTime <= 0) {
+		// Setup the answerTimer
+		questionDisplayTimer.stop();
+		allOptions.show();
+		setDisableOfAnswerButtons(false, true);
+
+		remainingTime.show();
+		answerTimer.play(true);
+
+	} else {
+
+		// Increment answerTimer position
+		currentQuestionDisplayTime -= questionDisplayIncrementTime;
+		if (currentQuestionDisplayTime < 0) {
+			currentQuestionDisplayTime = 0;
+		}
+	}
+}
+
 
 var create_progressbar = function(id) {
 
@@ -452,30 +488,20 @@ var setDisableOfAnswerButtons = function(disabled, force) {
 }
 
 function processMessage(message) {
-	var screenMsg = $('#confirmationMessage');
-	var errorMsg = $('#errorMessage');
-	var opponentSelectList = $("#opponentSelectList");
-	var updateMsg = $('#updateMessage');
-	var chatMsgField = $("#messages");
-
-	remainingTime = $("#countdown");
-
 	if (message.messageName === 'gameFound') {
 		screenMsg.text(message.result);
 
 	} else if (message.messageName === 'gameReady') {
-		$('#positivemessage').text("");
+		positiveMsg.text("");
 		addTextBeforeNode(message.result, updateMsg);
 		setReadyButtonVisiblity(true);
 
 	} else if (message.messageName === 'delayBeforeStart') {
 
-		timer = $.timer(updateTimer, incrementTime, false);
-
-		$('#positivemessage').text("");
+		positiveMsg.text("");
+		remainingTime.hide();
 		totalNumberOfQuestions = message.totalNumberOfQuestions;
 
-		// create_progressbars();
 		// init data for mapping between user and the progress bar index
 		userProgressMap.myMapAssigned = false;
 		userProgressMap.count = 0;
@@ -563,7 +589,7 @@ function processMessage(message) {
 
 		setReadyButtonVisiblity(false);
 		screenMsg.text("");
-		$('#positivemessage').text("");
+		positiveMsg.text("");
 
 		var counter = parseInt(message.delayTime, 10);
 
@@ -579,7 +605,7 @@ function processMessage(message) {
 
 	} else if (message.messageName === 'continueWaiting') {
 		errorMsg.text("");
-		$('#positivemessage').text("");
+		positiveMsg.text("");
 		setReadyButtonVisiblity(false);
 		addTextBeforeNode(message.result, updateMsg);
 
@@ -587,8 +613,9 @@ function processMessage(message) {
 		guessedMessage = "Question " + currentQuestionIdx + ": "
 				+ message.result;
 		setReadyButtonVisiblity(false);
-		addTextBeforeNode(guessedMessage, updateMsg);
+		addTextAfterNode(guessedMessage, updateMsg);
 
+		updateMsg.scrollTop(updateMsg[0].scrollHeight);
 	} else if (message.messageName === 'question') {
 		setReadyButtonVisiblity(false);
 
@@ -597,11 +624,12 @@ function processMessage(message) {
 		$("#countdown").css("color", "green");
 		$("#countdown").css("border", "1px solid green");
 
-		$('#positivemessage').text("");
+		positiveMsg.text("");
 		screenMsg.text("");
 		errorMsg.text("");
 		$('input:radio[name="option"]').removeAttr('checked');
 		$('#question-text').text(message.question.question);
+		allOptions.hide();
 		$('#option-a').text(message.question.option1);
 		$('#option-b').text(message.question.option2);
 		$('#option-c').text(message.question.option3);
@@ -611,13 +639,21 @@ function processMessage(message) {
 		$('#questionNumber').text(
 				"Question # " + message.questionNumber + " of "
 						+ totalNumberOfQuestions);
+		currentQuestionIdx = message.questionNumber;
+		currentTime = startingTime;
+		currentQuestionDisplayTime = startingQuestionDisplayTime;
+
+		//give 2 seconds to display the question only
+		questionDisplayTimer.play(true);
+
+		/*
 		setDisableOfAnswerButtons(false, true);
 
 		// $("#submitButton").prop("disabled", false);
-		currentTime = startingTime;
-		timer.play(true);
+		//currentTime = startingTime;
+		answerTimer.play(true);
 		remainingTime.show();
-		currentQuestionIdx = message.questionNumber;
+*/
 
 	} else if ((message.messageName === 'questionResults')
 			|| (message.messageName === 'gameResults')) {
@@ -721,7 +757,9 @@ function processMessage(message) {
 		if (message.messageName === 'gameResults') {
 			var iWon = false;
 
-			addTextBeforeNode("Game Over!", updateMsg);
+			addTextAfterNode("Game Over!", updateMsg);
+			updateMsg.scrollTop(updateMsg[0].scrollHeight);
+
 
 			var messageToPrint = "The ";
 			var winners;
@@ -749,7 +787,7 @@ function processMessage(message) {
 			}
 
 			if (iWon === true) {
-				$('#positivemessage').text(messageToPrint);
+				positiveMsg.text(messageToPrint);
 			} else {
 				errorMsg.text(messageToPrint);
 			}
@@ -780,7 +818,7 @@ function processMessage(message) {
 
 		addTextAfterNode(chatMessage, chatMsgField);
 
-		$("#messages").scrollTop($("#messages")[0].scrollHeight);
+		chatMsgField.scrollTop(chatMsgField[0].scrollHeight);
 
 	}
 }
@@ -798,5 +836,28 @@ function connect(gameId, userId) {
 			processMessage(JSON.parse(message.body));
 		});
 	});
+
+}
+
+var init = function() {
+	screenMsg = $('#confirmationMessage');
+	errorMsg = $('#errorMessage');
+	positiveMsg = $('#positivemessage');
+	opponentSelectList = $("#opponentSelectList");
+	updateMsg = $('#updateMessage');
+	chatMsgField = $("#messages");
+
+	remainingTime = $("#countdown");
+	allOptions = $("#allOptions");
+	
+	incrementTime = 80;
+	questionDisplayIncrementTime = 2000;
+	startingTime = 10000;
+	currentTime = 10000; // 10 seconds (in milliseconds)
+	startingQuestionDisplayTime = 1500;
+	currentQuestionDisplayTime = 1500;
+	
+	answerTimer = $.timer(updateTimer, incrementTime, false);
+	questionDisplayTimer = $.timer(updateQuestionDisplayTimer, questionDisplayIncrementTime, false);
 
 }
