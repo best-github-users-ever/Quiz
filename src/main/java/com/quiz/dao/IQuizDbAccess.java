@@ -1,5 +1,7 @@
 package com.quiz.dao;
 
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +63,10 @@ public interface IQuizDbAccess {
 	Game setRemainingPlayersNoAnswer(int gameId);
 	
 	String showHint(String userId);
+	
+	void updateFlatFileWithQuestion(Question question, String filePath);
+
+	void updateFlatFileWithTopic(String topic, String filePath);
 
 	Game updateQuestionInfo(int gameId, int questionId);
 }

@@ -182,7 +182,6 @@ function updateQuestionDisplayTimer() {
 		allOptions.show();
 		setDisableOfAnswerButtons(false, true);
 
-		remainingTime.show();
 		answerTimer.play(true);
 
 	} else {
@@ -641,19 +640,13 @@ function processMessage(message) {
 						+ totalNumberOfQuestions);
 		currentQuestionIdx = message.questionNumber;
 		currentTime = startingTime;
+		
+		remainingTime.html("Time: " + formatSeconds(currentTime));
+		remainingTime.show();
 		currentQuestionDisplayTime = startingQuestionDisplayTime;
 
 		//give 2 seconds to display the question only
 		questionDisplayTimer.play(true);
-
-		/*
-		setDisableOfAnswerButtons(false, true);
-
-		// $("#submitButton").prop("disabled", false);
-		//currentTime = startingTime;
-		answerTimer.play(true);
-		remainingTime.show();
-*/
 
 	} else if ((message.messageName === 'questionResults')
 			|| (message.messageName === 'gameResults')) {

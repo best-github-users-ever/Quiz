@@ -449,6 +449,9 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 			request.setAttribute("reqPositiveMessage",
 					"Topic '" + topic.getName() + "' added with topic ID of " + newTopic + ".");
+			
+		    String path = session.getServletContext().getRealPath("/WEB-INF/db_additions.sql");
+			dao.updateFlatFileWithTopic(topic.getName(), path);
 		}
 
 		return model;
@@ -456,7 +459,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 	@RequestMapping(value = "/new-question.action", method = RequestMethod.POST)
 	public ModelAndView newTopicAction(@ModelAttribute("question") Question question,
-			HttpServletRequest request) {
+			HttpServletRequest request, HttpSession session) {
 
 		ModelAndView model = new ModelAndView("admin");
 
@@ -475,6 +478,9 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 			request.setAttribute("reqPositiveMessage",
 					"Question '" + question.getQuestion() + "' added with Question ID of " + newQuestion + ".");
+			
+		    String path = session.getServletContext().getRealPath("/WEB-INF/db_additions.sql");
+			dao.updateFlatFileWithQuestion(question, path);
 		}
 
 		return model;

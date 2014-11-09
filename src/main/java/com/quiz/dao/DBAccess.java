@@ -1,5 +1,9 @@
 package com.quiz.dao;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,6 +16,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.quiz.dbgenerator.GenerateDB;
 import com.quiz.model.Game;
 import com.quiz.model.Question;
 import com.quiz.model.Topic;
@@ -1177,4 +1182,60 @@ public class DBAccess implements IQuizDbAccess {
 		}
 	}
 
+	public static String formatForSql(String incomingString) {
+		String stringForDB;
+
+		// converts quotes into sql literals \' and \"
+
+		if (incomingString == null) {
+			return "";
+		}
+
+		stringForDB = incomingString.replaceAll("\'", "\\\\'");
+		stringForDB = stringForDB.replaceAll("\"", "\\\\\"");
+
+		return stringForDB;
+	}
+
+	public void updateFlatFileWithQuestion(Question question, String filePath) {
+		FileOutputStream file = null;
+		try {
+			file = new FileOutputStream(filePath, true);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			log.info("File not found: " + filePath);
+		}
+		
+		PrintWriter writer;
+
+		writer = new PrintWriter(file);
+		writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', " + question.getTopicId() 
+				+ ", '" + formatForSql(question.getQuestion()) + "', '" + formatForSql(question.getOption1()) + "', '" 
+				+ formatForSql(question.getOption2())+ "', '" + formatForSql(question.getOption3())+ "', '" 
+				+ formatForSql(question.getOption4()) + "',"+ question.getAnswerIdx() + ");");
+
+		writer.flush();
+		writer.close();
+
+	}
+
+	public void updateFlatFileWithTopic(String topic, String filePath) {
+		FileOutputStream file = null;
+		try {
+			file = new FileOutputStream(filePath, true);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			log.info("File not found: " + filePath);
+		}
+		
+		PrintWriter writer;
+
+		writer = new PrintWriter(file);
+		writer.println(" INSERT INTO TOPICS VALUES ('DEFAULT', '" + formatForSql(topic)
+				+ "');");
+
+		writer.flush();
+		writer.close();
+
+	}
 }
