@@ -468,6 +468,9 @@ public class QuizController implements Serializable, BeanFactoryAware {
 			dao.updateFlatFileWithTopic(topic.getName(), path);
 		}
 
+		request.setAttribute("adminTopicsList", dao.getTopics());
+		request.setAttribute("adminQuestionsList", dao.getQuestions());
+		
 		return model;
 	}
 
@@ -500,6 +503,9 @@ public class QuizController implements Serializable, BeanFactoryAware {
 					"/WEB-INF/db_additions.sql");
 			dao.updateFlatFileWithQuestion(question, path);
 		}
+
+		request.setAttribute("adminTopicsList", dao.getTopics());
+		request.setAttribute("adminQuestionsList", dao.getQuestions());
 
 		return model;
 	}
