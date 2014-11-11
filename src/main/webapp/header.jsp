@@ -8,22 +8,21 @@
        <head>
       <meta charset="utf-8">
       <title>Quiz</title>
-      <link rel="icon" type="image/png" href="resources/images/quizsmall.png">
-      <link type="text/css" rel="stylesheet" href="resources/quiz.css"
+      <link rel="icon" type="image/png" href="<spring:url value='/resources/images/quizsmall.png' htmlEscape='true'/>">
+      <link type="text/css" rel="stylesheet" href="<spring:url value='/resources/quiz.css' htmlEscape='true'/>"
      media="screen and (min-width: 481px)">
-     <link type="text/css" rel="stylesheet" href="resources/quiz.css"
+     <link type="text/css" rel="stylesheet" href="<spring:url value='/resources/quiz.css' htmlEscape='true'/>"
      media="screen and (max-width: 480px)">
-      <link type="text/css" rel="stylesheet" href="resources/quiz.css" media="print">
-      <script src="resources/js/jquery-1.11.1.min.js"></script>
-      <script src="resources/js/jquery-ui.min.js"></script>
-      <script src="resources/js/sockjs-0.3.4.min.js"></script>
-      <script src="resources/js/stomp.min.js"></script>
-      <script src="resources/js/progressbar.js"></script>
-      <script src="resources/js/jquery.timer.js"></script>
-      <script src="resources/js/websocketJoin.js"></script>
- 	  
+      <link type="text/css" rel="stylesheet" href="<spring:url value='/resources/quiz.css' htmlEscape='true'/>" media="print">
+      <script src="<spring:url value='/resources/js/jquery-1.11.1.min.js' htmlEscape='true'/>"></script>
+      <script src="<spring:url value='/resources/js/jquery-ui.min.js' htmlEscape='true'/>"></script>
+      <script src="<spring:url value='/resources/js/sockjs-0.3.4.min.js' htmlEscape='true'/>"></script>
+      <script src="<spring:url value='/resources/js/stomp.min.js' htmlEscape='true'/>"></script>
+      <script src="<spring:url value='/resources/js/progressbar.js' htmlEscape='true'/>"></script>
+      <script src="<spring:url value='/resources/js/jquery.timer.js' htmlEscape='true'/>"></script>
+      <script src="<spring:url value='/resources/js/websocketJoin.js' htmlEscape='true'/>"></script>
       </head>
       <body>
 	<div id="header">
-      <h1><img src="resources/images/quizsmall.png" alt="Quiz Icon" height="60" width="60"></h1><br>
+      <h1><img src="<spring:url value='/resources/images/quizsmall.png' htmlEscape='true'/>" alt="Quiz Icon" height="60" width="60"></h1><br>
     </div>

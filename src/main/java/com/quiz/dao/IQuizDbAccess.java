@@ -23,6 +23,10 @@ public interface IQuizDbAccess {
 	boolean allPlayersFinishedQuestion(int gameId);
 
 	boolean allPlayersReady(int gameId);
+	
+	boolean deleteQuestion(int QuestionId);
+	
+	boolean deleteTopic(int TopicId);
 
 	Game findGameForNewPlayer(int topicId, int totalPlayers, String username);
 
@@ -33,6 +37,8 @@ public interface IQuizDbAccess {
 	Question getQuestion(int topicId);
 
 	Question getQuestionFromQuestionId(int questionId);
+	
+	List<Question> getQuestions();
 	
 	Question getRandomQuestion(int topicId);
 

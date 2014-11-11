@@ -547,3 +547,11 @@ textarea {
 	margin-bottom:15px;
 	padding:15px;
 }
+
+#editDeleteTopic {
+	width: 35%;
+}
+
+#editDeleteQuestion {
+	width: 65%;
+}

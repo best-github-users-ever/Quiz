@@ -380,6 +380,36 @@ public class DBAccess implements IQuizDbAccess {
 			return false;
 		}
 	}
+	
+	public boolean deleteQuestion(int questionId){
+		final String DELETE_QUESTION = "DELETE FROM questions WHERE questionid = ?";
+
+		try {
+			jdbcTemplate.update(DELETE_QUESTION,
+			        new Object[] { questionId});
+		   
+		   return true;
+		} 
+		catch (Exception e) {
+			return false;
+		}
+	
+	}
+
+	public boolean deleteTopic(int topicId){
+		final String DELETE_TOPIC = "DELETE FROM topics WHERE topicid = ?";
+
+		try {
+			jdbcTemplate.update(DELETE_TOPIC,
+			        new Object[] { topicId});
+		   
+		   return true;
+		} 
+		catch (Exception e) {
+			return false;
+		}
+	
+	}
 
 	@Override
 	public Game findGameForNewPlayer(int topicId, int totalPlayers,
@@ -577,8 +607,24 @@ public class DBAccess implements IQuizDbAccess {
 	}
 
 	@Override
+	public List<Question> getQuestions() {
+		final String GET_QUESTIONS = "SELECT * FROM questions ORDER BY questionid";
+		List<Question> questions = new ArrayList<Question>();
+
+		List<Object> objects = jdbcTemplate.query(GET_QUESTIONS, new Object[] {},
+				new QuestionMapper());
+
+		for (Object myObject : objects) {
+			questions.add((Question) myObject);
+		}
+
+		return questions;
+	}
+
+
+	@Override
 	public List<Topic> getTopics() {
-		final String GET_TOPICS = "SELECT * FROM topics";
+		final String GET_TOPICS = "SELECT * FROM topics ORDER BY topicid";
 		List<Topic> topics = new ArrayList<Topic>();
 
 		List<Object> objects = jdbcTemplate.query(GET_TOPICS, new Object[] {},
