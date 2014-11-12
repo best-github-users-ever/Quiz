@@ -23,10 +23,6 @@
 	<br>
 	<c:if test="${not empty sessionScope.user}">
 		<div class="userstatus">
-			<b>User ${sessionScope.user.userId} is logged in.</b>
-			<c:url var="logoutURL" value="/logout-u.action">
-			</c:url>
-			(Click <a href="${editUserURL}"> here</a> to change user settings) <br> <br>
             <b>User ${sessionScope.user.userId} is logged in.</b>
             <c:url var="logoutURL" value="/logout-u.action">
             </c:url>
