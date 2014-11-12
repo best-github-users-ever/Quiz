@@ -1,15 +1,10 @@
 package com.quiz.socket.controller;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.servlet.http.HttpSession;
-
 import org.apache.log4j.Logger;
-import org.apache.struts2.interceptor.RequestAware;
-import org.apache.struts2.interceptor.SessionAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -17,11 +12,9 @@ import org.springframework.stereotype.Controller;
 
 import com.quiz.dao.DBAccess;
 import com.quiz.dao.IQuizDbAccess;
-import com.quiz.listener.HttpSessionCollector;
 import com.quiz.model.Game;
 import com.quiz.model.PlayerList;
 import com.quiz.model.Question;
-import com.quiz.model.User;
 import com.quiz.socket.gamelogic.AnswerInput;
 import com.quiz.socket.gamelogic.ChatInput;
 import com.quiz.socket.gamelogic.ChatResult;

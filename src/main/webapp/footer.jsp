@@ -26,9 +26,16 @@
 			<b>User ${sessionScope.user.userId} is logged in.</b>
 			<c:url var="logoutURL" value="/logout-u.action">
 			</c:url>
-			(Click <a href="${logoutURL}"> here</a> to logout) <br> <br>
+			(Click <a href="${editUserURL}"> here</a> to change user settings) <br> <br>
+            <b>User ${sessionScope.user.userId} is logged in.</b>
+            <c:url var="logoutURL" value="/logout-u.action">
+            </c:url>
+            (Click <a href="${logoutURL}"> here</a> to logout) <br> <br>
+            <c:url var="editUserURL" value="/edit-user-req-u.action">
+            </c:url>
+            (Click <a href="${editUserURL}"> here</a> to edit user settings) <br> <br>
 	        <c:if test="${sessionScope.user.userId == 'admin'}">
-			<c:url var="performAdmin" value="/admin-u.action">
+			<c:url var="performAdmin" value="/admin.action">
 			</c:url>
 			(Click <a href="${performAdmin}"> here</a> to perform Admin activities) <br> <br>
 	        </c:if>

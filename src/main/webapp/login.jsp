@@ -21,11 +21,7 @@
 			<td><b>Password:</b></td>
 			<td><input type='password' name='password' size='8'></td>
 		</tr>
-		<tr>
-			<td>&nbsp</td>
-			<td>&nbsp</td>
-		</tr>
-		<tr>
+ 		<tr>
 			<td>&nbsp</td>
 			<td>&nbsp</td>
 		</tr>

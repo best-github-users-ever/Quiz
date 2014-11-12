@@ -1,9 +1,15 @@
 package com.quiz.socket.gamelogic;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ChatInput {
-    private String msgType;
+public class ChatInput implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -960845571820192242L;
+	
+	private String msgType;
     private int gameId;
     private String userId;
     private String jsessionId;

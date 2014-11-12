@@ -1,8 +1,13 @@
 package com.quiz.socket.gamelogic;
 
-import com.quiz.model.PlayerList;
+import java.io.Serializable;
 
-public class ChatResult {
+public class ChatResult implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2819242865847878953L;
+	
 	private String messageName;
 	private String senderId;
     private String chatMessage;

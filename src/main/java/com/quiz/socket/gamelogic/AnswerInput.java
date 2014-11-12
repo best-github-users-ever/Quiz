@@ -1,6 +1,14 @@
 package com.quiz.socket.gamelogic;
-public class AnswerInput {
-    private int gameId;
+
+import java.io.Serializable;
+
+public class AnswerInput implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6369539465766173337L;
+	
+	private int gameId;
     private String userId;
     private int questionId;
     private int guess;

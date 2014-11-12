@@ -1,8 +1,14 @@
 package com.quiz.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class PlayerList {
+public class PlayerList implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6239157406212329743L;
+	
 	int numberOfPlayers;
 	private String player1;
 	private String player2;

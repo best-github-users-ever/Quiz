@@ -9,8 +9,6 @@ import javax.servlet.http.HttpSessionListener;
 
 import org.apache.log4j.Logger;
 
-import com.quiz.quizcontroller.QuizController;
-
 public class HttpSessionCollector implements HttpSessionListener {
     private static final Map<String, HttpSession> sessions = new HashMap<String, HttpSession>();
 	private static Logger log = Logger.getLogger(HttpSessionCollector.class);

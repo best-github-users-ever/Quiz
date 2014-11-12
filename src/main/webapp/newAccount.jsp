@@ -10,26 +10,67 @@
         
         <table class="newaccount" >
             <tr> 
-                <td> User Name: </td> <td><input type='text' name='userId' size='20' maxsize='20'></td> 
+                <td> User Name: </td> <td><input id="userId" type='text' name='userId' size='20' maxlength='20'></td> 
             </tr>
             <tr> 
-                <td> Password: </td><td><input type='password' name='password' size='10' maxsize='10'></td>
+                <td> Password: </td><td><input type='password' name='password' size='10' maxlength='10'></td>
             </tr>
             <tr> 
-                <td> Confirm Password: </td><td><input type='password' name='confirmPpassword' size='10'  maxsize='10'></td>
+                <td> Confirm Password: </td><td><input type='password' id='confirmPassword' name='confirmPpassword' size='10'  maxlength='10'></td>
             </tr>
             <tr> 
-                <td> Password Hint: </td><td><input type='text' name='hint'  size='20' maxsize='30'></td>
+                <td> Password Hint: </td><td><input type='text' id="hint" name='hint'  size='20' maxlength='30'></td>
             </tr>
             <tr> 
-                <td> Email adddress: </td> <td><input type='text' name='email' size='30' maxsize='40'><br></td> 
+                <td> Email adddress: </td> <td><input type='text' id="emailAddress" name='emailAddress' size='30' maxlength='40'><br></td> 
             </tr>
         </table>
         <br>
-        <input class="centeredButton" type='submit' value='create account'>
+        <input id="newAccountButton" class="centeredButton" type='submit' value='create account'>
         </sf:form>
         
         <br><br>
         <c:import url="footer.jsp"/>
 </body>
 </html>
+<script>
+$("#newAccountButton").click(function(event){
+	   if ($.trim($("#userId").val()) == "" ){
+           alert("Username cannot be empty.");
+           event.preventDefault();
+           $("#userId").focus();
+		   return;
+	   }
+	   
+       if ($.trim($("#password").val()) == "" ){
+           alert("Password cannot be empty.");
+           event.preventDefault();
+           $("#").focus();
+           return;
+       }
+       
+	   if ($("#password").val() !== $("#confirmPassword").val()){
+	        alert("Passwords must match.");
+	        event.preventDefault();
+	        $("#").focus();
+	        return;
+	   }
+	   
+       if ($.trim($("#hint").val()) == "" ){
+           alert("Hint cannot be empty.");
+           event.preventDefault();
+           $("#password").focus();
+           return;
+       }
+       
+       if ($.trim($("#emailAddress").val()) !== "" ){
+    	   var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+    	   if( !emailReg.test($.trim($("#emailAddress").val())) ) {
+               alert("Email Address entered is invalid.");
+               event.preventDefault();
+               $("#emailAddress").focus();
+               return;
+    		  }
+       }
+});
+</script>

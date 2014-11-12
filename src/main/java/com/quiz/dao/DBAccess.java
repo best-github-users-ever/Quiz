@@ -3,24 +3,14 @@ package com.quiz.dao;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.quiz.dbgenerator.GenerateDB;
-import com.quiz.model.Game;
-import com.quiz.model.Question;
-import com.quiz.model.Topic;
-import com.quiz.model.User;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -28,11 +18,14 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+
+import com.quiz.model.Game;
+import com.quiz.model.Question;
+import com.quiz.model.Topic;
+import com.quiz.model.User;
 
 public class DBAccess implements IQuizDbAccess {
 	private static final class GameMapper implements RowMapper<Object> {
@@ -380,35 +373,31 @@ public class DBAccess implements IQuizDbAccess {
 			return false;
 		}
 	}
-	
-	public boolean deleteQuestion(int questionId){
+
+	public boolean deleteQuestion(int questionId) {
 		final String DELETE_QUESTION = "DELETE FROM questions WHERE questionid = ?";
 
 		try {
-			jdbcTemplate.update(DELETE_QUESTION,
-			        new Object[] { questionId});
-		   
-		   return true;
-		} 
-		catch (Exception e) {
+			jdbcTemplate.update(DELETE_QUESTION, new Object[] { questionId });
+
+			return true;
+		} catch (Exception e) {
 			return false;
 		}
-	
+
 	}
 
-	public boolean deleteTopic(int topicId){
+	public boolean deleteTopic(int topicId) {
 		final String DELETE_TOPIC = "DELETE FROM topics WHERE topicid = ?";
 
 		try {
-			jdbcTemplate.update(DELETE_TOPIC,
-			        new Object[] { topicId});
-		   
-		   return true;
-		} 
-		catch (Exception e) {
+			jdbcTemplate.update(DELETE_TOPIC, new Object[] { topicId });
+
+			return true;
+		} catch (Exception e) {
 			return false;
 		}
-	
+
 	}
 
 	@Override
@@ -611,8 +600,8 @@ public class DBAccess implements IQuizDbAccess {
 		final String GET_QUESTIONS = "SELECT * FROM questions ORDER BY questionid";
 		List<Question> questions = new ArrayList<Question>();
 
-		List<Object> objects = jdbcTemplate.query(GET_QUESTIONS, new Object[] {},
-				new QuestionMapper());
+		List<Object> objects = jdbcTemplate.query(GET_QUESTIONS,
+				new Object[] {}, new QuestionMapper());
 
 		for (Object myObject : objects) {
 			questions.add((Question) myObject);
@@ -621,6 +610,23 @@ public class DBAccess implements IQuizDbAccess {
 		return questions;
 	}
 
+	@Override
+	public Topic getTopicFromTopicId(int topicId) {
+		final String GET_TOPIC = "SELECT * FROM topics WHERE topicid = ?";
+
+		try {
+			Topic topic = (Topic) jdbcTemplate.queryForObject(GET_TOPIC,
+					new Object[] { topicId }, new TopicMapper());
+
+			return topic;
+
+		} catch (Exception e) {
+			// topic not found
+			log.info("exception is :" + e.getMessage());
+			return null;
+		}
+
+	}
 
 	@Override
 	public List<Topic> getTopics() {
@@ -1118,6 +1124,65 @@ public class DBAccess implements IQuizDbAccess {
 	}
 
 	@Override
+	public Question setQuestion(Question question) {
+		Question localQuestion = getQuestionFromQuestionId(question
+				.getQuestionId());
+log.info("in set question:" + question);
+		if (localQuestion == null) {
+			return localQuestion;
+		} else {
+
+			String updateStatement = " UPDATE questions SET QUESTION = ?, TOPICID = ?, "
+					+ "OPTION1 = ?, OPTION2 = ?, OPTION3 = ?, OPTION4 = ?, ANSWERIDX = ?  WHERE questionId = ?";
+
+			try {
+				jdbcTemplate.update(
+						updateStatement,
+						new Object[] { question.getQuestion(),
+								question.getTopicId(), question.getOption1(),
+								question.getOption2(), question.getOption3(),
+								question.getOption4(), question.getAnswerIdx(),
+								question.getQuestionId() });
+
+				return getQuestionFromQuestionId(question.getQuestionId());
+				
+			} catch (Exception e) {
+				return null;
+			}
+		}
+	}
+
+	@Override
+	public Topic setTopic(Topic topic) {
+		Topic localTopic = getTopicFromTopicId(topic.getTopicId());
+
+		if (localTopic == null) {
+			return localTopic;
+		} else {
+			String updateStatement = " UPDATE topics SET NAME = ?  WHERE topicId = ?";
+
+			jdbcTemplate.update(updateStatement,
+					new Object[] { topic.getName(), topic.getTopicId() });
+
+			return topic;
+		}
+	}
+
+	@Override
+	public User setUser(User user) {
+		User localUser;
+
+		String updateStatement = " UPDATE users SET PASSWORD = ?, HINT = ?, EMAIL = ? WHERE userId = ?";
+
+		jdbcTemplate.update(updateStatement, new Object[] { user.getPassword(),
+				user.getHint(), user.getEmailAddress(), user.getUserId() });
+
+		localUser = getUser(user);
+
+		return localUser;
+	}
+
+	@Override
 	public String showHint(String userId) {
 		final String GET_HINT = "SELECT * FROM users WHERE userid = ?";
 		User user = null;
@@ -1251,14 +1316,18 @@ public class DBAccess implements IQuizDbAccess {
 			// TODO Auto-generated catch block
 			log.info("File not found: " + filePath);
 		}
-		
+
 		PrintWriter writer;
 
 		writer = new PrintWriter(file);
-		writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', " + question.getTopicId() 
-				+ ", '" + formatForSql(question.getQuestion()) + "', '" + formatForSql(question.getOption1()) + "', '" 
-				+ formatForSql(question.getOption2())+ "', '" + formatForSql(question.getOption3())+ "', '" 
-				+ formatForSql(question.getOption4()) + "',"+ question.getAnswerIdx() + ");");
+		writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', "
+				+ question.getTopicId() + ", '"
+				+ formatForSql(question.getQuestion()) + "', '"
+				+ formatForSql(question.getOption1()) + "', '"
+				+ formatForSql(question.getOption2()) + "', '"
+				+ formatForSql(question.getOption3()) + "', '"
+				+ formatForSql(question.getOption4()) + "',"
+				+ question.getAnswerIdx() + ");");
 
 		writer.flush();
 		writer.close();
@@ -1273,12 +1342,12 @@ public class DBAccess implements IQuizDbAccess {
 			// TODO Auto-generated catch block
 			log.info("File not found: " + filePath);
 		}
-		
+
 		PrintWriter writer;
 
 		writer = new PrintWriter(file);
-		writer.println(" INSERT INTO TOPICS VALUES ('DEFAULT', '" + formatForSql(topic)
-				+ "');");
+		writer.println(" INSERT INTO TOPICS VALUES ('DEFAULT', '"
+				+ formatForSql(topic) + "');");
 
 		writer.flush();
 		writer.close();

@@ -1,8 +1,5 @@
 package com.quiz.dao;
 
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.quiz.model.Game;
@@ -44,6 +41,8 @@ public interface IQuizDbAccess {
 
 	Question getRandomQuestionWithExclusions(int topicId, int gameId);
 	
+	Topic getTopicFromTopicId(int TopicId);
+	
 	List<Topic> getTopics();
 
 	User getUser(User user);
@@ -66,7 +65,13 @@ public interface IQuizDbAccess {
 	
 	Game setPlayerFinishedQuestion(String username, int gameId);
 	
+	Question setQuestion(Question question);
+	
 	Game setRemainingPlayersNoAnswer(int gameId);
+	
+	Topic setTopic(Topic topic);
+	
+	User setUser (User user);
 	
 	String showHint(String userId);
 	

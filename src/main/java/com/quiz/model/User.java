@@ -2,13 +2,9 @@ package com.quiz.model;
 
 import java.io.Serializable;
 
-import org.apache.log4j.Logger;
-
 public class User implements Serializable {
 	
 	private static final long serialVersionUID = 2274657357128107147L;
-
-	private static Logger log = Logger.getLogger(User.class);
 
 	private  String userId = null;
 	private  String password = null;

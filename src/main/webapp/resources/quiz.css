@@ -555,3 +555,15 @@ textarea {
 #editDeleteQuestion {
 	width: 65%;
 }
+
+#editQuestion {
+    width: 85%;
+}
+
+#editTopic {
+    width: 55%;
+}
+
+#editUser {
+    width: 25%;
+}

@@ -1,8 +1,15 @@
 package com.quiz.socket.gamelogic;
 
+import java.io.Serializable;
+
 import com.quiz.model.PlayerList;
 
-public class GameStartResult {
+public class GameStartResult implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6495467282465626615L;
+	
 	private PlayerList playerList;
 	private String messageName;
 	private int totalNumberOfQuestions;

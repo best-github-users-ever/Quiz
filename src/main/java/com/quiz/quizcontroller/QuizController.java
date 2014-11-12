@@ -1,24 +1,18 @@
 package com.quiz.quizcontroller;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,11 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.opensymphony.xwork2.ActionContext;
 import com.quiz.dao.DBAccess;
 import com.quiz.dao.IQuizDbAccess;
 import com.quiz.model.Game;
@@ -43,7 +34,6 @@ import com.quiz.model.Question;
 import com.quiz.model.Topic;
 import com.quiz.model.User;
 import com.quiz.socket.controller.JoinGameWebSocketController;
-import com.quiz.socket.gamelogic.GameResult;
 
 @Controller
 public class QuizController implements Serializable, BeanFactoryAware {
@@ -78,19 +68,6 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		return model;
 	}
 
-	@RequestMapping("/admin-u.action")
-	public ModelAndView adminAction(HttpServletRequest request) {
-
-		IQuizDbAccess dao = DBAccess.getDbAccess();
-
-		ModelAndView model = new ModelAndView("admin");
-		
-		request.setAttribute("adminTopicsList", dao.getTopics());
-		request.setAttribute("adminQuestionsList", dao.getQuestions());
-
-		return model;
-	}
-
 	@RequestMapping("/logout-u.action")
 	public ModelAndView logoutAction(HttpSession session) {
 
@@ -111,9 +88,16 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 	@RequestMapping(value = "/new-account.action", method = RequestMethod.POST)
 	public ModelAndView newAccountAction(@ModelAttribute("user") User user,
+			@RequestParam("confirmPassword") String confirmPassword,
 			HttpServletRequest request) {
 
 		ModelAndView model = new ModelAndView("login");
+
+		if (!user.getPassword().equals(confirmPassword)) {
+			request.setAttribute("reqErrorMessage",
+					"The passwords must match. Please try again.");
+			return model;
+		}
 
 		IQuizDbAccess dao = DBAccess.getDbAccess();
 
@@ -163,7 +147,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 	public ModelAndView loginAction(@ModelAttribute("user") User user,
 			HttpServletRequest request, HttpSession session) {
 
-		log.info("in LoginAction::in execute.");
+		log.info("in LoginAction");
 		log.info(user.toString());
 
 		ModelAndView model = new ModelAndView();
@@ -177,8 +161,20 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 		if (localUser != null) {
 
-			model.setViewName("topics-u");
-			session.setAttribute("user", localUser);
+			Boolean editUserRequest = (Boolean) session
+					.getAttribute("editUserRequest");
+
+			if ((editUserRequest != null) && (editUserRequest == true)) {
+
+				session.removeAttribute("editUserRequest");
+
+				model.setViewName("editUser");
+				session.setAttribute("user", localUser);
+
+			} else {
+				model.setViewName("topics-u");
+				session.setAttribute("user", localUser);
+			}
 
 		} else {
 			model.setViewName("login");
@@ -312,123 +308,6 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 	}
 
-	@RequestMapping(value = "/ready-u.action", method = RequestMethod.POST)
-	public ModelAndView startQuizAction(HttpServletRequest request,
-			HttpSession session) {
-
-		ModelAndView model = new ModelAndView();
-
-		log.info("in ready action");
-		IQuizDbAccess dao = DBAccess.getDbAccess();
-
-		Question question = null;
-
-		String user = ((User) session.getAttribute("user")).getUserId();
-		Game game = (Game) session.getAttribute("game");
-
-		game = dao.setPlayerReady(user, game.getGameId());
-
-		if (game != null) {
-			// update game with ready indication
-			session.setAttribute("game", game);
-		} else {
-			model.setViewName("topics-u");
-			request.setAttribute("reqErrorMessage",
-					"Error updating ready status. Please choose topic again.");
-			return model;
-		}
-
-		if (dao.allPlayersReady(game.getGameId())) {
-			question = dao.getRandomQuestion(game.getTopicId());
-		} else {
-			model.setViewName("quiz-u");
-
-			return model;
-
-		}
-
-		if (question != null) {
-			model.setViewName("quiz-u");
-
-			session.setAttribute("questionNumber", 1);
-			session.setAttribute("totalNumberOfQuestions",
-					Game.NUMBER_QUESTIONS_PER_GAME);
-
-			// JoinGameWebSocketController.sendQuestion(template,
-			// game.getGameId(), 1, Game.NUMBER_QUESTIONS_PER_GAME, question);
-
-			return model;
-		} else {
-			// no questions for topic
-
-			model.setViewName("topics-u");
-			request.setAttribute("reqErrorMessage",
-					"No Questions available for this topic");
-			return model;
-		}
-	}
-
-	@RequestMapping(value = "/answerQuestion-u.action", method = RequestMethod.POST)
-	public ModelAndView answerQuestionAction(
-			@RequestParam("option") int option, HttpServletRequest request,
-			HttpSession session) {
-
-		ModelAndView model = new ModelAndView();
-		model.setViewName("quiz-u");
-
-		log.info("in answerQuestionAction");
-		log.info("option:" + option);
-
-		Question question = (Question) session.getAttribute("question");
-
-		if (question != null) {
-
-			IQuizDbAccess dao = DBAccess.getDbAccess();
-			String thisUserId = ((User) session.getAttribute("user"))
-					.getUserId();
-			Game game = (Game) session.getAttribute("game");
-
-			List<String> opponentList = dao.getOtherPlayerUserIds(
-					game.getGameId(), thisUserId);
-
-			if (question.getAnswerIdx() == option) {
-				request.setAttribute("reqPositiveMessage", "Correct!");
-
-				// 'randomly' get a question from the topic.
-				// should really get one we're sure that hasn't been asked yet.
-				// for now just picks one at random & may be the same one
-				// repeatedly
-				Question nextQuestion = dao.getRandomQuestion(question
-						.getTopicId());
-
-				if (nextQuestion != null) {
-					model.setViewName("quiz-u");
-					session.setAttribute("question", nextQuestion);
-
-					return model;
-				} else {
-					// no questions for topic
-
-					model.setViewName("topics-u");
-					request.setAttribute("reqErrorMessage",
-							"No Questions available for this topic");
-					return model;
-				}
-
-			} else {
-
-				request.setAttribute("reqErrorMessage", "Wrong!");
-			}
-
-		} else {
-			// no questions for topic
-
-			request.setAttribute("reqErrorMessage", "Question Not Found");
-		}
-
-		return model;
-	}
-
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		// kludge. should be able to find this in the context but w/ the msg
@@ -443,11 +322,240 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 	}
 
-	@RequestMapping(value = "/new-topic.action", method = RequestMethod.POST)
+	@RequestMapping(value = "/edit-user-req-u.action", method = RequestMethod.GET)
+	public ModelAndView editUserReqAction(HttpServletRequest request,
+			HttpSession session) {
+
+		ModelAndView model = new ModelAndView("login");
+
+		request.setAttribute("reqPositiveMessage",
+				"User must log in again to perform this activity");
+
+		session.setAttribute("editUserRequest", true);
+
+		return model;
+	}
+
+	@RequestMapping(value = "/edit-user-u.action", method = RequestMethod.POST)
+	public ModelAndView editUserAction(@ModelAttribute("user") User user,
+			@RequestParam("confirmPassword") String confirmPassword,
+			HttpServletRequest request, HttpSession session) {
+
+		ModelAndView model = new ModelAndView("topics-u");
+
+		if (!user.getPassword().equals(confirmPassword)) {
+			request.setAttribute("reqErrorMessage",
+					"The passwords must match. Please try again.");
+			model.setViewName("editUser");
+			return model;
+		}
+
+		User sessionUser = (User) session.getAttribute("user");
+
+		if ((user != null) && user.getUserId().equals(sessionUser.getUserId())) {
+			// do nothing. continue.
+		} else {
+			// send back to login screen.
+			model.setViewName("login");
+			return model;
+		}
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+
+		User localUser = dao.setUser(user);
+
+		localUser = dao.setUser(user);
+		
+		session.setAttribute("user", localUser);
+		request.setAttribute("reqPositiveMessage",
+				"User '" + localUser.getUserId() + "' updated.");
+		
+		return model;
+	}
+
+	// ************* Admin screens below *************
+
+	@RequestMapping("/admin.action")
+	public ModelAndView adminAction(HttpServletRequest request,
+			HttpSession session) {
+
+		User user = (User) session.getAttribute("user");
+		ModelAndView model = new ModelAndView("admin");
+
+		if ((user != null) & "admin".equals(user.getUserId())) {
+			// do nothing. continue.
+		} else {
+			// send back to login screen.
+			model.setViewName("login");
+			return model;
+		}
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+
+		request.setAttribute("topicList", dao.getTopics());
+		request.setAttribute("adminQuestionsList", dao.getQuestions());
+
+		return model;
+	}
+
+	@RequestMapping(value = "/admin-edit-question-req.action/{questionId}", method = RequestMethod.GET)
+	public ModelAndView adminEditQuestionReqAction(
+			@PathVariable(value = "questionId") int questionId,
+			HttpServletRequest request, HttpSession session) {
+
+		User user = (User) session.getAttribute("user");
+
+		ModelAndView model = new ModelAndView("admin");
+
+		if ((user != null) & "admin".equals(user.getUserId())) {
+			// do nothing. continue.
+		} else {
+			// send back to login screen.
+			model.setViewName("login");
+			return model;
+		}
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+
+		Question question = dao.getQuestionFromQuestionId(questionId);
+
+		if (question == null) {
+			request.setAttribute("reqErrorMessage", "Question '" + questionId
+					+ "' doesn't exist.");
+
+		} else {
+			model.setViewName("adminEditQuestion");
+
+			request.setAttribute("question", question);
+
+		}
+
+		return model;
+	}
+
+	@RequestMapping(value = "/admin-edit-question.action", method = RequestMethod.POST)
+	public ModelAndView adminEditQuestionAction(
+			@ModelAttribute(value = "question") Question question,
+			HttpServletRequest request, HttpSession session) {
+
+		User user = (User) session.getAttribute("user");
+
+		ModelAndView model = new ModelAndView("admin");
+
+		if ((user != null) & user.getUserId().equals("admin")) {
+			// do nothing. continue.
+		} else {
+			// send back to login screen.
+			model.setViewName("login");
+			return model;
+		}
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+
+		Question localQuestion = dao.getQuestionFromQuestionId(question
+				.getQuestionId());
+
+		if (localQuestion == null) {
+			request.setAttribute("reqErrorMessage",
+					"Question '" + question.getQuestionId()
+							+ "' doesn't exist.");
+		} else {
+			localQuestion = dao.setQuestion(question);
+			request.setAttribute("reqPositiveMessage", "Question '"
+					+ localQuestion.getQuestionId() + "' updated.");
+		}
+
+		request.setAttribute("topicList", dao.getTopics());
+		request.setAttribute("adminQuestionsList", dao.getQuestions());
+
+		return model;
+	}
+
+	@RequestMapping(value = "/admin-edit-topic-req.action/{topicId}", method = RequestMethod.GET)
+	public ModelAndView adminEditTopicReqAction(
+			@PathVariable(value = "topicId") int topicId,
+			HttpServletRequest request, HttpSession session) {
+
+		User user = (User) session.getAttribute("user");
+
+		ModelAndView model = new ModelAndView("admin");
+
+		if ((user != null) & "admin".equals(user.getUserId())) {
+			// do nothing. continue.
+		} else {
+			// send back to login screen.
+			model.setViewName("login");
+			return model;
+		}
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+
+		Topic topic = dao.getTopicFromTopicId(topicId);
+		if (topic == null) {
+			request.setAttribute("reqErrorMessage", "Topic '" + topicId
+					+ "' doesn't exist.");
+
+		} else {
+			model.setViewName("adminEditTopic");
+
+			request.setAttribute("topic", topic);
+
+		}
+
+		return model;
+	}
+
+	@RequestMapping(value = "/admin-edit-topic.action", method = RequestMethod.POST)
+	public ModelAndView adminEditTopicAction(
+			@ModelAttribute(value = "topic") Topic topic,
+			HttpServletRequest request, HttpSession session) {
+
+		User user = (User) session.getAttribute("user");
+
+		ModelAndView model = new ModelAndView("admin");
+
+		if ((user != null) & "admin".equals(user.getUserId())) {
+			// do nothing. continue.
+		} else {
+			// send back to login screen.
+			model.setViewName("login");
+			return model;
+		}
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+
+		Topic localTopic = dao.getTopicFromTopicId(topic.getTopicId());
+
+		if (localTopic == null) {
+			request.setAttribute("reqErrorMessage", "Topic '" + localTopic
+					+ "' doesn't exist.");
+		} else {
+			localTopic = dao.setTopic(topic);
+			request.setAttribute("reqPositiveMessage", "Topic '" + localTopic.getName()
+					+ "' updated.");
+		}
+
+		request.setAttribute("topicList", dao.getTopics());
+		request.setAttribute("adminQuestionsList", dao.getQuestions());
+
+		return model;
+	}
+
+	@RequestMapping(value = "/admin-new-topic.action", method = RequestMethod.POST)
 	public ModelAndView newTopicAction(@ModelAttribute("topic") Topic topic,
 			HttpServletRequest request, HttpSession session) {
 
+		User user = (User) session.getAttribute("user");
+
 		ModelAndView model = new ModelAndView("admin");
+
+		if ((user != null) & "admin".equals(user.getUserId())) {
+			// do nothing. continue.
+		} else {
+			// send back to login screen.
+			model.setViewName("login");
+			return model;
+		}
 
 		IQuizDbAccess dao = DBAccess.getDbAccess();
 
@@ -468,18 +576,28 @@ public class QuizController implements Serializable, BeanFactoryAware {
 			dao.updateFlatFileWithTopic(topic.getName(), path);
 		}
 
-		request.setAttribute("adminTopicsList", dao.getTopics());
+		request.setAttribute("topicList", dao.getTopics());
 		request.setAttribute("adminQuestionsList", dao.getQuestions());
-		
+
 		return model;
 	}
 
-	@RequestMapping(value = "/new-question.action", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin-new-question.action", method = RequestMethod.POST)
 	public ModelAndView newTopicAction(
 			@ModelAttribute("question") Question question,
 			HttpServletRequest request, HttpSession session) {
 
 		ModelAndView model = new ModelAndView("admin");
+
+		User user = (User) session.getAttribute("user");
+
+		if ((user != null) & "admin".equals(user.getUserId())) {
+			// do nothing. continue.
+		} else {
+			// send back to login screen.
+			model.setViewName("login");
+			return model;
+		}
 
 		IQuizDbAccess dao = DBAccess.getDbAccess();
 
@@ -504,58 +622,119 @@ public class QuizController implements Serializable, BeanFactoryAware {
 			dao.updateFlatFileWithQuestion(question, path);
 		}
 
-		request.setAttribute("adminTopicsList", dao.getTopics());
+		request.setAttribute("topicList", dao.getTopics());
 		request.setAttribute("adminQuestionsList", dao.getQuestions());
 
 		return model;
 	}
 
-	@RequestMapping(value = "/delete-question.action/{questionId}", method = RequestMethod.GET)
-	public ModelAndView deleteQuestionAction(@PathVariable(value = "questionId") int questionId, HttpServletRequest request){
+	@RequestMapping(value = "/admin-delete-question.action/{questionId}", method = RequestMethod.GET)
+	public ModelAndView deleteQuestionAction(
+			@PathVariable(value = "questionId") int questionId,
+			HttpServletRequest request, HttpSession session) {
 		IQuizDbAccess dao = DBAccess.getDbAccess();
-		
+
 		ModelAndView model = new ModelAndView("admin");
-		
+
+		User user = (User) session.getAttribute("user");
+
+		if ((user != null) & "admin".equals(user.getUserId())) {
+			// do nothing. continue.
+		} else {
+			// send back to login screen.
+			model.setViewName("login");
+			return model;
+		}
+
 		dao.deleteQuestion(questionId);
-		
-		request.setAttribute("reqPositiveMessage",
-				"Question " + questionId + " was deleted.");
-		
-		request.setAttribute("adminTopicsList", dao.getTopics());
+
+		request.setAttribute("reqPositiveMessage", "Question " + questionId
+				+ " was deleted.");
+
+		request.setAttribute("topicList", dao.getTopics());
 		request.setAttribute("adminQuestionsList", dao.getQuestions());
 
 		return model;
-}
-	
+	}
 
-	@RequestMapping(value = "/delete-topic.action/{topicId}", method = RequestMethod.GET)
-	public ModelAndView deleteTopicAction(@PathVariable(value = "topicId") int topicId, HttpServletRequest request){
-		IQuizDbAccess dao = DBAccess.getDbAccess();
-		
+	@RequestMapping(value = "/admin-delete-topic.action/{topicId}", method = RequestMethod.GET)
+	public ModelAndView deleteTopicAction(
+			@PathVariable(value = "topicId") int topicId,
+			HttpServletRequest request, HttpSession session) {
 		ModelAndView model = new ModelAndView("admin");
-		
-		if (dao.deleteTopic(topicId)){
-			request.setAttribute("reqPositiveMessage",
-					"Topic " + topicId + " was deleted.");
-						
+
+		User user = (User) session.getAttribute("user");
+
+		if ((user != null) & "admin".equals(user.getUserId())) {
+			// do nothing. continue.
 		} else {
-			request.setAttribute("reqErrorMessage",
-					"Topic " + topicId + " can't be deleted until all questions with that topic are deleted.");
-			
+			// send back to login screen.
+			model.setViewName("login");
+			return model;
+		}
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+
+		if (dao.deleteTopic(topicId)) {
+			request.setAttribute("reqPositiveMessage", "Topic " + topicId
+					+ " was deleted.");
+
+		} else {
+			request.setAttribute(
+					"reqErrorMessage",
+					"Topic "
+							+ topicId
+							+ " can't be deleted until all questions with that topic are deleted.");
 
 		}
-		
-		request.setAttribute("adminTopicsList", dao.getTopics());
+
+		request.setAttribute("topicList", dao.getTopics());
 		request.setAttribute("adminQuestionsList", dao.getQuestions());
 
 		return model;
-}
-	
-	
+	}
+
 	// ************* REST Methods below *************
 
+	// create a new user
 	@RequestMapping(value = "/users", method = RequestMethod.POST, headers = "content-type=application/json")
 	ResponseEntity<String> newAccountRest(@RequestBody User user,
+			@RequestParam("confirmPassword") String confirmPassword,
+			HttpServletRequest request) {
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+		String message = null;
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+		if (!user.getPassword().equals(confirmPassword)) {
+			message = "Password and Conirmation Password do not match.";
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if (!dao.addUser(user)) {
+			message = "Username " + user.getUserId() + " already exists.";
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.CONFLICT);
+
+		} else {
+			message = "User '" + user.getUserId()
+					+ "' was successfully created!";
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.CREATED);
+
+		}
+
+	}
+
+	// update a new user
+	@RequestMapping(value = "/users", method = RequestMethod.PUT, headers = "content-type=application/json")
+	ResponseEntity<String> updateAccountRest(@RequestBody User user,
+			@RequestParam("confirmPassword") String confirmPassword,
 			HttpServletRequest request) {
 
 		IQuizDbAccess dao = DBAccess.getDbAccess();
@@ -580,11 +759,11 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 	}
 
+	// log a user in
 	@RequestMapping(value = "/users/login", method = RequestMethod.POST, headers = "content-type=application/json")
 	ResponseEntity<Map<String, String>> loginRest(@RequestBody User tempUser,
 			HttpServletRequest request, HttpSession session) {
 
-		String sessionId = "";
 		Map<String, String> parameterMap = new LinkedHashMap<String, String>();
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
@@ -621,6 +800,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 	}
 
+	// retrieve a user's hint
 	@RequestMapping(value = "/users/hint", method = RequestMethod.POST, headers = "content-type=application/json")
 	ResponseEntity<String> hintRest(@RequestBody User tempUser,
 			HttpServletRequest request, HttpSession session) {
@@ -652,6 +832,35 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 	}
 
+	// create a new question
+	@RequestMapping(value = "/questions", method = RequestMethod.POST, headers = "content-type=application/json")
+	ResponseEntity<String> newQuestionRest(@RequestBody Question question,
+			HttpServletRequest request) {
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+		String message = null;
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+		int newQuestionId = dao.addQuestion(question);
+
+		if (newQuestionId < 0) {
+			message = "Question '" + question.getQuestion()
+					+ "' already exists.";
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.CONFLICT);
+
+		} else {
+			message = "/questions/" + newQuestionId;
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.CREATED);
+
+		}
+
+	}
+
+	// create a new topic
 	@RequestMapping(value = "/topics", method = RequestMethod.POST, headers = "content-type=application/json")
 	ResponseEntity<String> newTopicRest(@RequestBody Topic topic,
 			HttpServletRequest request, HttpSession session) {
@@ -681,33 +890,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 	}
 
-	@RequestMapping(value = "/questions", method = RequestMethod.POST, headers = "content-type=application/json")
-	ResponseEntity<String> newQuestionRest(@RequestBody Question question,
-			HttpServletRequest request) {
-
-		IQuizDbAccess dao = DBAccess.getDbAccess();
-		String message = null;
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
-		int newQuestionId = dao.addQuestion(question);
-
-		if (newQuestionId < 0) {
-			message = "Question '" + question.getQuestion()
-					+ "' already exists.";
-
-			return new ResponseEntity<String>(message, httpHeaders,
-					HttpStatus.CONFLICT);
-
-		} else {
-			message = "/questions/" + newQuestionId;
-
-			return new ResponseEntity<String>(message, httpHeaders,
-					HttpStatus.CREATED);
-
-		}
-
-	}
-
+	// retrieve a topic question
 	@RequestMapping(value = "/questions", method = RequestMethod.GET, headers = "Accept=application/json")
 	public @ResponseBody List<Question> queryQuestionsRest() {
 		IQuizDbAccess dao = DBAccess.getDbAccess();
@@ -715,6 +898,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		return questions;
 	}
 
+	// retrieve a topic topic
 	@RequestMapping(value = "/topics", method = RequestMethod.GET, headers = "Accept=application/json")
 	public @ResponseBody List<Topic> queryTopicsRest() {
 		IQuizDbAccess dao = DBAccess.getDbAccess();
@@ -722,20 +906,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		return topics;
 	}
 
-	@RequestMapping(value = "/topics/{topicId}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-	ResponseEntity<String> deleteTopicRest(
-			@PathVariable(value = "topicId") int topicId) {
-		IQuizDbAccess dao = DBAccess.getDbAccess();
-		String message = "";
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
-		dao.deleteTopic(topicId);
-		
-		//ignore any rc from deleteTopic & always return NO CONTENT for completion
-		return new ResponseEntity<String>(message, httpHeaders,
-				HttpStatus.NO_CONTENT);
-	}
-
+	// delete a question
 	@RequestMapping(value = "/questions/{questionId}", method = RequestMethod.DELETE, headers = "Accept=application/json")
 	ResponseEntity<String> deleteQuestionRest(
 			@PathVariable(value = "questionId") int questionId) {
@@ -744,10 +915,76 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
 		dao.deleteQuestion(questionId);
-		
-		//ignore any rc from deleteTopic & always return NO CONTENT for completion
+
+		// ignore any rc from deleteTopic & always return NO CONTENT for
+		// completion
 		return new ResponseEntity<String>(message, httpHeaders,
 				HttpStatus.NO_CONTENT);
+	}
+
+	// delete a topic
+	@RequestMapping(value = "/topics/{topicId}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+	ResponseEntity<String> deleteTopicRest(
+			@PathVariable(value = "topicId") int topicId) {
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+		String message = "";
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+		dao.deleteTopic(topicId);
+
+		// ignore any rc from deleteTopic & always return NO CONTENT for
+		// completion
+		return new ResponseEntity<String>(message, httpHeaders,
+				HttpStatus.NO_CONTENT);
+	}
+
+	// update existing question
+	@RequestMapping(value = "/questions", method = RequestMethod.PUT, headers = "Accept=application/json")
+	ResponseEntity<String> updateQuestionRest(
+			@RequestParam(value = "question") Question question) {
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+		String message = "";
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+		Question localQuestion = dao.getQuestionFromQuestionId(question
+				.getQuestionId());
+
+		if (localQuestion == null) {
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.CONFLICT);
+
+		} else {
+			dao.setQuestion(question);
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.OK);
+
+		}
+	}
+
+	// update existing topic
+	@RequestMapping(value = "/topics", method = RequestMethod.PUT, headers = "Accept=application/json")
+	ResponseEntity<String> updateTopicRest(
+			@RequestParam(value = "topic") Topic topic) {
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+		String message = "";
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+		Topic localTopic = dao.getTopicFromTopicId(topic.getTopicId());
+
+		if (localTopic == null) {
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.CONFLICT);
+
+		} else {
+			dao.setTopic(topic);
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.OK);
+
+		}
 	}
 
 }

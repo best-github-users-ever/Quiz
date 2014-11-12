@@ -1,5 +1,13 @@
 package com.quiz.socket.gamelogic;
-public class GameResult {
+
+import java.io.Serializable;
+
+public class GameResult implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7245191197341357723L;
+	
 	private String messageName;
     private String result;
     public GameResult(String messageName, String result) {

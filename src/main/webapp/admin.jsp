@@ -11,7 +11,7 @@
 <div class="adminPage">
 
 	<div id="newTopic" class="adminDiv">
-		<form action="/Quiz/new-topic.action" method="POST">
+		<form action="/Quiz/admin-new-topic.action" method="POST">
 			<div>
 				<label><b>Add Topic</b></label><br> <input type="text"
 					id="newTopic" name="name" size="30"><br> <input
@@ -22,9 +22,9 @@
 
 	<div id="newQuestion" class="adminDiv">
 		<br> <br>
-		<form action="/Quiz/new-question.action" method="POST">
+		<form action="/Quiz/admin-new-question.action" method="POST">
 
-			<label><b>Add Question</b></b></label><br> <br> <label>Choose
+			<label><b>Add Question</b></label><br> <br> <label>Choose
 				Topic for this Question</label><br> <select name="topicId">
 				<c:forEach var="topic" items="${topicList}">
 					<option value="${topic.topicId}">${topic.name}
@@ -44,8 +44,8 @@
 				value="2">3<br> <input type="radio" name="answerIdx"
 				value="3">4<br> <input type="submit"
 				value="Add Question" id="addQuestionButton">
-	</div>
-	</form>
+	   </form>
+    </div>
 </div>
 <br>
 <div id="editDeleteTopic" class="adminDiv">
@@ -59,14 +59,14 @@
 				<th>Topic Name</th>
 			</tr>
 
-			<c:forEach var="topic" items="${adminTopicsList}">
+			<c:forEach var="topic" items="${topicList}">
 				<tr>
 					<td><a
-						href="<spring:url value='/delete-topic.action/{topicId}'>
+						href="<spring:url value='/admin-delete-topic.action/{topicId}'>
 								<spring:param name='topicId' value='${topic.topicId}' />
 							</spring:url>">delete</a></td>
 					<td><a
-						href="<spring:url value='/edit-topic.action/{topicId}'>
+						href="<spring:url value='/admin-edit-topic-req.action/{topicId}'>
 								<spring:param name='topicId' value='${topic.topicId}' />
 							</spring:url>">edit</a></td>
 					<td>${topic.topicId}</td>
@@ -97,11 +97,11 @@
 			<c:forEach var="question" items="${adminQuestionsList}">
 				<tr>
 					<td><a
-						href="<spring:url value='/delete-question.action/{questionId}'>
+						href="<spring:url value='/admin-delete-question.action/{questionId}'>
 								<spring:param name='questionId' value='${question.questionId}' />
 							</spring:url>">delete</a></td>
 					<td><a
-						href="<spring:url value='/edit-question.action/{questionId}'>
+						href="<spring:url value='/admin-edit-question-req.action/{questionId}'>
 								<spring:param name='questionId' value='${question.questionId}' />
 							</spring:url>">edit</a></td>
 					<td>${question.questionId}</td>
