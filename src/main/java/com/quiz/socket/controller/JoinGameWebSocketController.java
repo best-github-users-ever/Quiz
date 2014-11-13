@@ -42,6 +42,7 @@ public class JoinGameWebSocketController {
 		return template;
 	}
 
+	//input text from chat
 	@MessageMapping("/joinGame/chat")
 	public void chatMessage(ChatInput input) throws Exception {
 
@@ -72,6 +73,7 @@ public class JoinGameWebSocketController {
 
 	}
 
+	//player indicates that he/she is ready to begin the game
 	@MessageMapping("/joinGame/ready")
 	public void readyGameMessage(JoinInput input) throws Exception {
 		IQuizDbAccess dao = DBAccess.getDbAccess();
@@ -182,56 +184,7 @@ public class JoinGameWebSocketController {
 
 	}
 
-	public static void sendGameReadyMessageToOpponent(
-			SimpMessagingTemplate templateIn, int gameId, String recipient) {
-		String message = null;
-		String opponentNameList = "";
-		IQuizDbAccess dao = DBAccess.getDbAccess();
-		List<String> opponentList = dao
-				.getOtherPlayerUserIds(gameId, recipient);
-
-		if (opponentList != null) {
-			if (opponentList.size() > 1) {
-				message = "Game with users ";
-
-				for (String user : opponentList) {
-					opponentNameList = opponentNameList + "'" + user + "' ";
-				}
-
-				message = message + opponentNameList + "can now begin!";
-
-			} else {
-				message = "Game with user '" + opponentList.get(0)
-						+ "' can now begin!";
-			}
-		}
-
-		GameResult result = new GameResult("gameReady", message);
-
-		log.info("result:" + result);
-		log.info("template is null:" + (templateIn == null));
-
-		log.info("xxxxxx opponentList:" + opponentList);
-		if (opponentList != null) {
-			templateIn.convertAndSend("/queue/" + gameId + "/" + recipient
-					+ "/gameUpdates", result);
-
-		}
-
-	}
-
-	public void sendPlayerGuessedMessageToOpponent(int gameId, String guesser,
-			String recipient) {
-		log.info("guesser:" + guesser + " recipient:" + recipient);
-		String message = "User '" + guesser + "' just guessed!";
-
-		GameResult result = new GameResult("playerGuessed", message);
-
-		template.convertAndSend("/queue/" + gameId + "/" + recipient
-				+ "/gameUpdates", result);
-
-	}
-
+	//player has made a guess
 	@MessageMapping("/joinGame/answer")
 	public void answerQuestionMessage(AnswerInput input) throws Exception {
 		IQuizDbAccess dao = DBAccess.getDbAccess();
@@ -325,6 +278,52 @@ public class JoinGameWebSocketController {
 		}
 	}
 
+	public void sendPlayerGuessedMessageToOpponent(int gameId, String guesser,
+			String recipient) {
+		log.info("guesser:" + guesser + " recipient:" + recipient);
+		String message = "User '" + guesser + "' just guessed!";
+
+		GameResult result = new GameResult("playerGuessed", message);
+
+		template.convertAndSend("/queue/" + gameId + "/" + recipient
+				+ "/gameUpdates", result);
+
+	}
+
+	public static void sendGameReadyMessageToOpponent(
+			SimpMessagingTemplate templateIn, int gameId, String recipient) {
+		String message = null;
+		String opponentNameList = "";
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+		List<String> opponentList = dao
+				.getOtherPlayerUserIds(gameId, recipient);
+
+		if (opponentList != null) {
+			if (opponentList.size() > 1) {
+				message = "Game with users ";
+
+				for (String user : opponentList) {
+					opponentNameList = opponentNameList + "'" + user + "' ";
+				}
+
+				message = message + opponentNameList + "can now begin!";
+
+			} else {
+				message = "Game with user '" + opponentList.get(0)
+						+ "' can now begin!";
+			}
+		}
+
+		GameResult result = new GameResult("gameReady", message);
+
+		if (opponentList != null) {
+			templateIn.convertAndSend("/queue/" + gameId + "/" + recipient
+					+ "/gameUpdates", result);
+
+		}
+
+	}
+
 	public static void sendPlayersQuestionResultsMessage(
 			SimpMessagingTemplate templateIn, Game game) {
 
@@ -332,7 +331,6 @@ public class JoinGameWebSocketController {
 
 		questionResultMessage = new GameQuestionFinishedResult(
 				"questionResults", game);
-		log.info("******GAME" + game.toString());
 
 		templateIn.convertAndSend(
 				"/topic/" + game.getGameId() + "/gameUpdates",
@@ -347,7 +345,6 @@ public class JoinGameWebSocketController {
 
 		gameResultMessage = new GameFinishedResult("gameResults", game,
 				game.determineWinner());
-		log.info("******GAME" + game.toString());
 
 		templateIn.convertAndSend(
 				"/topic/" + game.getGameId() + "/gameUpdates",

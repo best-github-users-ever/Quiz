@@ -13,6 +13,7 @@ public class Game implements Serializable {
 	 * 
 	 */
 	public static final int NUMBER_QUESTIONS_PER_GAME = 10;
+	public static final int MAX_PLAYERS_PER_GAME = 5;
 
 	private static Logger log = Logger.getLogger(Game.class);
 

@@ -19,14 +19,14 @@
 		</tr>
 		<tr>
 			<td><b>Password:</b></td>
-			<td><input type='password' name='password' size='8'></td>
+			<td><input type='password' id="password" name='password' size='8'></td>
 		</tr>
  		<tr>
 			<td>&nbsp</td>
 			<td>&nbsp</td>
 		</tr>
 		<tr>
-			<td colspan="2"><input class="centeredButton" type='submit'
+			<td colspan="2"><input id="loginButton" class="centeredButton" type='submit'
 				value='login'></td>
 		</tr>
 		<tr>
@@ -54,6 +54,21 @@
 <c:import url="footer.jsp" />
 </body>
 <script>
+var submitClick = function(event){
+	   if ($.trim($("#userId").val()) == "" ){
+        alert("Username cannot be empty.");
+        event.preventDefault();
+        $("#userId").focus();
+		   return;
+	   }
+	   
+    if ($.trim($("#password").val()) == "" ){
+        alert("Password cannot be empty.");
+        event.preventDefault();
+        $("#password").focus();
+        return;
+    }
+}
  	function hintClick(event) {
 		var userId = $.trim($("#userId").val());
 
@@ -74,6 +89,9 @@
 	$(document).ready(function() {
 		$("#hintLink").click(function(event) {
 			hintClick(event);
+		});
+		$("#loginButton").click(function(event) {
+			submitClick(event);
 		});
 	});
 </script>

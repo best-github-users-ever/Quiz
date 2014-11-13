@@ -57,3 +57,46 @@
 <c:import url="footer.jsp" />
 </body>
 </html>
+<script>
+var submitClick = function(event){
+       if ($.trim($("#editPassword").val()) == "" ){
+           alert("Password cannot be empty.");
+           event.preventDefault();
+           $("#editPassword").focus();
+           return;
+       }
+       
+       if ($("#editPassword").val() !== $("#confirmPassword").val()){
+            alert("Passwords must match.");
+            $("#editPassword").val("");
+            $("#confirmPassword").val("");
+            event.preventDefault();
+            $("#editPassword").focus();
+            return;
+       }
+       
+       if ($.trim($("#editHint").val()) == "" ){
+           alert("Hint cannot be empty.");
+           event.preventDefault();
+           $("#editHint").focus();
+           return;
+       }
+       
+       if ($.trim($("#editEmailAddress").val()) !== "" ){
+           var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+           if( !emailReg.test($.trim($("#editEmailAddress").val())) ) {
+               alert("Email Address entered is invalid.");
+               event.preventDefault();
+               $("#editEmailAddress").focus();
+               return;
+              }
+       }
+};
+
+$(document).ready(function() {
+    $("#editUserButton").click(function(event) {
+        submitClick(event);
+    });
+});
+
+</script>

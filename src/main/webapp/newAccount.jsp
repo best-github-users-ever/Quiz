@@ -10,10 +10,10 @@
         
         <table class="newaccount" >
             <tr> 
-                <td> User Name: </td> <td><input id="userId" type='text' name='userId' size='20' maxlength='20'></td> 
+                <td> User Name: </td> <td><input id='userId' type='text' name='userId' size='20' maxlength='20'></td> 
             </tr>
             <tr> 
-                <td> Password: </td><td><input type='password' name='password' size='10' maxlength='10'></td>
+                <td> Password: </td><td><input id='password' type='password' name='password' size='10' maxlength='10'></td>
             </tr>
             <tr> 
                 <td> Confirm Password: </td><td><input type='password' id='confirmPassword' name='confirmPpassword' size='10'  maxlength='10'></td>
@@ -34,7 +34,7 @@
 </body>
 </html>
 <script>
-$("#newAccountButton").click(function(event){
+var submitClick = function(event){
 	   if ($.trim($("#userId").val()) == "" ){
            alert("Username cannot be empty.");
            event.preventDefault();
@@ -45,21 +45,23 @@ $("#newAccountButton").click(function(event){
        if ($.trim($("#password").val()) == "" ){
            alert("Password cannot be empty.");
            event.preventDefault();
-           $("#").focus();
+           $("#password").focus();
            return;
        }
        
 	   if ($("#password").val() !== $("#confirmPassword").val()){
 	        alert("Passwords must match.");
+            $("#password").val("");
+	        $("#confirmPassword").val("");
 	        event.preventDefault();
-	        $("#").focus();
+	        $("#password").focus();
 	        return;
 	   }
 	   
        if ($.trim($("#hint").val()) == "" ){
            alert("Hint cannot be empty.");
            event.preventDefault();
-           $("#password").focus();
+           $("#hint").focus();
            return;
        }
        
@@ -73,4 +75,11 @@ $("#newAccountButton").click(function(event){
     		  }
        }
 });
+
+$(document).ready(function() {
+    $("#newAccountButton").click(function(event) {
+    	submitClick(event);
+    });
+});
+
 </script>

@@ -29,10 +29,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.quiz.dao.DBAccess;
 import com.quiz.dao.IQuizDbAccess;
+import com.quiz.listener.HttpSessionCollector;
 import com.quiz.model.Game;
+import com.quiz.model.GameToBeginREST;
 import com.quiz.model.Question;
 import com.quiz.model.Topic;
 import com.quiz.model.User;
+import com.quiz.model.UserToVerifyREST;
 import com.quiz.socket.controller.JoinGameWebSocketController;
 
 @Controller
@@ -93,11 +96,33 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 		ModelAndView model = new ModelAndView("login");
 
+		// Validate input fields
+
+		if ((user.getUserId() == null) || ("".equals(user.getUserId().trim()))) {
+			request.setAttribute("reqErrorMessage",
+					"A Username must be entered.");
+			return model;
+		}
+
+		if ((user.getPassword() == null) || ("".equals(user.getPassword().trim()))) {
+			request.setAttribute("reqErrorMessage",
+					"A Password must be entered.");
+			return model;
+		}
+
 		if (!user.getPassword().equals(confirmPassword)) {
 			request.setAttribute("reqErrorMessage",
 					"The passwords must match. Please try again.");
 			return model;
 		}
+
+		if ((user.getHint() == null) || ("".equals(user.getHint().trim()))) {
+			request.setAttribute("reqErrorMessage",
+					"A Password Hint must be entered.");
+			return model;
+		}
+
+		// Access the DB
 
 		IQuizDbAccess dao = DBAccess.getDbAccess();
 
@@ -122,8 +147,13 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 		log.info("in showHintAction.");
 		log.info("userid:" + userId);
-		ModelAndView model = new ModelAndView();
-		model.setViewName("/login");
+		ModelAndView model = new ModelAndView("login");
+
+		if ((userId == null) || ("".equals(userId.trim()))) {
+			request.setAttribute("reqErrorMessage",
+					"A Username must be entered.");
+			return model;
+		}
 
 		IQuizDbAccess dao = DBAccess.getDbAccess();
 
@@ -151,6 +181,20 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		log.info(user.toString());
 
 		ModelAndView model = new ModelAndView();
+
+		// Validate input fields
+
+		if ((user.getUserId() == null) || ("".equals(user.getUserId().trim()))) {
+			request.setAttribute("reqErrorMessage",
+					"A Username must be entered.");
+			return model;
+		}
+
+		if ((user.getPassword() == null) || ("".equals(user.getPassword().trim()))) {
+			request.setAttribute("reqErrorMessage",
+					"A Password must be entered.");
+			return model;
+		}
 
 		// ensure old user removed from session
 		session.removeAttribute("user");
@@ -310,13 +354,12 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		// kludge. should be able to find this in the context but w/ the msg
-		// broker
+		// should be able to find this in the context but w/ the msg broker
 		// initialized w/ annotations not sure where the websocket context is
-		// defined.
-		// it's separate from the context.xml or web.xml one as it can't be
-		// found
-		// via the context path lookup. so, finding it in the bean factory.
+		// defined. it's separate from the context.xml or web.xml one as it
+		// can't be
+		// found via the context path lookup. so, finding it in the bean
+		// factory.
 		template = (SimpMessagingTemplate) beanFactory
 				.getBean("brokerMessagingTemplate");
 
@@ -343,10 +386,33 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 		ModelAndView model = new ModelAndView("topics-u");
 
+		// Validate input fields
+
+		if ((user.getUserId() == null) || ("".equals(user.getUserId().trim()))) {
+			model.setViewName("editUser");
+			request.setAttribute("reqErrorMessage",
+					"A Username must be entered.");
+			return model;
+		}
+
+		if ((user.getPassword() == null) || ("".equals(user.getPassword().trim()))) {
+			model.setViewName("editUser");
+			request.setAttribute("reqErrorMessage",
+					"A Password must be entered.");
+			return model;
+		}
+
 		if (!user.getPassword().equals(confirmPassword)) {
+			model.setViewName("editUser");
 			request.setAttribute("reqErrorMessage",
 					"The passwords must match. Please try again.");
+			return model;
+		}
+
+		if ((user.getHint() == null) || ("".equals(user.getHint().trim()))) {
 			model.setViewName("editUser");
+			request.setAttribute("reqErrorMessage",
+					"A Password Hint must be entered.");
 			return model;
 		}
 
@@ -365,15 +431,15 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		User localUser = dao.setUser(user);
 
 		localUser = dao.setUser(user);
-		
+
 		session.setAttribute("user", localUser);
 		request.setAttribute("reqPositiveMessage",
 				"User '" + localUser.getUserId() + "' updated.");
-		
+
 		return model;
 	}
 
-	// ************* Admin screens below *************
+	// ************* Admin actions below *************
 
 	@RequestMapping("/admin.action")
 	public ModelAndView adminAction(HttpServletRequest request,
@@ -450,6 +516,46 @@ public class QuizController implements Serializable, BeanFactoryAware {
 			return model;
 		}
 
+		// Validate input fields
+
+		if ((question.getQuestion() == null)
+				|| ("".equals(question.getQuestion().trim()))) {
+			model.setViewName("adminEditQuestion");
+			request.setAttribute("reqErrorMessage",
+					"A Question must be entered.");
+			return model;
+		}
+
+		if ((question.getOption1() == null)
+				|| ("".equals(question.getOption1().trim()))) {
+			model.setViewName("adminEditQuestion");
+			request.setAttribute("reqErrorMessage", "Option 1 must be entered.");
+			return model;
+		}
+
+		if ((question.getOption2() == null)
+				|| ("".equals(question.getOption2().trim()))) {
+			model.setViewName("adminEditQuestion");
+			request.setAttribute("reqErrorMessage", "Option 2 must be entered.");
+			return model;
+		}
+
+		if ((question.getOption3() == null)
+				|| ("".equals(question.getOption3().trim()))) {
+			model.setViewName("adminEditQuestion");
+			request.setAttribute("reqErrorMessage", "Option 3 must be entered.");
+			return model;
+		}
+
+		if ((question.getOption4() == null)
+				|| ("".equals(question.getOption3().trim()))) {
+			model.setViewName("adminEditQuestion");
+			request.setAttribute("reqErrorMessage", "Option 4 must be entered.");
+			return model;
+		}
+
+		// Access the DB
+
 		IQuizDbAccess dao = DBAccess.getDbAccess();
 
 		Question localQuestion = dao.getQuestionFromQuestionId(question
@@ -522,6 +628,15 @@ public class QuizController implements Serializable, BeanFactoryAware {
 			return model;
 		}
 
+		// Validate the input field
+
+		if ((topic.getName() == null) || ("".equals(topic.getName().trim()))) {
+			model.setViewName("adminEditTopic");
+			request.setAttribute("reqErrorMessage",
+					"A Topic Name must be entered.");
+			return model;
+		}
+
 		IQuizDbAccess dao = DBAccess.getDbAccess();
 
 		Topic localTopic = dao.getTopicFromTopicId(topic.getTopicId());
@@ -531,8 +646,8 @@ public class QuizController implements Serializable, BeanFactoryAware {
 					+ "' doesn't exist.");
 		} else {
 			localTopic = dao.setTopic(topic);
-			request.setAttribute("reqPositiveMessage", "Topic '" + localTopic.getName()
-					+ "' updated.");
+			request.setAttribute("reqPositiveMessage",
+					"Topic '" + localTopic.getName() + "' updated.");
 		}
 
 		request.setAttribute("topicList", dao.getTopics());
@@ -554,6 +669,14 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		} else {
 			// send back to login screen.
 			model.setViewName("login");
+			return model;
+		}
+
+		// Validate the input field
+
+		if ((topic.getName() == null) || ("".equals(topic.getName().trim()))) {
+			request.setAttribute("reqErrorMessage",
+					"A Topic Name must be entered.");
 			return model;
 		}
 
@@ -596,6 +719,39 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		} else {
 			// send back to login screen.
 			model.setViewName("login");
+			return model;
+		}
+
+		// Validate input fields
+
+		if ((question.getQuestion() == null)
+				|| ("".equals(question.getQuestion().trim()))) {
+			request.setAttribute("reqErrorMessage",
+					"A Question must be entered.");
+			return model;
+		}
+
+		if ((question.getOption1() == null)
+				|| ("".equals(question.getOption1().trim()))) {
+			request.setAttribute("reqErrorMessage", "Option 1 must be entered.");
+			return model;
+		}
+
+		if ((question.getOption2() == null)
+				|| ("".equals(question.getOption2().trim()))) {
+			request.setAttribute("reqErrorMessage", "Option 2 must be entered.");
+			return model;
+		}
+
+		if ((question.getOption3() == null)
+				|| ("".equals(question.getOption3().trim()))) {
+			request.setAttribute("reqErrorMessage", "Option 3 must be entered.");
+			return model;
+		}
+
+		if ((question.getOption4() == null)
+				|| ("".equals(question.getOption4().trim()))) {
+			request.setAttribute("reqErrorMessage", "Option 4 must be entered.");
 			return model;
 		}
 
@@ -698,8 +854,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 	// create a new user
 	@RequestMapping(value = "/users", method = RequestMethod.POST, headers = "content-type=application/json")
-	ResponseEntity<String> newAccountRest(@RequestBody User user,
-			@RequestParam("confirmPassword") String confirmPassword,
+	ResponseEntity<String> newAccountRest(@RequestBody UserToVerifyREST userToVerify,
 			HttpServletRequest request) {
 
 		IQuizDbAccess dao = DBAccess.getDbAccess();
@@ -707,21 +862,39 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
 
-		if (!user.getPassword().equals(confirmPassword)) {
+		if ((userToVerify.getUser().getUserId() == null) || ("".equals(userToVerify.getUser().getUserId().trim()))) {
+			message = "A Username must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if ((userToVerify.getUser().getPassword() == null) || ("".equals(userToVerify.getUser().getPassword().trim()))) {
+			message = "A Password must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if (!userToVerify.getUser().getPassword().equals(userToVerify.getConfirmPassword())) {
 			message = "Password and Conirmation Password do not match.";
 
 			return new ResponseEntity<String>(message, httpHeaders,
 					HttpStatus.BAD_REQUEST);
 		}
 
-		if (!dao.addUser(user)) {
-			message = "Username " + user.getUserId() + " already exists.";
+		if ((userToVerify.getUser().getHint() == null) || ("".equals(userToVerify.getUser().getHint().trim()))) {
+			message = "A Password Hint must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if (!dao.addUser(userToVerify.getUser())) {
+			message = "Username " + userToVerify.getUser().getUserId() + " already exists.";
 
 			return new ResponseEntity<String>(message, httpHeaders,
 					HttpStatus.CONFLICT);
 
 		} else {
-			message = "User '" + user.getUserId()
+			message = "User '" + userToVerify.getUser().getUserId()
 					+ "' was successfully created!";
 
 			return new ResponseEntity<String>(message, httpHeaders,
@@ -731,7 +904,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 	}
 
-	// update a new user
+	// update a user
 	@RequestMapping(value = "/users", method = RequestMethod.PUT, headers = "content-type=application/json")
 	ResponseEntity<String> updateAccountRest(@RequestBody User user,
 			@RequestParam("confirmPassword") String confirmPassword,
@@ -741,6 +914,31 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		String message = null;
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+		if ((user.getUserId() == null) || ("".equals(user.getUserId().trim()))) {
+			message = "A Username must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if ((user.getPassword() == null) || ("".equals(user.getPassword().trim()))) {
+			message = "A Password must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if (!user.getPassword().equals(confirmPassword)) {
+			message = "Password and Conirmation Password do not match.";
+
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if ((user.getHint() == null) || ("".equals(user.getHint().trim()))) {
+			message = "A Password Hint must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
 
 		if (!dao.addUser(user)) {
 			message = "Username " + user.getUserId() + " already exists.";
@@ -771,6 +969,20 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		// ensure old user removed from session
 		session.removeAttribute("user");
 
+		if ((tempUser.getUserId() == null)
+				|| ("".equals(tempUser.getUserId().trim()))) {
+			parameterMap.put("message", "A Username must be included.");
+			return new ResponseEntity<Map<String, String>>(parameterMap,
+					httpHeaders, HttpStatus.BAD_REQUEST);
+		}
+
+		if ((tempUser.getPassword() == null)
+				|| ("".equals(tempUser.getPassword().trim()))) {
+			parameterMap.put("message", "A Password must be included.");
+			return new ResponseEntity<Map<String, String>>(parameterMap,
+					httpHeaders, HttpStatus.BAD_REQUEST);
+		}
+
 		IQuizDbAccess dao = DBAccess.getDbAccess();
 
 		User localUser = dao.getUser(tempUser);
@@ -791,8 +1003,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 					httpHeaders, HttpStatus.OK);
 
 		} else {
-
-			parameterMap.put("", "");
+			parameterMap.put("message", "User/Password combination is not valid.");
 			return new ResponseEntity<Map<String, String>>(parameterMap,
 					httpHeaders, HttpStatus.UNAUTHORIZED);
 
@@ -812,21 +1023,28 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		// ensure old user removed from session
 		session.removeAttribute("user");
 
-		IQuizDbAccess dao = DBAccess.getDbAccess();
+		if ((tempUser.getUserId() == null)
+				|| ("".equals(tempUser.getUserId().trim()))) {
+			message = "A Username must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
 
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+		
 		message = dao.showHint(tempUser.getUserId());
 
-		if (!"".equals(message)) {
+		if (message != null) {
 
 			return new ResponseEntity<String>(message, httpHeaders,
 					HttpStatus.OK);
 
 		} else {
 
-			message = "User " + tempUser.getUserId() + " not found";
+			message = "User '" + tempUser.getUserId() + "' not found";
 
 			return new ResponseEntity<String>(message, httpHeaders,
-					HttpStatus.UNAUTHORIZED);
+					HttpStatus.BAD_REQUEST);
 
 		}
 
@@ -841,6 +1059,49 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		String message = null;
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+		log.info("********** question: " + question);
+
+		if ((question.getQuestion() == null)
+				|| ("".equals(question.getQuestion().trim()))) {
+			message = "A Question must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if ((question.getOption1() == null)
+				|| ("".equals(question.getOption1().trim()))) {
+			message = "Option 1 must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if ((question.getOption2() == null)
+				|| ("".equals(question.getOption2().trim()))) {
+			message = "Option 2 must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if ((question.getOption3() == null)
+				|| ("".equals(question.getOption3().trim()))) {
+			message = "Option 3 must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if ((question.getOption4() == null)
+				|| ("".equals(question.getOption4().trim()))) {
+			message = "Option 4 must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if ((question.getAnswerIdx() < 0) || (question.getAnswerIdx() > 3)) {
+			message = "Invalid Answer Index.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
 		int newQuestionId = dao.addQuestion(question);
 
 		if (newQuestionId < 0) {
@@ -870,6 +1131,12 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
 
+		if ((topic.getName() == null) || ("".equals(topic.getName().trim()))) {
+			message = "Topic Name must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
 		int newTopicId = dao.addTopic(topic);
 
 		if (newTopicId < 0) {
@@ -890,7 +1157,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 
 	}
 
-	// retrieve a topic question
+	// retrieve questions
 	@RequestMapping(value = "/questions", method = RequestMethod.GET, headers = "Accept=application/json")
 	public @ResponseBody List<Question> queryQuestionsRest() {
 		IQuizDbAccess dao = DBAccess.getDbAccess();
@@ -898,7 +1165,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		return questions;
 	}
 
-	// retrieve a topic topic
+	// retrieve topics
 	@RequestMapping(value = "/topics", method = RequestMethod.GET, headers = "Accept=application/json")
 	public @ResponseBody List<Topic> queryTopicsRest() {
 		IQuizDbAccess dao = DBAccess.getDbAccess();
@@ -947,6 +1214,47 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
 
+		if ((question.getQuestion() == null)
+				|| ("".equals(question.getQuestion().trim()))) {
+			message = "A Question must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if ((question.getOption1() == null)
+				|| ("".equals(question.getOption1().trim()))) {
+			message = "Option 1 must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if ((question.getOption2() == null)
+				|| ("".equals(question.getOption2().trim()))) {
+			message = "Option 2 must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if ((question.getOption3() == null)
+				|| ("".equals(question.getOption3().trim()))) {
+			message = "Option 3 must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if ((question.getOption4() == null)
+				|| ("".equals(question.getOption4().trim()))) {
+			message = "Option 4 must be included.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
+		if ((question.getAnswerIdx() < 0) || (question.getAnswerIdx() > 3)) {
+			message = "Invalid Answer Index.";
+			return new ResponseEntity<String>(message, httpHeaders,
+					HttpStatus.BAD_REQUEST);
+		}
+
 		Question localQuestion = dao.getQuestionFromQuestionId(question
 				.getQuestionId());
 
@@ -987,4 +1295,183 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		}
 	}
 
+	@RequestMapping(value = "/game", method = RequestMethod.POST)
+	ResponseEntity<Map<String, String>> joinGameREST(@RequestBody GameToBeginREST gameToBegin,
+			HttpSession session) {
+		
+		String userId = gameToBegin.getUserId();
+		int topicId = gameToBegin.getTopicId();
+		String password = gameToBegin.getPassword();
+		String JSESSIONID = gameToBegin.getJsessionId();
+		int numberPlayers = gameToBegin.getNumberPlayers();
+		
+
+		Map<String, String> parameterMap = new LinkedHashMap<String, String>();
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+		IQuizDbAccess dao = DBAccess.getDbAccess();
+
+		Game game = null;
+
+		log.info("in joinGameREST");
+		log.info("topicid:" + topicId);
+
+		if ((userId == null)
+				|| ("".equals(userId.trim()))) {
+			parameterMap.put("message", "A Username must be included.");
+			return new ResponseEntity<Map<String, String>>(parameterMap,
+					httpHeaders, HttpStatus.BAD_REQUEST);
+		}
+
+		if ((password == null)
+				|| ("".equals(password.trim()))) {
+			parameterMap.put("message", "A Password must be included.");
+			return new ResponseEntity<Map<String, String>>(parameterMap,
+					httpHeaders, HttpStatus.BAD_REQUEST);
+		}
+		
+		if ((JSESSIONID == null)
+				|| ("".equals(JSESSIONID.trim()))) {
+			parameterMap.put("message", "A JSESSIONID parameter must be included.");
+			return new ResponseEntity<Map<String, String>>(parameterMap,
+					httpHeaders, HttpStatus.BAD_REQUEST);
+		}
+		
+		User myUser = new User();
+
+		myUser.setUserId(userId);
+		;
+		myUser.setPassword(password);
+
+		myUser = dao.getUser(myUser);
+
+		if (myUser == null) {
+			// user didn't pass authentication
+			parameterMap.put("message",
+					"User/Password combination is not valid.");
+			return new ResponseEntity<Map<String, String>>(parameterMap,
+					httpHeaders, HttpStatus.UNAUTHORIZED);
+		}
+
+		if (session.getId() != JSESSIONID) {
+			HttpSession tempSession = HttpSessionCollector.find(JSESSIONID);
+			log.info("Session ID and received JSESSIONID are different. Using JSESSIONID if available");
+			if (tempSession != null) {
+				session = tempSession;
+			}
+
+			session.setAttribute("user", myUser);
+		}
+		
+		if ((numberPlayers < 1) || (numberPlayers > Game.MAX_PLAYERS_PER_GAME)) {
+			// invalid topicId
+			parameterMap.put("message",
+					"Invalid numberPlayers.");
+			return new ResponseEntity<Map<String, String>>(parameterMap,
+					httpHeaders, HttpStatus.BAD_REQUEST);
+			}
+
+		Topic testTopic = dao.getTopicFromTopicId(topicId);
+		if (testTopic == null) {
+			// invalid topicId
+			parameterMap.put("message",
+					"Invalid topicId.");
+			return new ResponseEntity<Map<String, String>>(parameterMap,
+					httpHeaders, HttpStatus.BAD_REQUEST);
+			}
+
+		String thisUserId = ((User) session.getAttribute("user")).getUserId();
+
+		game = dao.findGameForNewPlayer(topicId, numberPlayers, thisUserId);
+
+		if (game != null) {
+
+			session.setAttribute("game", game);
+
+			session.setAttribute("gameFound", true);
+
+			// Based on this gameId parameter, we're expecting the client to
+			// open a Websocket and continue the game using that connection.
+			// Client expected to either send a /joinGame/ready if 
+			// allPlayersFound is true.  Otherwise, client waits over the
+			// socket for the gameReady message.
+			
+			parameterMap.put("gameId", String.valueOf(game.getGameId()));
+
+			if (game.getTotalPlayers() == game.getNumPlayers()) {
+
+				parameterMap.put("allPlayersFound", "true");
+
+				session.setAttribute("allPlayersFound", true);
+
+				if (game.getTotalPlayers() > 1) {
+
+					List<String> opponentList = dao.getOtherPlayerUserIds(
+							game.getGameId(), thisUserId);
+
+					String opponentListString = "";
+
+					for (String opponent : opponentList) {
+						opponentListString = opponentListString + " "
+								+ opponent;
+					}
+
+					parameterMap.put("opponentList", opponentListString);
+
+					// send messages to other players
+					for (String recipient : opponentList) {
+						JoinGameWebSocketController
+								.sendGameReadyMessageToOpponent(template,
+										game.getGameId(), recipient);
+					}
+				}
+
+				Question question = dao.getRandomQuestion(topicId);
+
+				if (question != null) {
+					return new ResponseEntity<Map<String, String>>(
+							parameterMap, httpHeaders, HttpStatus.OK);
+				} else {
+					// no questions for topic
+
+					parameterMap.clear();
+					parameterMap.put("message",
+							"No Questions available for this topic.");
+					return new ResponseEntity<Map<String, String>>(
+							parameterMap, httpHeaders,
+							HttpStatus.SERVICE_UNAVAILABLE);
+				}
+
+			} else {
+
+				Question question = dao.getRandomQuestion(topicId);
+
+				if (question != null) {
+					parameterMap.put("message",
+							"Game Found--Waiting for other players to join.");
+					return new ResponseEntity<Map<String, String>>(
+							parameterMap, httpHeaders, HttpStatus.OK);
+
+				} else {
+					// no questions for topic
+
+					parameterMap.put("message",
+							"No Questions available for this topic.");
+					return new ResponseEntity<Map<String, String>>(
+							parameterMap, httpHeaders,
+							HttpStatus.SERVICE_UNAVAILABLE);
+				}
+
+			}
+		} else {
+			parameterMap
+					.put("message",
+							"Error finding a game for selected Topic and number of players.");
+			return new ResponseEntity<Map<String, String>>(parameterMap,
+					httpHeaders, HttpStatus.SERVICE_UNAVAILABLE);
+		}
+
+	}
+	
 }

@@ -10,7 +10,7 @@
 </c:if>
 <div class="adminPage">
 
-	<div id="editTopic" class="adminDiv">
+	<div id="editTopicDiv" class="adminDiv">
 		<form action="/Quiz/admin-edit-topic.action" method="POST">
 			<div>
 				<label><b>Edit Topic</b></label><br>
@@ -20,13 +20,15 @@
 						<th>Topic Name</th>
 					</tr>
 					<tr>
-						<td>${topic.getTopicId() }</td>
-						<td><input type="hidden" name="topicId"
-							value="${topic.topicId }"> <input type="text"
-							id="editTopic" name="name" size="35" 
-							value="${topic.name }"><br></td>
-						<td><input type="submit" value="Edit Topic"
+						<td>${topic.getTopicId() }<input type="hidden" name="topicId"
+							value="${topic.topicId }">
+						</td>
+						<td><input type="text" id="editTopic" name="name" size="35"
+							value="${topic.name }"></td>
+					<tr>
+						<td colspan="2"><input type="submit" value="Edit Topic"
 							id="editTopicButton"></td>
+					</tr>
 				</table>
 			</div>
 		</form>
@@ -37,28 +39,22 @@
 <br>
 <c:import url="footer.jsp" />
 </body>
+</html>
 <script>
-	function hintClick(event) {
-		var userId = $("#userId").val();
+	var submitClick = function(event) {
+		var topic = $("#editTopic").val();
 
-		if (!userId.match(/^[0-9a-z]+$/)) {
-			window.alert("Enter valid Username");
-			$("#userId").val("");
-			$("#userId").focus();
+		if ($.trim(topic) === "") {
+			window.alert("Enter valid Topic Name");
+			topic.focus();
 			event.preventDefault();
-			//		$("#hintLink").attr("href", "login-again.action");
-		} else {
-
-			$("#hintLink").attr("href",
-					$("#hintLink").attr("href") + "/" + userId);
+			return;
 		}
-		console.log("value of userId:" + userId);
 	}
 
 	$(document).ready(function() {
-		$("#hintLink").click(function(event) {
-			hintClick(event);
+		$("#editTopicButton").click(function(event) {
+			submitClick(event);
 		});
 	});
 </script>
-</html>

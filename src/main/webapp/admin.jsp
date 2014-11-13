@@ -20,7 +20,7 @@
 		</form>
 	</div>
 
-	<div id="newQuestion" class="adminDiv">
+	<div id="newQuestionDiv" class="adminDiv">
 		<br> <br>
 		<form action="/Quiz/admin-new-question.action" method="POST">
 
@@ -29,25 +29,34 @@
 				<c:forEach var="topic" items="${topicList}">
 					<option value="${topic.topicId}">${topic.name}
 				</c:forEach>
-			</select> <br> <br> <label>The Question</label><br> <input
-				name="question" type="text" id="newQuestion" size="80"><br>
-			<br> <label>Option 1</label><br> <input type="text"
-				id="newOption1" size="80" name="option1"><br> <label>Option
-				2</label><br> <input type="text" id="newOption2" size="80"
-				name="option2"><br> <label>Option 3</label><br> <input
-				type="text" id="newOption3" size="80" name="option3"><br>
-			<label>Option 4</label><br> <input type="text" id="newOption4"
-				size="80" name="option4"><br> <br> <label>Answer
-				is 1, 2, 3 or 4</label><br> <input type="radio" name="answerIdx"
-				value="0">1<br> <input type="radio" name="answerIdx"
-				value="1">2<br> <input type="radio" name="answerIdx"
-				value="2">3<br> <input type="radio" name="answerIdx"
-				value="3">4<br> <input type="submit"
+			</select> <br> <br> 
+			<label>The Question</label><br> 
+			<input name="question" type="text" id="newQuestion" size="80"><br><br> 
+			<label>Option 1</label><br> 
+			<input type="text"
+				id="newOption1" size="80" name="option1"><br> 
+			<label>Option 2</label><br> 
+			<input type="text" id="newOption2" size="80"
+				name="option2"><br> 
+			<label>Option 3</label><br> 
+			<input type="text" id="newOption3" size="80" name="option3"><br>
+			<label>Option 4</label><br> 
+			<input type="text" id="newOption4"
+				size="80" name="option4"><br> <br> 
+			<label>Answer is 1, 2, 3 or 4</label><br> 
+			<input type="radio" name="answerIdx"
+				value="0">1<br> 
+				<input type="radio" name="answerIdx"
+				value="1">2<br> 
+				<input type="radio" name="answerIdx"
+				value="2">3<br> 
+				<input type="radio" name="answerIdx"
+				value="3">4<br> 
+				<input type="submit"
 				value="Add Question" id="addQuestionButton">
-	   </form>
-    </div>
+		</form>
+	</div>
 </div>
-<br>
 <div id="editDeleteTopic" class="adminDiv">
 	<div>
 		<label><b>Topics</b></label><br>
@@ -77,7 +86,7 @@
 		</table>
 	</div>
 </div>
-<div id="editDeleteQuestion" class="adminDiv">
+<div id="editDeleteQuestionDiv" class="adminDiv">
 	<div>
 		<label><b>Questions</b></label><br>
 		<table>
@@ -122,28 +131,70 @@
 <br>
 <c:import url="footer.jsp" />
 </body>
+</html>
 <script>
-	function hintClick(event) {
-		var userId = $("#userId").val();
+	var topicClick = function(event) {
+		var topic = $("#newTopic").val();
 
-		if (!userId.match(/^[0-9a-z]+$/)) {
-			window.alert("Enter valid Username");
-			$("#userId").val("");
-			$("#userId").focus();
+		if ($.trim(topic) == "") {
+			window.alert("Enter valid Topic Name");
 			event.preventDefault();
-			//		$("#hintLink").attr("href", "login-again.action");
-		} else {
-
-			$("#hintLink").attr("href",
-					$("#hintLink").attr("href") + "/" + userId);
+			topic.focus();
+			return;
 		}
-		console.log("value of userId:" + userId);
+	}
+
+	var questionClick = function(event) {
+		if ( $.trim ($("#newQuestion").val()) === "") {
+			alert("Question cannot be empty.");
+			event.preventDefault();
+			$("#newQuestion").focus();
+			return;
+		}
+
+		if ($.trim($("#newOption1").val()) === "") {
+			alert("Option 1 cannot be empty.");
+			event.preventDefault();
+			$("#newOption1").focus();
+			return;
+		}
+
+		if ($.trim($("#newOption2").val()) === "") {
+			alert("Option 2 cannot be empty.");
+			event.preventDefault();
+			$("#newOption2").focus();
+			return;
+		}
+
+		if ($.trim($("#newOption3").val()) === "") {
+			alert("Option 3 cannot be empty.");
+			event.preventDefault();
+			$("#newOption3").focus();
+			return;
+		}
+
+		if ($.trim($("#newOption4").val()) === "") {
+			alert("Option 4 cannot be empty.");
+			event.preventDefault();
+			$("#newOption4").focus();
+			return;
+		}
+
+		if (!$("input:radio[name='answerIdx']").is(":checked")) {
+			alert("An answer to the new question must be selected");
+			event.preventDefault();
+			return;
+		}
 	}
 
 	$(document).ready(function() {
-		$("#hintLink").click(function(event) {
-			hintClick(event);
+		$("#addTopicButton").click(function(event) {
+			topicClick(event);
 		});
+
+		$("#addQuestionButton").click(function(event) {
+			questionClick(event);
+		});
+
 	});
 </script>
-</html>

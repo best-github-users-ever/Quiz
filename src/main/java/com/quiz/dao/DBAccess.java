@@ -646,7 +646,6 @@ public class DBAccess implements IQuizDbAccess {
 
 	@Override
 	public User getUser(User user) {
-		// log.error(user.toString());
 		// need to include password below
 		final String GET_USER = "SELECT * FROM users WHERE userid = ? AND password = ?";
 		try {
@@ -1191,7 +1190,7 @@ log.info("in set question:" + question);
 			user = (User) jdbcTemplate.queryForObject(GET_HINT,
 					new Object[] { userId }, new UserMapper());
 		} catch (EmptyResultDataAccessException e) {
-			return "";
+			return null;
 		}
 
 		if (user != null) {

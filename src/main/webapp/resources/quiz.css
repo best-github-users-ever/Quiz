@@ -556,14 +556,20 @@ textarea {
 	width: 65%;
 }
 
-#editQuestion {
-    width: 85%;
+#editQuestionDiv {
+    width: 45%;
 }
 
-#editTopic {
+#editTopicDiv {
     width: 55%;
 }
 
-#editUser {
+#editUserDiv {
     width: 25%;
+}
+
+#editDeleteQuestionDiv{
+	width: 90%;
+
+	}
 }
