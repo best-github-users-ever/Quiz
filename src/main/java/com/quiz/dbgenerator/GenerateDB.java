@@ -138,7 +138,7 @@ public class GenerateDB {
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What song did Dr. Fugue teach to the class of Mr. Ratburn ?', 'Tea for Two', 'Hello Dolly', 'In the Good Old Summertime', 'Make Lemonade from These Lemons!', 2);");
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'Pal is worried she may not be top dog when this dog makes a visit ?', 'Sandy', 'Amigo', 'Hocum', 'Treenie', 1);");
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What is the full name of The Brain ?', 'Alan Powers', 'Reginald Smith', 'Marcus Welby', 'Fred Sanford', 0);");
-	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'In what city does Artur take place ?', 'Lakewood City', 'Elwood City', 'Reed City', 'Sherman', 1);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'In what city does Arthur take place ?', 'Lakewood City', 'Elwood City', 'Reed City', 'Sherman', 1);");
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 4, 'Which horror movie ended with a burning house ?', 'The Amityville Horror', 'Carrie', 'all of them', 'The Shining', 2);");
 
 	}

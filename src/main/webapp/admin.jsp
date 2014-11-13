@@ -10,7 +10,7 @@
 </c:if>
 <div class="adminPage">
 
-	<div id="newTopic" class="adminDiv">
+	<div id="newTopicDiv" class="adminDiv">
 		<form action="/Quiz/admin-new-topic.action" method="POST">
 			<div>
 				<label><b>Add Topic</b></label><br> <input type="text"

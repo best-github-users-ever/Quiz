@@ -10,7 +10,7 @@
 </c:if>
 <div class="adminPage">
 
-	<div id="editUser" class="adminDiv">
+	<div id="editUserDiv" class="adminDiv">
 		<form action="/Quiz/edit-user-u.action" method="POST">
 			<div>
 				<label><b>Edit User</b></label><br>
