@@ -16,7 +16,7 @@
                 <td> Password: </td><td><input id='password' type='password' name='password' size='10' maxlength='10'></td>
             </tr>
             <tr> 
-                <td> Confirm Password: </td><td><input type='password' id='confirmPassword' name='confirmPpassword' size='10'  maxlength='10'></td>
+                <td> Confirm Password: </td><td><input type='password' id='confirmPassword' name='confirmPassword' size='10'  maxlength='10'></td>
             </tr>
             <tr> 
                 <td> Password Hint: </td><td><input type='text' id="hint" name='hint'  size='20' maxlength='30'></td>
@@ -35,14 +35,14 @@
 </html>
 <script>
 var submitClick = function(event){
-	   if ($.trim($("#userId").val()) == "" ){
+	   if ($.trim($("#userId").val()) === "" ){
            alert("Username cannot be empty.");
            event.preventDefault();
            $("#userId").focus();
 		   return;
 	   }
 	   
-       if ($.trim($("#password").val()) == "" ){
+       if ($.trim($("#password").val()) === "" ){
            alert("Password cannot be empty.");
            event.preventDefault();
            $("#password").focus();
@@ -58,7 +58,7 @@ var submitClick = function(event){
 	        return;
 	   }
 	   
-       if ($.trim($("#hint").val()) == "" ){
+       if ($.trim($("#hint").val()) === "" ){
            alert("Hint cannot be empty.");
            event.preventDefault();
            $("#hint").focus();
@@ -74,11 +74,11 @@ var submitClick = function(event){
                return;
     		  }
        }
-});
+};
 
 $(document).ready(function() {
     $("#newAccountButton").click(function(event) {
-    	submitClick(event);
+    	 submitClick(event);
     });
 });
 

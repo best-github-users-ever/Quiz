@@ -101,24 +101,28 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		if ((user.getUserId() == null) || ("".equals(user.getUserId().trim()))) {
 			request.setAttribute("reqErrorMessage",
 					"A Username must be entered.");
+			model.setViewName("newAccount");
 			return model;
 		}
 
 		if ((user.getPassword() == null) || ("".equals(user.getPassword().trim()))) {
 			request.setAttribute("reqErrorMessage",
 					"A Password must be entered.");
+			model.setViewName("newAccount");
 			return model;
 		}
 
 		if (!user.getPassword().equals(confirmPassword)) {
 			request.setAttribute("reqErrorMessage",
 					"The passwords must match. Please try again.");
+			model.setViewName("newAccount");
 			return model;
 		}
 
 		if ((user.getHint() == null) || ("".equals(user.getHint().trim()))) {
 			request.setAttribute("reqErrorMessage",
 					"A Password Hint must be entered.");
+			model.setViewName("newAccount");
 			return model;
 		}
 
@@ -129,6 +133,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		if (!dao.addUser(user)) {
 			request.setAttribute("reqErrorMessage",
 					"Username '" + user.getUserId() + "' already exists.");
+			model.setViewName("newAccount");
 
 		} else {
 			request.setAttribute("reqPositiveMessage",
