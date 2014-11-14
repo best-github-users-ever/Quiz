@@ -25,6 +25,7 @@ import com.quiz.socket.gamelogic.GameResult;
 import com.quiz.socket.gamelogic.GameStartResult;
 import com.quiz.socket.gamelogic.JoinInput;
 import com.quiz.utility.QuizTimerTask;
+import com.quiz.utility.Utility;
 
 @Controller
 public class JoinGameWebSocketController {
@@ -42,7 +43,7 @@ public class JoinGameWebSocketController {
 		return template;
 	}
 
-	//input text from chat
+	// input text from chat
 	@MessageMapping("/joinGame/chat")
 	public void chatMessage(ChatInput input) throws Exception {
 
@@ -70,10 +71,9 @@ public class JoinGameWebSocketController {
 					+ otherPlayer + "/gameUpdates", chatMessage);
 
 		}
-
 	}
 
-	//player indicates that he/she is ready to begin the game
+	// player indicates that he/she is ready to begin the game
 	@MessageMapping("/joinGame/ready")
 	public void readyGameMessage(JoinInput input) throws Exception {
 		IQuizDbAccess dao = DBAccess.getDbAccess();
@@ -121,8 +121,8 @@ public class JoinGameWebSocketController {
 				}
 
 				game = dao.resetPlayersQDone(game);
-				
-				//select question that hasn't yet been asked in this game
+
+				// select question that hasn't yet been asked in this game
 				question = dao.getRandomQuestionWithExclusions(
 						game.getTopicId(), game.getGameId());
 
@@ -161,14 +161,16 @@ public class JoinGameWebSocketController {
 				TimerTask task = new QuizTimerTask(gameId,
 						game.getCurrQIndex(), template);
 
-				//14.5 = 10 seconds + 3 for propagation delay + 1.5 for display of question (before choices) at clent
+				// 14.5 = 10 seconds + 3 for propagation delay + 1.5 for display
+				// of question (before choices) at clent
 				timer.schedule(task, 14500);
 
 			} while (game.getCurrQIndex() < Game.NUMBER_QUESTIONS_PER_GAME);
 
 			if (game.getCurrQIndex() >= Game.NUMBER_QUESTIONS_PER_GAME) {
 
-				log.info("***** end of game " + game.getGameId() + ". wait for results of last question****");
+				log.info("***** end of game " + game.getGameId()
+						+ ". wait for results of last question****");
 				// send end of game message
 			}
 
@@ -181,10 +183,9 @@ public class JoinGameWebSocketController {
 					+ userId + "/gameUpdates", result);
 
 		}
-
 	}
 
-	//player has made a guess
+	// player has made a guess
 	@MessageMapping("/joinGame/answer")
 	public void answerQuestionMessage(AnswerInput input) throws Exception {
 		IQuizDbAccess dao = DBAccess.getDbAccess();
@@ -195,9 +196,6 @@ public class JoinGameWebSocketController {
 		// HttpSession session =
 		// HttpSessionCollector.find(input.getJsessionId());
 
-		List<String> opponentList = dao.getOtherPlayerUserIds(
-				input.getGameId(), input.getUserId());
-
 		Question question = dao
 				.getQuestionFromQuestionId(input.getQuestionId());
 
@@ -205,8 +203,11 @@ public class JoinGameWebSocketController {
 			Game game = null;
 
 			if (question.getAnswerIdx() == input.getGuess()) {
+				int answerPoints = Utility.determinePoints(input
+						.getAnswerTime());
+
 				game = dao.setPlayerCorrectAnswer(input.getUserId(),
-						input.getAnswerTime(), input.getGameId());
+						answerPoints, input.getGameId());
 				GameResult result = null;
 
 				if (game != null) {
@@ -242,11 +243,15 @@ public class JoinGameWebSocketController {
 						+ input.getUserId() + "/gameUpdates", result);
 			}
 
-			log.info("opponentList:" + opponentList);
-			// send messages to other players
-			for (String recipient : opponentList) {
-				sendPlayerGuessedMessageToOpponent(input.getGameId(),
-						input.getUserId(), recipient);
+			if (game.getTotalPlayers() > 1) {
+				List<String> opponentList = dao.getOtherPlayerUserIds(
+						input.getGameId(), input.getUserId());
+
+				// send messages to other players
+				for (String recipient : opponentList) {
+					sendPlayerGuessedMessageToOpponent(input.getGameId(),
+							input.getUserId(), recipient);
+				}
 			}
 
 			if (game == null) {
@@ -270,7 +275,6 @@ public class JoinGameWebSocketController {
 			GameResult result = new GameResult("answerResult",
 					"Error! QuestionId" + input.getQuestionId()
 							+ " was not found!");
-			log.info("result:" + result);
 
 			template.convertAndSend(
 					"/queue/" + input.getGameId() + "/" + input.getUserId()
@@ -280,7 +284,7 @@ public class JoinGameWebSocketController {
 
 	public void sendPlayerGuessedMessageToOpponent(int gameId, String guesser,
 			String recipient) {
-		log.info("guesser:" + guesser + " recipient:" + recipient);
+
 		String message = "User '" + guesser + "' just guessed!";
 
 		GameResult result = new GameResult("playerGuessed", message);
@@ -321,7 +325,6 @@ public class JoinGameWebSocketController {
 					+ "/gameUpdates", result);
 
 		}
-
 	}
 
 	public static void sendPlayersQuestionResultsMessage(

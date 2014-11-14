@@ -23,15 +23,31 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import com.quiz.model.Game;
+import com.quiz.model.Player;
 import com.quiz.model.Question;
 import com.quiz.model.Topic;
 import com.quiz.model.User;
 
 public class DBAccess implements IQuizDbAccess {
+	
+	private static IQuizDbAccess dbo;
+
+	private static Logger log = Logger.getLogger("com.quiz.dao.DBAccess");
+
+	private JdbcTemplate jdbcTemplate = null;
+	
+	private NamedParameterJdbcTemplate namedJdbcTemplate;
+
+	private DBAccess() {
+	}
+
+	// DB Access methods below
+
 	private static final class GameMapper implements RowMapper<Object> {
 
 		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Player player;
 
 			Game localGame = new Game();
 			localGame.setGameId(rs.getInt("gameId"));
@@ -49,42 +65,61 @@ public class DBAccess implements IQuizDbAccess {
 			localGame.setQ8Id(rs.getInt("Q8ID"));
 			localGame.setQ9Id(rs.getInt("Q9ID"));
 			localGame.setQ10Id(rs.getInt("Q10ID"));
-			localGame.setPlayer1(rs.getString("player1"));
-			localGame.setP1Ready(rs.getBoolean("p1_ready"));
-			localGame.setP1NumCorrect(rs.getInt("p1_num_correct"));
-			localGame.setP1NumWrong(rs.getInt("p1_num_wrong"));
-			localGame.setP1NumNoAnswer(rs.getInt("p1_num_no_ans"));
-			localGame.setP1Time(rs.getDouble("p1_time"));
-			localGame.setP1CurrQDone(rs.getBoolean("P1_CURR_Q_DONE"));
-			localGame.setPlayer2(rs.getString("player2"));
-			localGame.setP2Ready(rs.getBoolean("p2_ready"));
-			localGame.setP2NumCorrect(rs.getInt("p2_num_correct"));
-			localGame.setP2NumWrong(rs.getInt("p2_num_wrong"));
-			localGame.setP2NumNoAnswer(rs.getInt("p2_num_no_ans"));
-			localGame.setP2Time(rs.getDouble("p2_time"));
-			localGame.setP2CurrQDone(rs.getBoolean("P2_CURR_Q_DONE"));
-			localGame.setPlayer3(rs.getString("player3"));
-			localGame.setP3Ready(rs.getBoolean("p3_ready"));
-			localGame.setP3NumCorrect(rs.getInt("p3_num_correct"));
-			localGame.setP3NumWrong(rs.getInt("p3_num_wrong"));
-			localGame.setP3NumNoAnswer(rs.getInt("p3_num_no_ans"));
-			localGame.setP3Time(rs.getDouble("p3_time"));
-			localGame.setP3CurrQDone(rs.getBoolean("P3_CURR_Q_DONE"));
-			localGame.setPlayer4(rs.getString("player4"));
-			localGame.setP4Ready(rs.getBoolean("p4_ready"));
-			localGame.setP4NumCorrect(rs.getInt("p4_num_correct"));
-			localGame.setP4NumWrong(rs.getInt("p4_num_wrong"));
-			localGame.setP4NumNoAnswer(rs.getInt("p4_num_no_ans"));
-			localGame.setP4Time(rs.getDouble("p4_time"));
-			localGame.setP4CurrQDone(rs.getBoolean("P4_CURR_Q_DONE"));
-			localGame.setPlayer5(rs.getString("player5"));
-			localGame.setP5Ready(rs.getBoolean("p5_ready"));
-			localGame.setP5NumCorrect(rs.getInt("p5_num_correct"));
-			localGame.setP5NumWrong(rs.getInt("p5_num_wrong"));
-			localGame.setP5NumNoAnswer(rs.getInt("p5_num_no_ans"));
-			localGame.setP5Time(rs.getDouble("p5_time"));
-			localGame.setP5CurrQDone(rs.getBoolean("P5_CURR_Q_DONE"));
-			// TODO Auto-generated method stub
+			
+			player = localGame.getPlayerFromPlayerNumber(1);
+			player.setPlayerNumber(1);
+			player.setPlayer(rs.getString("player1"));
+			player.setPlayerReady(rs.getBoolean("p1_ready"));
+			player.setPlayerNumCorrect(rs.getInt("p1_num_correct"));
+			player.setPlayerNumWrong(rs.getInt("p1_num_wrong"));
+			player.setPlayerNumNoAnswer(rs.getInt("p1_num_no_ans"));
+			player.setPlayerPoints(rs.getDouble("p1_points"));
+			player.setPlayerCurrQDone(rs.getBoolean("P1_CURR_Q_DONE"));
+
+			player = localGame.getPlayerFromPlayerNumber(2);
+			player.setPlayerNumber(2);
+			player.setPlayer(rs.getString("player2"));
+			player.setPlayerReady(rs.getBoolean("p2_ready"));
+			player.setPlayerNumCorrect(rs.getInt("p2_num_correct"));
+			player.setPlayerNumWrong(rs.getInt("p2_num_wrong"));
+			player.setPlayerNumNoAnswer(rs.getInt("p2_num_no_ans"));
+			player.setPlayerPoints(rs.getDouble("p2_points"));
+			player.setPlayerCurrQDone(rs.getBoolean("P2_CURR_Q_DONE"));
+			
+			player = localGame.getPlayerFromPlayerNumber(3);
+			player.setPlayerNumber(3);
+			player.setPlayer(rs.getString("player3"));
+			player.setPlayerReady(rs.getBoolean("p3_ready"));
+			player.setPlayerNumCorrect(rs.getInt("p3_num_correct"));
+			player.setPlayerNumWrong(rs.getInt("p3_num_wrong"));
+			player.setPlayerNumNoAnswer(rs.getInt("p3_num_no_ans"));
+			player.setPlayerPoints(rs.getDouble("p3_points"));
+			player.setPlayerCurrQDone(rs.getBoolean("P3_CURR_Q_DONE"));
+			
+			player = localGame.getPlayerFromPlayerNumber(4);
+			player.setPlayerNumber(4);
+			player.setPlayer(rs.getString("player4"));
+			player.setPlayerReady(rs.getBoolean("p4_ready"));
+			player.setPlayerNumCorrect(rs.getInt("p4_num_correct"));
+			player.setPlayerNumWrong(rs.getInt("p4_num_wrong"));
+			player.setPlayerNumNoAnswer(rs.getInt("p4_num_no_ans"));
+			player.setPlayerPoints(rs.getDouble("p4_points"));
+			player.setPlayerCurrQDone(rs.getBoolean("P4_CURR_Q_DONE"));
+			
+			player = localGame.getPlayerFromPlayerNumber(5);
+			player.setPlayerNumber(5);
+			player.setPlayer(rs.getString("player5"));
+			player.setPlayerReady(rs.getBoolean("p5_ready"));
+			player.setPlayerNumCorrect(rs.getInt("p5_num_correct"));
+			player.setPlayerNumWrong(rs.getInt("p5_num_wrong"));
+			player.setPlayerNumNoAnswer(rs.getInt("p5_num_no_ans"));
+			player.setPlayerPoints(rs.getDouble("p5_points"));
+			player.setPlayerCurrQDone(rs.getBoolean("P5_CURR_Q_DONE"));
+			
+			for (int i = 1; i <= localGame.getNumPlayers(); i++){
+				localGame.getPlayerFromPlayerNumber(i).setValidPlayer(true);
+			}
+
 			return localGame;
 		}
 	}
@@ -154,7 +189,7 @@ public class DBAccess implements IQuizDbAccess {
 			localUser.setEmailAddress(rs.getString("email"));
 			localUser.setPassword(rs.getString("password"));
 			localUser.setHint(rs.getString("hint"));
-			// TODO Auto-generated method stub
+
 			return localUser;
 		}
 	}
@@ -196,7 +231,6 @@ public class DBAccess implements IQuizDbAccess {
 		} catch (Exception e) {
 			return -1;
 		}
-
 	}
 
 	private static class TopicPreparedStatementCreator implements
@@ -229,7 +263,6 @@ public class DBAccess implements IQuizDbAccess {
 		} catch (Exception e) {
 			return -1;
 		}
-
 	}
 
 	public static IQuizDbAccess getDbAccess() {
@@ -243,20 +276,6 @@ public class DBAccess implements IQuizDbAccess {
 			return dbo;
 		}
 	}
-
-	private static IQuizDbAccess dbo;
-
-	private static Logger log = Logger.getLogger("com.quiz.dao.DBAccess");
-
-	private JdbcTemplate jdbcTemplate = null;
-
-	// New
-	private NamedParameterJdbcTemplate namedJdbcTemplate;
-
-	private DBAccess() {
-	}
-
-	// DB Access methods below
 
 	@Override
 	public Game addGame(int topicId, int totalPlayers) {
@@ -308,7 +327,6 @@ public class DBAccess implements IQuizDbAccess {
 		} catch (Exception e) {
 			return false;
 		}
-
 	}
 
 	@Override
@@ -318,25 +336,7 @@ public class DBAccess implements IQuizDbAccess {
 		log.info("game value:" + game);
 		if (game != null) {
 
-			if (game.getTotalPlayers() == 2) {
-				return game.isP1CurrQDone() & game.isP2CurrQDone();
-			} else if (game.getTotalPlayers() == 3) {
-				return game.isP1CurrQDone() & game.isP2CurrQDone()
-						& game.isP3CurrQDone();
-			} else if (game.getTotalPlayers() == 4) {
-				return game.isP1CurrQDone() & game.isP2CurrQDone()
-						& game.isP3CurrQDone() & game.isP4CurrQDone();
-			} else if (game.getTotalPlayers() == 5) {
-				return game.isP1CurrQDone() & game.isP2CurrQDone()
-						& game.isP3CurrQDone() & game.isP4CurrQDone()
-						& game.isP5CurrQDone();
-			} else if (game.getTotalPlayers() == 1) {
-				return game.isP1CurrQDone();
-			} else {
-				log.info("value of total players is invalid in gameId: "
-						+ gameId);
-				return false;
-			}
+			return game.allPlayersFinishedQuestion();
 
 		} else {
 			log.info("couldn't find game based on gameId of:" + gameId);
@@ -349,25 +349,8 @@ public class DBAccess implements IQuizDbAccess {
 		Game game = retrieveGamefromId(gameId);
 
 		if (game != null) {
-
-			if (game.getTotalPlayers() == 2) {
-				return (game.isP1Ready() & game.isP2Ready());
-			} else if (game.getTotalPlayers() == 3) {
-				return game.isP1Ready() & game.isP2Ready() & game.isP3Ready();
-			} else if (game.getTotalPlayers() == 4) {
-				return game.isP1Ready() & game.isP2Ready() & game.isP3Ready()
-						& game.isP4Ready();
-			} else if (game.getTotalPlayers() == 5) {
-				return game.isP1Ready() & game.isP2Ready() & game.isP3Ready()
-						& game.isP4Ready() & game.isP5Ready();
-			} else if (game.getTotalPlayers() == 1) {
-				return game.isP1Ready();
-			} else {
-				log.info("value of total players is invalid in gameId: "
-						+ gameId);
-				return false;
-			}
-
+			return game.allPlayersReady();
+			
 		} else {
 			log.info("couldn't find game based on gameId of:" + gameId);
 			return false;
@@ -397,7 +380,6 @@ public class DBAccess implements IQuizDbAccess {
 		} catch (Exception e) {
 			return false;
 		}
-
 	}
 
 	@Override
@@ -431,55 +413,17 @@ public class DBAccess implements IQuizDbAccess {
 	public List<String> getAllPlayerUserIds(int gameId) {
 
 		Game game = retrieveGamefromId(gameId);
-		List<String> playerList = new ArrayList<String>();
-
 		log.info(game.toString());
-		if ((game.getPlayer1() != null) & (game.getPlayer1() != "")) {
-			playerList.add(game.getPlayer1());
-		}
-		if ((game.getPlayer2() != null) & (game.getPlayer2() != "")) {
-			playerList.add(game.getPlayer2());
-		}
-		if ((game.getPlayer3() != null) & (game.getPlayer3() != "")) {
-			playerList.add(game.getPlayer3());
-		}
-		if ((game.getPlayer4() != null) & (game.getPlayer4() != "")) {
-			playerList.add(game.getPlayer4());
-		}
-		if ((game.getPlayer5() != null) & (game.getPlayer5() != "")) {
-			playerList.add(game.getPlayer5());
-		}
-		return playerList;
+		
+		return game.getAllPlayerUserIds();
 	}
 
 	@Override
 	public List<String> getOtherPlayerUserIds(int gameId, String userId) {
 
 		Game game = retrieveGamefromId(gameId);
-		List<String> opponentList = new ArrayList<String>();
+		return game.getOtherPlayerUserIds(userId);
 
-		log.info(game.toString());
-		if ((game.getPlayer1() != null) & (game.getPlayer1() != "")
-				& (!userId.equals(game.getPlayer1()))) {
-			opponentList.add(game.getPlayer1());
-		}
-		if ((game.getPlayer2() != null) & (game.getPlayer2() != "")
-				& (!userId.equals(game.getPlayer2()))) {
-			opponentList.add(game.getPlayer2());
-		}
-		if ((game.getPlayer3() != null) & (game.getPlayer3() != "")
-				& (!userId.equals(game.getPlayer3()))) {
-			opponentList.add(game.getPlayer3());
-		}
-		if ((game.getPlayer4() != null) & (game.getPlayer4() != "")
-				& (!userId.equals(game.getPlayer4()))) {
-			opponentList.add(game.getPlayer4());
-		}
-		if ((game.getPlayer5() != null) & (game.getPlayer5() != "")
-				& (!userId.equals(game.getPlayer5()))) {
-			opponentList.add(game.getPlayer5());
-		}
-		return opponentList;
 	}
 
 	@Override
@@ -496,7 +440,6 @@ public class DBAccess implements IQuizDbAccess {
 		} else {
 			return null;
 		}
-
 	}
 
 	@Override
@@ -509,7 +452,6 @@ public class DBAccess implements IQuizDbAccess {
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
-
 	}
 
 	@Override
@@ -529,7 +471,6 @@ public class DBAccess implements IQuizDbAccess {
 		} else {
 			return null;
 		}
-
 	}
 
 	@Override
@@ -575,7 +516,6 @@ public class DBAccess implements IQuizDbAccess {
 		}
 		final String GET_QUESTION = "SELECT * FROM questions WHERE topicid = ?"
 				+ exclusionText;
-		;
 
 		try {
 			List<Object> candidateQuestions = jdbcTemplate.query(GET_QUESTION,
@@ -625,7 +565,6 @@ public class DBAccess implements IQuizDbAccess {
 			log.info("exception is :" + e.getMessage());
 			return null;
 		}
-
 	}
 
 	@Override
@@ -671,23 +610,18 @@ public class DBAccess implements IQuizDbAccess {
 
 				switch (playerNumber) {
 				case 1:
-					game.setPlayer1(username);
 					playerString = "player1";
 					break;
 				case 2:
-					game.setPlayer2(username);
 					playerString = "player2";
 					break;
 				case 3:
-					game.setPlayer3(username);
 					playerString = "player3";
 					break;
 				case 4:
-					game.setPlayer4(username);
 					playerString = "player4";
 					break;
 				case 5:
-					game.setPlayer5(username);
 					playerString = "player5";
 					break;
 
@@ -695,6 +629,9 @@ public class DBAccess implements IQuizDbAccess {
 					log.severe("Incorrect player number: " + playerNumber);
 					break;
 				}
+				
+				game.getPlayerFromPlayerNumber(playerNumber).setPlayer(username);
+				game.getPlayerFromPlayerNumber(playerNumber).setValidPlayer(true);
 
 				game.setNumPlayers(game.getNumPlayers() + 1);
 				log.info(game.toString());
@@ -707,14 +644,12 @@ public class DBAccess implements IQuizDbAccess {
 						updateStatement,
 						new Object[] { game.getNumPlayers(), playerUserId,
 								game.getGameId() });
-
 			}
 		} else {
 			log.info("couldn't find game based on gameid of:" + gameId);
 
 		}
 		return game;
-
 	}
 
 	@Override
@@ -738,14 +673,12 @@ public class DBAccess implements IQuizDbAccess {
 			return null;
 
 		}
-
 	}
 
 	public Game retrieveGamefromId(int gameId) {
 		final String GET_GAME = "SELECT * FROM games WHERE gameid = ?";
 		return (Game) jdbcTemplate.queryForObject(GET_GAME,
 				new Object[] { gameId }, new GameMapper());
-
 	}
 
 	@Override
@@ -760,7 +693,6 @@ public class DBAccess implements IQuizDbAccess {
 		} else {
 			return null;
 		}
-
 	}
 
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
@@ -778,28 +710,16 @@ public class DBAccess implements IQuizDbAccess {
 
 		if (game != null) {
 			String playerReadyString = null;
-
-			if (username.equals(game.getPlayer1())) {
-				game.setP1Ready(true);
-				playerReadyString = "p1_ready";
-			} else if (username.equals(game.getPlayer2())) {
-				game.setP2Ready(true);
-				playerReadyString = "p2_ready";
-			} else if (username.equals(game.getPlayer3())) {
-				game.setP3Ready(true);
-				playerReadyString = "p3_ready";
-			} else if (username.equals(game.getPlayer4())) {
-				game.setP4Ready(true);
-				playerReadyString = "p4_ready";
-			} else if (username.equals(game.getPlayer5())) {
-				game.setP5Ready(true);
-				playerReadyString = "p5_ready";
-			}
-
-			else {
+			
+			int playerNumber = game.findPlayerNumberFromUserId(username);
+			
+			if (playerNumber == 0){
 				log.severe("Incorrect username: " + username);
 				return null;
 			}
+			
+			game.getPlayerFromPlayerNumber(playerNumber).setPlayerReady(true);
+			playerReadyString = "P"+playerNumber+"_READY";
 
 			String updateStatement = " UPDATE games" + " SET "
 					+ playerReadyString + " = true" + " WHERE gameId = ?";
@@ -824,86 +744,37 @@ public class DBAccess implements IQuizDbAccess {
 			String playerFinishedQuestionString = null;
 			String playerCorrectAnswerString = null;
 			String playerTimeString = null;
-			double newTimeAmount;
+			double newPointsAmount;
 
-			if (username.equals(game.getPlayer1())) {
-				if (game.isP1CurrQDone()) {
-					log.info("P1: late correct");
-					return null;
-				}
-				game.setP1CurrQDone(true);
-				newCorrectCount = game.getP1NumCorrect() + 1;
-				game.setP1NumCorrect(newCorrectCount);
-				newTimeAmount = game.getP1Time() + answerTime;
-				game.setP1Time(newTimeAmount);
-				playerTimeString = "P1_TIME";
-				playerFinishedQuestionString = "P1_CURR_Q_DONE";
-				playerCorrectAnswerString = "P1_NUM_CORRECT";
-			} else if (username.equals(game.getPlayer2())) {
-				if (game.isP2CurrQDone()) {
-					log.info("P2: late correct");
-					return null;
-				}
-				newCorrectCount = game.getP2NumCorrect() + 1;
-				game.setP2NumCorrect(newCorrectCount);
-				game.setP2CurrQDone(true);
-				newTimeAmount = game.getP2Time() + answerTime;
-				game.setP2Time(newTimeAmount);
-				playerTimeString = "P2_TIME";
-				playerFinishedQuestionString = "P2_CURR_Q_DONE";
-				playerCorrectAnswerString = "P2_NUM_CORRECT";
-			} else if (username.equals(game.getPlayer3())) {
-				if (game.isP3CurrQDone()) {
-					log.info("P3: late correct");
-					return null;
-				}
-				newCorrectCount = game.getP3NumCorrect() + 1;
-				game.setP3NumCorrect(newCorrectCount);
-				game.setP3CurrQDone(true);
-				newTimeAmount = game.getP3Time() + answerTime;
-				game.setP3Time(newTimeAmount);
-				playerTimeString = "P3_TIME";
-				playerFinishedQuestionString = "P3_CURR_Q_DONE";
-				playerCorrectAnswerString = "P3_NUM_CORRECT";
-			} else if (username.equals(game.getPlayer4())) {
-				if (game.isP4CurrQDone()) {
-					log.info("P4: late correct");
-					return null;
-				}
-				newCorrectCount = game.getP4NumCorrect() + 1;
-				game.setP4NumCorrect(newCorrectCount);
-				game.setP4CurrQDone(true);
-				newTimeAmount = game.getP4Time() + answerTime;
-				game.setP4Time(newTimeAmount);
-				playerTimeString = "P4_TIME";
-				playerFinishedQuestionString = "P4_CURR_Q_DONE";
-				playerCorrectAnswerString = "P4_NUM_CORRECT";
-			} else if (username.equals(game.getPlayer5())) {
-				if (game.isP5CurrQDone()) {
-					log.info("P5: late correct");
-					return null;
-				}
-				newCorrectCount = game.getP5NumCorrect() + 1;
-				game.setP5NumCorrect(newCorrectCount);
-				game.setP5CurrQDone(true);
-				newTimeAmount = game.getP5Time() + answerTime;
-				game.setP5Time(newTimeAmount);
-				playerTimeString = "P5_TIME";
-				playerFinishedQuestionString = "P5_CURR_Q_DONE";
-				playerCorrectAnswerString = "P5_NUM_CORRECT";
-			}
-
-			else {
+			int playerNumber = game.findPlayerNumberFromUserId(username);
+			
+			if (playerNumber == 0){
 				log.severe("Incorrect username: " + username);
 				return null;
 			}
+			
+			Player player = game.getPlayerFromPlayerNumber(playerNumber);
+			
+			if (player.isPlayerCurrQDone()){
+				log.info("P" + playerNumber +": late correct");
+				return null;
+			}
+			
+			player.setPlayerCurrQDone(true);
+			newCorrectCount = player.getPlayerNumCorrect() + 1;
+			player.setPlayerNumCorrect(newCorrectCount);
+			newPointsAmount = player.getPlayerPoints() + answerTime;
+			player.setPlayerPoints(newPointsAmount);
+			playerTimeString = "P"+playerNumber+"_POINTS";
+			playerFinishedQuestionString = "P"+playerNumber+"_CURR_Q_DONE";
+			playerCorrectAnswerString = "P"+playerNumber+"_NUM_CORRECT";
 
 			String updateStatement = " UPDATE games" + " SET "
 					+ playerFinishedQuestionString + " = true, "
 					+ playerTimeString + " = ?, " + playerCorrectAnswerString
 					+ " = ?  WHERE gameId = ?";
 
-			jdbcTemplate.update(updateStatement, new Object[] { newTimeAmount,
+			jdbcTemplate.update(updateStatement, new Object[] { newPointsAmount,
 					newCorrectCount, gameId });
 			game.dump_if_discrepancy();
 
@@ -921,28 +792,24 @@ public class DBAccess implements IQuizDbAccess {
 
 		if (game != null) {
 			String playerFinishedQuestionString = null;
-
-			if (username.equals(game.getPlayer1())) {
-				game.setP1CurrQDone(true);
-				playerFinishedQuestionString = "P1_CURR_Q_DONE";
-			} else if (username.equals(game.getPlayer2())) {
-				game.setP2CurrQDone(true);
-				playerFinishedQuestionString = "P2_CURR_Q_DONE";
-			} else if (username.equals(game.getPlayer3())) {
-				game.setP3CurrQDone(true);
-				playerFinishedQuestionString = "P3_CURR_Q_DONE";
-			} else if (username.equals(game.getPlayer4())) {
-				game.setP4CurrQDone(true);
-				playerFinishedQuestionString = "P4_CURR_Q_DONE";
-			} else if (username.equals(game.getPlayer5())) {
-				game.setP5CurrQDone(true);
-				playerFinishedQuestionString = "P5_CURR_Q_DONE";
-			}
-
-			else {
+			
+			int playerNumber = game.findPlayerNumberFromUserId(username);
+			
+			if (playerNumber == 0){
 				log.severe("Incorrect username: " + username);
 				return null;
 			}
+			
+			Player player = game.getPlayerFromPlayerNumber(playerNumber);
+			
+			if (player.isPlayerCurrQDone()){
+				log.info("P" + playerNumber +": already done");
+				return null;
+			}
+			
+			player.setPlayerCurrQDone(true);
+
+			playerFinishedQuestionString = "P"+playerNumber+"_CURR_Q_DONE";
 
 			String updateStatement = " UPDATE games" + " SET "
 					+ playerFinishedQuestionString + " = true WHERE gameId = ?";
@@ -967,62 +834,26 @@ public class DBAccess implements IQuizDbAccess {
 			String playerFinishedQuestionString = null;
 			String playerNoAnswerString = null;
 
-			if (username.equals(game.getPlayer1())) {
-				if (game.isP1CurrQDone()) {
-					log.info("P1: late no answer");
-					return null;
-				}
-				game.setP1CurrQDone(true);
-				newNoAnswerCount = game.getP1NumNoAnswer() + 1;
-				game.setP1NumNoAnswer(newNoAnswerCount);
-				playerFinishedQuestionString = "P1_CURR_Q_DONE";
-				playerNoAnswerString = "P1_NUM_NO_ANS";
-			} else if (username.equals(game.getPlayer2())) {
-				if (game.isP2CurrQDone()) {
-					log.info("P2: late no answer");
-					return null;
-				}
-				newNoAnswerCount = game.getP2NumNoAnswer() + 1;
-				game.setP2NumNoAnswer(newNoAnswerCount);
-				game.setP2CurrQDone(true);
-				playerFinishedQuestionString = "P2_CURR_Q_DONE";
-				playerNoAnswerString = "P2_NUM_NO_ANS";
-			} else if (username.equals(game.getPlayer3())) {
-				if (game.isP3CurrQDone()) {
-					log.info("P3: late no answer");
-					return null;
-				}
-				newNoAnswerCount = game.getP3NumNoAnswer() + 1;
-				game.setP3NumNoAnswer(newNoAnswerCount);
-				game.setP3CurrQDone(true);
-				playerFinishedQuestionString = "P3_CURR_Q_DONE";
-				playerNoAnswerString = "P3_NUM_NO_ANS";
-			} else if (username.equals(game.getPlayer4())) {
-				if (game.isP4CurrQDone()) {
-					log.info("P4: late no answer");
-					return null;
-				}
-				newNoAnswerCount = game.getP4NumNoAnswer() + 1;
-				game.setP4NumNoAnswer(newNoAnswerCount);
-				game.setP4CurrQDone(true);
-				playerFinishedQuestionString = "P4_CURR_Q_DONE";
-				playerNoAnswerString = "P4_NUM_NO_ANS";
-			} else if (username.equals(game.getPlayer5())) {
-				if (game.isP5CurrQDone()) {
-					log.info("P5: late no answer");
-					return null;
-				}
-				newNoAnswerCount = game.getP5NumNoAnswer() + 1;
-				game.setP5NumNoAnswer(newNoAnswerCount);
-				game.setP5CurrQDone(true);
-				playerFinishedQuestionString = "P5_CURR_Q_DONE";
-				playerNoAnswerString = "P5_NUM_NO_ANS";
-			}
-
-			else {
+			int playerNumber = game.findPlayerNumberFromUserId(username);
+			
+			if (playerNumber == 0){
 				log.severe("Incorrect username: " + username);
 				return null;
 			}
+			
+			Player player = game.getPlayerFromPlayerNumber(playerNumber);
+			
+			if (player.isPlayerCurrQDone()){
+				log.info("P" + playerNumber +": No Answer. already done");
+				return null;
+			}
+			
+			player.setPlayerCurrQDone(true);
+			newNoAnswerCount = player.getPlayerNumNoAnswer() + 1;
+
+			player.setPlayerNumNoAnswer(newNoAnswerCount);
+			playerFinishedQuestionString = "P"+playerNumber+"_CURR_Q_DONE";
+			playerNoAnswerString = "P"+playerNumber+"_NUM_NO_ANS";
 
 			String updateStatement = " UPDATE games" + " SET "
 					+ playerFinishedQuestionString + " = true, "
@@ -1030,7 +861,7 @@ public class DBAccess implements IQuizDbAccess {
 
 			jdbcTemplate.update(updateStatement, new Object[] {
 					newNoAnswerCount, gameId });
-			log.info("******GAME DAO" + game.toString());
+
 			game.dump_if_discrepancy();
 			return game;
 		} else {
@@ -1049,62 +880,25 @@ public class DBAccess implements IQuizDbAccess {
 			String playerFinishedQuestionString = null;
 			String playerWrongAnswerString = null;
 
-			if (username.equals(game.getPlayer1())) {
-				if (game.isP1CurrQDone()) {
-					log.info("P1: late wrong");
-					return null;
-				}
-				game.setP1CurrQDone(true);
-				newWrongCount = game.getP1NumWrong() + 1;
-				game.setP1NumWrong(newWrongCount);
-				playerFinishedQuestionString = "P1_CURR_Q_DONE";
-				playerWrongAnswerString = "P1_NUM_WRONG";
-			} else if (username.equals(game.getPlayer2())) {
-				if (game.isP2CurrQDone()) {
-					log.info("P2: late wrong");
-					return null;
-				}
-				newWrongCount = game.getP2NumWrong() + 1;
-				game.setP2NumWrong(newWrongCount);
-				game.setP2CurrQDone(true);
-				playerFinishedQuestionString = "P2_CURR_Q_DONE";
-				playerWrongAnswerString = "P2_NUM_WRONG";
-			} else if (username.equals(game.getPlayer3())) {
-				if (game.isP3CurrQDone()) {
-					log.info("P3: late wrong");
-					return null;
-				}
-				newWrongCount = game.getP3NumWrong() + 1;
-				game.setP3NumWrong(newWrongCount);
-				game.setP3CurrQDone(true);
-				playerFinishedQuestionString = "P3_CURR_Q_DONE";
-				playerWrongAnswerString = "P3_NUM_WRONG";
-			} else if (username.equals(game.getPlayer4())) {
-				if (game.isP4CurrQDone()) {
-					log.info("P4: late wrong");
-					return null;
-				}
-				newWrongCount = game.getP4NumWrong() + 1;
-				game.setP4NumWrong(newWrongCount);
-				game.setP4CurrQDone(true);
-				playerFinishedQuestionString = "P4_CURR_Q_DONE";
-				playerWrongAnswerString = "P4_NUM_WRONG";
-			} else if (username.equals(game.getPlayer5())) {
-				if (game.isP5CurrQDone()) {
-					log.info("P5: late wrong");
-					return null;
-				}
-				newWrongCount = game.getP5NumWrong() + 1;
-				game.setP5NumWrong(newWrongCount);
-				game.setP5CurrQDone(true);
-				playerFinishedQuestionString = "P5_CURR_Q_DONE";
-				playerWrongAnswerString = "P5_NUM_WRONG";
-			}
-
-			else {
+			int playerNumber = game.findPlayerNumberFromUserId(username);
+			
+			if (playerNumber == 0){
 				log.severe("Incorrect username: " + username);
 				return null;
 			}
+			
+			Player player = game.getPlayerFromPlayerNumber(playerNumber);
+			
+			if (player.isPlayerCurrQDone()){
+				log.info("P" + playerNumber +": late wrong");
+				return null;
+			}
+			
+			player.setPlayerCurrQDone(true);
+			newWrongCount = player.getPlayerNumWrong() + 1;
+			player.setPlayerNumWrong(newWrongCount);
+			playerFinishedQuestionString = "P"+playerNumber+"_CURR_Q_DONE";
+			playerWrongAnswerString = "P"+playerNumber+"_NUM_WRONG";
 
 			String updateStatement = " UPDATE games" + " SET "
 					+ playerFinishedQuestionString + " = true, "
@@ -1122,11 +916,12 @@ public class DBAccess implements IQuizDbAccess {
 		}
 	}
 
+
 	@Override
 	public Question setQuestion(Question question) {
 		Question localQuestion = getQuestionFromQuestionId(question
 				.getQuestionId());
-log.info("in set question:" + question);
+
 		if (localQuestion == null) {
 			return localQuestion;
 		} else {
@@ -1209,23 +1004,16 @@ log.info("in set question:" + question);
 	public Game setRemainingPlayersNoAnswer(int gameId) {
 
 		Game game = retrieveGamefromId(gameId);
-		log.info("******GAME BEFORE DAO" + game.toString());
 
-		if (game.isP1Ready() & !game.isP1CurrQDone()) {
-			game = setPlayerNoAnswer(game.getPlayer1(), gameId);
+		Player player;
+		
+		for (int i = 1; i <= Game.MAX_PLAYERS_PER_GAME;i++){
+			player = game.getPlayerFromPlayerNumber(i);
+			if(player.isValidPlayer() && !player.isPlayerCurrQDone()){
+				game = setPlayerNoAnswer(player.getPlayer(), gameId);
+			}			
 		}
-		if (game.isP2Ready() & !game.isP2CurrQDone()) {
-			game = setPlayerNoAnswer(game.getPlayer2(), gameId);
-		}
-		if (game.isP3Ready() & !game.isP3CurrQDone()) {
-			game = setPlayerNoAnswer(game.getPlayer3(), gameId);
-		}
-		if (game.isP4Ready() & !game.isP4CurrQDone()) {
-			game = setPlayerNoAnswer(game.getPlayer4(), gameId);
-		}
-		if (game.isP5Ready() & !game.isP5CurrQDone()) {
-			game = setPlayerNoAnswer(game.getPlayer5(), gameId);
-		}
+
 		game.dump_if_discrepancy();
 
 		return game;
@@ -1312,7 +1100,6 @@ log.info("in set question:" + question);
 		try {
 			file = new FileOutputStream(filePath, true);
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
 			log.info("File not found: " + filePath);
 		}
 
@@ -1330,7 +1117,6 @@ log.info("in set question:" + question);
 
 		writer.flush();
 		writer.close();
-
 	}
 
 	public void updateFlatFileWithTopic(String topic, String filePath) {
@@ -1338,7 +1124,6 @@ log.info("in set question:" + question);
 		try {
 			file = new FileOutputStream(filePath, true);
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
 			log.info("File not found: " + filePath);
 		}
 
@@ -1350,6 +1135,5 @@ log.info("in set question:" + question);
 
 		writer.flush();
 		writer.close();
-
 	}
 }

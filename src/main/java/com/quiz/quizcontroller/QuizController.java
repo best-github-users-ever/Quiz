@@ -253,7 +253,6 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		log.info("topicid:" + topicId);
 
 		IQuizDbAccess dao = DBAccess.getDbAccess();
-		log.info("value of dao is null:" + (dao == null));
 
 		session.removeAttribute("question");
 		model.addObject("numberPlayers", numberPlayers);
@@ -997,7 +996,7 @@ public class QuizController implements Serializable, BeanFactoryAware {
 			session.setAttribute("user", localUser);
 
 			parameterMap.put("JSESSIONID", session.getId());
-			parameterMap.put("maxPlayers", "5");
+			parameterMap.put("maxPlayers", String.valueOf(Game.MAX_PLAYERS_PER_GAME));
 
 			List<Topic> topics = dao.getTopics();
 			for (Topic topic : topics) {
@@ -1064,7 +1063,6 @@ public class QuizController implements Serializable, BeanFactoryAware {
 		String message = null;
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
-		log.info("********** question: " + question);
 
 		if ((question.getQuestion() == null)
 				|| ("".equals(question.getQuestion().trim()))) {
