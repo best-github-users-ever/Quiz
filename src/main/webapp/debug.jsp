@@ -7,7 +7,7 @@
  
       <br><br><br>
       Request Parameters:
-      <table border=1 width=80%>
+      <table border=1 >
       <tr><th>Parameter Name</th><th>Parameter Value</th></tr>
       <c:forEach var="item" items="${param}">
         <tr>
@@ -20,7 +20,7 @@
 
       <br><br><br>
       Request Attributes:
-      <table border=1 width=80%>
+      <table border=1 >
       <tr><th>Attribute Name</th><th>Attribute Value</th></tr>
       <c:forEach var="item" items="${requestScope}">
         <tr>
@@ -33,7 +33,7 @@
 
       <br><br><br>
       Request Headers:
-      <table border=1 width=80%>
+      <table border=1 >
        <c:forEach var='hdr' items='${header}'>
              <tr>
                <td><c:out value='${hdr.key}'/></td>
@@ -46,7 +46,7 @@
 
       <br><br><br>
       Cookies:
-      <table border=1 width=80%>
+      <table border=1 >
       <tr><th>Cookie Name</th><th>Cookie Value</th></tr>
       <c:forEach var="item" items="${cookie}">
         <tr>
@@ -58,7 +58,7 @@
       
       <br><br><br>
       Session Attributes:
-      <table border=1 width=80%>
+      <table border=1 >
       <tr><th>Attribute Name</th><th>Attribute Value</th></tr>
       <c:forEach var="item" items="${sessionScope}">
         <tr>
@@ -71,7 +71,7 @@
       
       <br><br><br>
       Application Attributes:
-      <table border=1 width=80%>
+      <table border=1 >
       <tr><th>Attribute Name</th><th>Attribute Value</th></tr>
       <c:forEach var="item" items="${applicationScope}">
         <tr>

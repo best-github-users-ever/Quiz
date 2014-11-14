@@ -243,6 +243,12 @@ public class JoinGameWebSocketController {
 						+ input.getUserId() + "/gameUpdates", result);
 			}
 
+			if (game == null) {
+				// late answer. just retrieve the game again.
+				// inefficient but this is a rare event.
+				game = dao.retrieveGamefromId(input.getGameId());
+			}
+
 			if (game.getTotalPlayers() > 1) {
 				List<String> opponentList = dao.getOtherPlayerUserIds(
 						input.getGameId(), input.getUserId());
@@ -252,12 +258,6 @@ public class JoinGameWebSocketController {
 					sendPlayerGuessedMessageToOpponent(input.getGameId(),
 							input.getUserId(), recipient);
 				}
-			}
-
-			if (game == null) {
-				// late answer. just retrieve the game again.
-				// inefficient but this is a rare event.
-				game = dao.retrieveGamefromId(input.getGameId());
 			}
 
 			if (game.allPlayersFinishedQuestion()

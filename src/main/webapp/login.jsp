@@ -22,8 +22,8 @@
 			<td><input type='password' id="password" name='password' size='8'></td>
 		</tr>
  		<tr>
-			<td>&nbsp</td>
-			<td>&nbsp</td>
+			<td><pre> </pre></td>
+			<td><pre> </pre></td>
 		</tr>
 		<tr>
 			<td colspan="2"><input id="loginButton" class="centeredButton" type='submit'

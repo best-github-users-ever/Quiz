@@ -26,8 +26,8 @@
 		</tr>
 
 		<tr>
-			<td>&nbsp</td>
-			<td>&nbsp</td>
+			<td><pre> </pre></td>
+			<td><pre> </pre></td>
 		</tr>
 		<tr>
 			<td>Number of Players</td>
@@ -41,8 +41,8 @@
 		</tr>
 
 		<tr>
-			<td>&nbsp</td>
-			<td>&nbsp</td>
+			<td><pre> </pre></td>
+			<td><pre> </pre></td>
 		</tr>
 
 

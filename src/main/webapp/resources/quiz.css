@@ -560,6 +560,10 @@ textarea {
     width: 45%;
 }
 
+#newQuestionDiv {
+    width: 60%;
+}
+
 #editTopicDiv {
     width: 30%;
 }
