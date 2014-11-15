@@ -52,12 +52,6 @@ p.logo {
 	color: green;
 }
 
-*.updatemessage {
-	font-size: 120%;
-	text-align: left;
-	color: blue;
-}
-
 *.centeredButton {
 	display: block;
 	margin-left: auto;
@@ -241,6 +235,19 @@ a {
 	width: 80%;
 	height: 200px;
 	color: green;
+	overflow: auto;
+	font-size: 120%;
+}
+
+#gameUpdateMessage {
+	float:none;
+	border: none;
+	margin-top: 0px;
+	margin-left: 10px;
+	position: relative;
+	width: 95%;
+	height: 490px;
+	color: blue;
 	overflow: auto;
 	font-size: 120%;
 }
@@ -560,14 +567,14 @@ textarea {
     width: 45%;
 }
 
-#newQuestionDiv {
-    width: 60%;
-}
-
 #editTopicDiv {
     width: 30%;
 }
 
+#newQuestionDiv {
+   width: 60%;
+   }
+ 
 #editUserDiv {
     width: 25%;
 }

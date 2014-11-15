@@ -494,7 +494,7 @@ function processMessage(message) {
 
 	} else if (message.messageName === 'gameReady') {
 		positiveMsg.text("");
-		addTextBeforeNode(message.result, updateMsg);
+		addTextAfterNode(message.result, updateMsg);
 		setReadyButtonVisiblity(true);
 
 	} else if (message.messageName === 'delayBeforeStart') {
@@ -608,7 +608,7 @@ function processMessage(message) {
 		errorMsg.text("");
 		positiveMsg.text("");
 		setReadyButtonVisiblity(false);
-		addTextBeforeNode(message.result, updateMsg);
+		addTextAfterNode(message.result, updateMsg);
 
 	} else if (message.messageName === 'playerGuessed') {
 		guessedMessage = "Question " + currentQuestionIdx + ": "
@@ -660,7 +660,8 @@ function processMessage(message) {
 
 		// $("#submitButton").prop("disabled", true);
 
-		if ((message.game.players[0].player !== null) && (message.game.players[0].player !== "")) {
+		if ((message.game.players[0].player !== null)
+				&& (message.game.players[0].player !== "")) {
 			remainingTime.hide();
 			localUserId = message.game.players[0].player;
 			progBarIndex = userProgressMap[localUserId];
@@ -669,12 +670,15 @@ function processMessage(message) {
 				progressBar1.setPercent(progressBar1.getPercentByValue(
 						message.game.players[0].playerPoints, "successData"),
 						"successData");
-				$("#my-progressbar-text1").text(localUserId + " - " + message.game.players[0].playerPoints);
+				$("#my-progressbar-text1").text(
+						localUserId + " - "
+								+ message.game.players[0].playerPoints);
 				progressBar1.setPercent(progressBar1.getPercentByValue(
-						100*message.game.players[0].playerNumWrong, "errorData"), "errorData");
+						100 * message.game.players[0].playerNumWrong,
+						"errorData"), "errorData");
 				progressBar1.setPercent(progressBar1.getPercentByValue(
-						100*message.game.players[0].playerNumNoAnswer, "noResponseData"),
-						"noResponseData");
+						100 * message.game.players[0].playerNumNoAnswer,
+						"noResponseData"), "noResponseData");
 
 				break;
 
@@ -682,12 +686,15 @@ function processMessage(message) {
 				progressBar2.setPercent(progressBar2.getPercentByValue(
 						message.game.players[0].playerPoints, "successData"),
 						"successData");
-				$("#my-progressbar-text2").text(localUserId + " - " + message.game.players[0].playerPoints);
+				$("#my-progressbar-text2").text(
+						localUserId + " - "
+								+ message.game.players[0].playerPoints);
 				progressBar2.setPercent(progressBar2.getPercentByValue(
-						100*message.game.players[0].playerNumWrong, "errorData"), "errorData");
+						100 * message.game.players[0].playerNumWrong,
+						"errorData"), "errorData");
 				progressBar2.setPercent(progressBar2.getPercentByValue(
-						100*message.game.players[0].playerNumNoAnswer, "noResponseData"),
-						"noResponseData");
+						100 * message.game.players[0].playerNumNoAnswer,
+						"noResponseData"), "noResponseData");
 
 				break;
 
@@ -696,7 +703,8 @@ function processMessage(message) {
 			}
 
 		}
-		if ((message.game.players[1].player !== null) && (message.game.players[1].player !== "")) {
+		if ((message.game.players[1].player !== null)
+				&& (message.game.players[1].player !== "")) {
 			localUserId = message.game.players[1].player;
 			progBarIndex = userProgressMap[localUserId];
 			switch (progBarIndex) {
@@ -704,12 +712,15 @@ function processMessage(message) {
 				progressBar1.setPercent(progressBar1.getPercentByValue(
 						message.game.players[1].playerPoints, "successData"),
 						"successData");
-				$("#my-progressbar-text1").text(localUserId + " - " + message.game.players[1].playerPoints);
+				$("#my-progressbar-text1").text(
+						localUserId + " - "
+								+ message.game.players[1].playerPoints);
 				progressBar1.setPercent(progressBar1.getPercentByValue(
-						100*message.game.players[1].playerNumWrong, "errorData"), "errorData");
+						100 * message.game.players[1].playerNumWrong,
+						"errorData"), "errorData");
 				progressBar1.setPercent(progressBar1.getPercentByValue(
-						100*message.game.players[1].playerNumNoAnswer, "noResponseData"),
-						"noResponseData");
+						100 * message.game.players[1].playerNumNoAnswer,
+						"noResponseData"), "noResponseData");
 
 				break;
 
@@ -717,12 +728,31 @@ function processMessage(message) {
 				progressBar2.setPercent(progressBar2.getPercentByValue(
 						message.game.players[1].playerPoints, "successData"),
 						"successData");
-				$("#my-progressbar-text2").text(localUserId + " - " + message.game.players[1].playerPoints);
+				$("#my-progressbar-text2").text(
+						localUserId + " - "
+								+ message.game.players[1].playerPoints);
 				progressBar2.setPercent(progressBar2.getPercentByValue(
-						100*message.game.players[1].playerNumWrong, "errorData"), "errorData");
+						100 * message.game.players[1].playerNumWrong,
+						"errorData"), "errorData");
 				progressBar2.setPercent(progressBar2.getPercentByValue(
-						100*message.game.players[1].playerNumNoAnswer, "noResponseData"),
-						"noResponseData");
+						100 * message.game.players[1].playerNumNoAnswer,
+						"noResponseData"), "noResponseData");
+
+				break;
+
+			case 3:
+				progressBar3.setPercent(progressBar3.getPercentByValue(
+						message.game.players[1].playerPoints, "successData"),
+						"successData");
+				$("#my-progressbar-text3").text(
+						localUserId + " - "
+								+ message.game.players[1].playerPoints);
+				progressBar3.setPercent(progressBar3.getPercentByValue(
+						100 * message.game.players[1].playerNumWrong,
+						"errorData"), "errorData");
+				progressBar3.setPercent(progressBar3.getPercentByValue(
+						100 * message.game.players[1].playerNumNoAnswer,
+						"noResponseData"), "noResponseData");
 
 				break;
 
@@ -731,7 +761,8 @@ function processMessage(message) {
 			}
 
 		}
-		if ((message.game.players[2].player !== null) && (message.game.players[2].player !== "")) {
+		if ((message.game.players[2].player !== null)
+				&& (message.game.players[2].player !== "")) {
 			remainingTime.hide();
 			localUserId = message.game.players[2].player;
 			progBarIndex = userProgressMap[localUserId];
@@ -740,12 +771,15 @@ function processMessage(message) {
 				progressBar1.setPercent(progressBar1.getPercentByValue(
 						message.game.players[2].playerPoints, "successData"),
 						"successData");
-				$("#my-progressbar-text1").text(localUserId + " - " + message.game.players[2].playerPoints);
+				$("#my-progressbar-text1").text(
+						localUserId + " - "
+								+ message.game.players[2].playerPoints);
 				progressBar1.setPercent(progressBar1.getPercentByValue(
-						100*message.game.players[2].playerNumWrong, "errorData"), "errorData");
+						100 * message.game.players[2].playerNumWrong,
+						"errorData"), "errorData");
 				progressBar1.setPercent(progressBar1.getPercentByValue(
-						100*message.game.players[2].playerNumNoAnswer, "noResponseData"),
-						"noResponseData");
+						100 * message.game.players[2].playerNumNoAnswer,
+						"noResponseData"), "noResponseData");
 
 				break;
 
@@ -753,122 +787,146 @@ function processMessage(message) {
 				progressBar3.setPercent(progressBar3.getPercentByValue(
 						message.game.players[2].playerPoints, "successData"),
 						"successData");
-				$("#my-progressbar-text3").text(localUserId + " - " + message.game.players[2].playerPoints);
+				$("#my-progressbar-text3").text(
+						localUserId + " - "
+								+ message.game.players[2].playerPoints);
 				progressBar3.setPercent(progressBar3.getPercentByValue(
-						100*message.game.players[2].playerNumWrong, "errorData"), "errorData");
+						100 * message.game.players[2].playerNumWrong,
+						"errorData"), "errorData");
 				progressBar3.setPercent(progressBar3.getPercentByValue(
-						100*message.game.players[2].playerNumNoAnswer, "noResponseData"),
-						"noResponseData");
+						100 * message.game.players[2].playerNumNoAnswer,
+						"noResponseData"), "noResponseData");
+
+				break;
+
+			case 4:
+				progressBar4.setPercent(progressBar4.getPercentByValue(
+						message.game.players[2].playerPoints, "successData"),
+						"successData");
+				$("#my-progressbar-text4").text(
+						localUserId + " - "
+								+ message.game.players[2].playerPoints);
+				progressBar4.setPercent(progressBar4.getPercentByValue(
+						100 * message.game.players[2].playerNumWrong,
+						"errorData"), "errorData");
+				progressBar4.setPercent(progressBar4.getPercentByValue(
+						100 * message.game.players[2].playerNumNoAnswer,
+						"noResponseData"), "noResponseData");
 
 				break;
 
 			default:
 				break;
 			}
-			if ((message.game.players[3].player !== null) && (message.game.players[3].player !== "")) {
-				remainingTime.hide();
-				localUserId = message.game.players[3].player;
-				progBarIndex = userProgressMap[localUserId];
-				switch (progBarIndex) {
-				case 1:
-					progressBar1.setPercent(progressBar1.getPercentByValue(
-							message.game.players[3].playerPoints, "successData"),
-							"successData");
-					$("#my-progressbar-text1").text(localUserId + " - " + message.game.players[3].playerPoints);
-					progressBar1.setPercent(progressBar1.getPercentByValue(
-							100*message.game.players[3].playerNumWrong, "errorData"), "errorData");
-					progressBar1.setPercent(progressBar1.getPercentByValue(
-							100*message.game.players[3].playerNumNoAnswer, "noResponseData"),
-							"noResponseData");
+		}
+		if ((message.game.players[3].player !== null)
+				&& (message.game.players[3].player !== "")) {
+			remainingTime.hide();
+			localUserId = message.game.players[3].player;
+			progBarIndex = userProgressMap[localUserId];
+			switch (progBarIndex) {
+			case 1:
+				progressBar1.setPercent(progressBar1.getPercentByValue(
+						message.game.players[3].playerPoints, "successData"),
+						"successData");
+				$("#my-progressbar-text1").text(
+						localUserId + " - "
+								+ message.game.players[3].playerPoints);
+				progressBar1.setPercent(progressBar1.getPercentByValue(
+						100 * message.game.players[3].playerNumWrong,
+						"errorData"), "errorData");
+				progressBar1.setPercent(progressBar1.getPercentByValue(
+						100 * message.game.players[3].playerNumNoAnswer,
+						"noResponseData"), "noResponseData");
 
-					break;
+				break;
 
-				case 4:
-					progressBar4.setPercent(progressBar4.getPercentByValue(
-							message.game.players[3].playerPoints, "successData"),
-							"successData");
-					$("#my-progressbar-text4").text(localUserId + " - " + message.game.players[3].playerPoints);
-					progressBar4.setPercent(progressBar4.getPercentByValue(
-							100*message.game.players[3].playerNumWrong, "errorData"), "errorData");
-					progressBar4.setPercent(progressBar4.getPercentByValue(
-							100*message.game.players[3].playerNumNoAnswer, "noResponseData"),
-							"noResponseData");
+			case 4:
+				progressBar4.setPercent(progressBar4.getPercentByValue(
+						message.game.players[3].playerPoints, "successData"),
+						"successData");
+				$("#my-progressbar-text4").text(
+						localUserId + " - "
+								+ message.game.players[3].playerPoints);
+				progressBar4.setPercent(progressBar4.getPercentByValue(
+						100 * message.game.players[3].playerNumWrong,
+						"errorData"), "errorData");
+				progressBar4.setPercent(progressBar4.getPercentByValue(
+						100 * message.game.players[3].playerNumNoAnswer,
+						"noResponseData"), "noResponseData");
 
-					break;
+				break;
 
-				default:
-					break;
-				}
+			case 4:
+				progressBar5.setPercent(progressBar5.getPercentByValue(
+						message.game.players[3].playerPoints, "successData"),
+						"successData");
+				$("#my-progressbar-text5").text(
+						localUserId + " - "
+								+ message.game.players[3].playerPoints);
+				progressBar5.setPercent(progressBar5.getPercentByValue(
+						100 * message.game.players[3].playerNumWrong,
+						"errorData"), "errorData");
+				progressBar5.setPercent(progressBar5.getPercentByValue(
+						100 * message.game.players[3].playerNumNoAnswer,
+						"noResponseData"), "noResponseData");
 
-			}
-			if ((message.game.players[4].player !== null) && (message.game.players[4].player !== "")) {
-				remainingTime.hide();
-				localUserId = message.game.players[4].player;
-				progBarIndex = userProgressMap[localUserId];
-				switch (progBarIndex) {
-				case 1:
-					progressBar1.setPercent(progressBar1.getPercentByValue(
-							message.game.players[4].playerPoints, "successData"),
-							"successData");
-					$("#my-progressbar-text1").text(localUserId + " - " + message.game.players[4].playerPoints);
-					progressBar1.setPercent(progressBar1.getPercentByValue(
-							100*message.game.players[4].playerNumWrong, "errorData"), "errorData");
-					progressBar1.setPercent(progressBar1.getPercentByValue(
-							100*message.game.players[4].playerNumNoAnswer, "noResponseData"),
-							"noResponseData");
+				break;
 
-					break;
-
-				case 5:
-					progressBar5.setPercent(progressBar5.getPercentByValue(
-							message.game.players[4].playerPoints, "successData"),
-							"successData");
-					$("#my-progressbar-text4").text(localUserId + " - " + message.game.players[4].playerPoints);
-					progressBar5.setPercent(progressBar5.getPercentByValue(
-							100*message.game.players[4].playerNumWrong, "errorData"), "errorData");
-					progressBar5.setPercent(progressBar5.getPercentByValue(
-							100*message.game.players[4].playerNumNoAnswer, "noResponseData"),
-							"noResponseData");
-
-					break;
-
-				default:
-					break;
-				}
-
+			default:
+				break;
 			}
 
 		}
-		/*
-		 * Add other players after 1/2 player verified
-		 * 
-		 * if ((message.game.player3 !== null) && (message.game.player3 !== "")) {
-		 * progBar = userProgressMap[message.game.player3];
-		 * progBar.setPercent(message.game.p3NumCorrect * 10, "successData");
-		 * progBar.setPercent(message.game.p3NumWrong * 10, "errorData");
-		 * progBar.setPercent(message.game.p3NumNoAnswer * 10,
-		 * "noResponseData"); } if ((message.game.player4 !== null) &&
-		 * (message.game.player4 !== "")) { progBar =
-		 * userProgressMap[message.game.player4];
-		 * progBar.setPercent(message.game.p4NumCorrect * 10, "successData");
-		 * progBar.setPercent(message.game.p4NumWrong * 10, "errorData");
-		 * progBar.setPercent(message.game.p4NumNoAnswer * 10,
-		 * "noResponseData"); } if ((message.game.player5 !== null) &&
-		 * (message.game.player5 !== "")) { progBar =
-		 * userProgressMap[message.game.player5];
-		 * progBar.setPercent(message.game.p5NumCorrect * 10, "successData");
-		 * progBar.setPercent(message.game.p5NumWrong * 10, "errorData");
-		 * progBar.setPercent(message.game.p5NumNoAnswer * 10,
-		 * "noResponseData"); }
-		 * 
-		 */
+		if ((message.game.players[4].player !== null)
+				&& (message.game.players[4].player !== "")) {
+			remainingTime.hide();
+			localUserId = message.game.players[4].player;
+			progBarIndex = userProgressMap[localUserId];
+			switch (progBarIndex) {
+			case 1:
+				progressBar1.setPercent(progressBar1.getPercentByValue(
+						message.game.players[4].playerPoints, "successData"),
+						"successData");
+				$("#my-progressbar-text1").text(
+						localUserId + " - "
+								+ message.game.players[4].playerPoints);
+				progressBar1.setPercent(progressBar1.getPercentByValue(
+						100 * message.game.players[4].playerNumWrong,
+						"errorData"), "errorData");
+				progressBar1.setPercent(progressBar1.getPercentByValue(
+						100 * message.game.players[4].playerNumNoAnswer,
+						"noResponseData"), "noResponseData");
+
+				break;
+
+			case 5:
+				progressBar5.setPercent(progressBar5.getPercentByValue(
+						message.game.players[4].playerPoints, "successData"),
+						"successData");
+				$("#my-progressbar-text4").text(
+						localUserId + " - "
+								+ message.game.players[4].playerPoints);
+				progressBar5.setPercent(progressBar5.getPercentByValue(
+						100 * message.game.players[4].playerNumWrong,
+						"errorData"), "errorData");
+				progressBar5.setPercent(progressBar5.getPercentByValue(
+						100 * message.game.players[4].playerNumNoAnswer,
+						"noResponseData"), "noResponseData");
+
+				break;
+
+			default:
+				break;
+			}
+
+		}
 
 		if (message.messageName === 'gameResults') {
 			var iWon = false;
 
 			addTextAfterNode("Game Over!", updateMsg);
 			updateMsg.scrollTop(updateMsg[0].scrollHeight);
-
 
 			var messageToPrint = "The ";
 			var winners = "";
@@ -880,8 +938,9 @@ function processMessage(message) {
 					if (message.winners[winnersIndex] === myUserId) {
 						iWon = true;
 					}
-					
-					winners = winners + ((winners === "") ? "" : ", ") + message.winners[winnersIndex];
+
+					winners = winners + ((winners === "") ? "" : ", ")
+							+ message.winners[winnersIndex];
 				}
 
 				winners = winners + "!";
@@ -904,7 +963,7 @@ function processMessage(message) {
 			}
 
 		}
-
+		
 	} else if (message.messageName === 'answerRight') {
 		screenMsg.text(message.result);
 		errorMsg.text("");
@@ -955,7 +1014,7 @@ var init = function() {
 	errorMsg = $('#errorMessage');
 	positiveMsg = $('#positivemessage');
 	opponentSelectList = $("#opponentSelectList");
-	updateMsg = $('#updateMessage');
+	updateMsg = $('#gameUpdateMessage');
 	chatMsgField = $("#messages");
 
 	remainingTime = $("#countdown");

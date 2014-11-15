@@ -23,7 +23,7 @@
 <div id="content">
 	<div id="content-left">
 		<p class="content-header">Game Updates</p>
-		<p id="updateMessage" class="updatemessage"></p>
+	 	<div id="gameUpdateMessage"> </div>
 	</div>
 	<div id="content-main">
 
