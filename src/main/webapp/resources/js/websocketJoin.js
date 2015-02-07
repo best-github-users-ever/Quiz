@@ -857,7 +857,7 @@ function processMessage(message) {
 
 				break;
 
-			case 4:
+			case 5:
 				progressBar5.setPercent(progressBar5.getPercentByValue(
 						message.game.players[3].playerPoints, "successData"),
 						"successData");

@@ -140,6 +140,7 @@ public class GenerateDB {
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'What is the full name of The Brain ?', 'Alan Powers', 'Reginald Smith', 'Marcus Welby', 'Fred Sanford', 0);");
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 3, 'In what city does Arthur take place ?', 'Lakewood City', 'Elwood City', 'Reed City', 'Sherman', 1);");
 	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 4, 'Which horror movie ended with a burning house ?', 'The Amityville Horror', 'Carrie', 'all of them', 'The Shining', 2);");
+	    writer.println(" INSERT INTO QUESTIONS VALUES ('DEFAULT', 4, 'What horror movie has the most sequels ?', 'Halloween', 'Nightmare on Elm Street', 'Friday the 13th', 'Scream',2);");
 
 	}
 }
