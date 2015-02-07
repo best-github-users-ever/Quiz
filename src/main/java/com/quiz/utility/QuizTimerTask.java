@@ -18,7 +18,7 @@ public class QuizTimerTask extends TimerTask implements Serializable {
 	private static final long serialVersionUID = 8421205880747739248L;
 
 	private static Logger log = Logger
-			.getLogger(JoinGameWebSocketController.class);
+			.getLogger(QuizTimerTask.class);
 
 	int gameId;
 	int theTimersQuestionId;

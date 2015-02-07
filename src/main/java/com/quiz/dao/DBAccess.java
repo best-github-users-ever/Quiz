@@ -287,7 +287,7 @@ public class DBAccess implements IQuizDbAccess {
 	}
 
 	@Override
-	public Game addGame(int topicId, int totalPlayers) {
+	public synchronized Game addGame(int topicId, int totalPlayers) {
 		Game game = new Game();
 		GamePreparedStatementCreator creator = new GamePreparedStatementCreator(
 				game, topicId, totalPlayers);
@@ -392,7 +392,7 @@ public class DBAccess implements IQuizDbAccess {
 	}
 
 	@Override
-	public Game findGameForNewPlayer(int topicId, int totalPlayers,
+	public synchronized Game findGameForNewPlayer(int topicId, int totalPlayers,
 			String username) {
 
 		Game game = searchForFirstMatchingQueuedGame(topicId, totalPlayers);
