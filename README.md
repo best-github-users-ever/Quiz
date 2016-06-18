@@ -3,4 +3,4 @@ Quiz
 
 quiz with web interface
 
-pls refer to the wiki
+pls refer to the Wiki.
